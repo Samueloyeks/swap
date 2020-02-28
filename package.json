@@ -1,0 +1,44 @@
+{
+  "name": "swap",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "start": "react-native start",
+    "test": "jest",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@react-native-community/async-storage": "^1.8.0",
+    "@react-native-community/masked-view": "^0.1.6",
+    "@react-navigation/bottom-tabs": "^5.1.0",
+    "@unimodules/core": "^5.0.0",
+    "expo-constants": "^8.0.0",
+    "react": "16.9.0",
+    "react-native": "0.61.5",
+    "react-native-animated-splash-screen": "git+https://github.com/Samueloyeks/react-native-animated-splash-screen.git",
+    "react-native-gesture-handler": "^1.6.0",
+    "react-native-reanimated": "^1.7.0",
+    "react-native-safe-area-context": "^0.6.4",
+    "react-native-screens": "^2.1.0",
+    "react-native-splash-screen": "3.0.6",
+    "react-native-unimodules": "^0.7.0",
+    "react-navigation": "^4.2.2",
+    "react-navigation-stack": "^2.2.2",
+    "react-navigation-tabs": "^2.8.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.6",
+    "@babel/runtime": "7.0.0-beta.55",
+    "@react-native-community/eslint-config": "^0.0.7",
+    "babel-jest": "^25.1.0",
+    "eslint": "^6.8.0",
+    "jest": "^25.1.0",
+    "metro-react-native-babel-preset": "^0.58.0",
+    "react-test-renderer": "16.9.0"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
