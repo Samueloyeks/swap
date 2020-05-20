@@ -8,7 +8,7 @@ import demoImage from '../../assets/imgs/demo.png';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
-
+import ModalSelector from 'react-native-modal-selector'
 
 
 export default class ExploreScreen extends React.Component {
@@ -24,8 +24,8 @@ export default class ExploreScreen extends React.Component {
       items: [],
       loading: false,
       isRefreshing: false,
-      error:null,
-      searchString:''
+      error: null,
+      searchString: ''
     }
 
     this.arrayholder = []
@@ -39,10 +39,11 @@ export default class ExploreScreen extends React.Component {
     this.props.navigation.setParams({
       updateSearch: this.updateSearch,
       searchFilterFunction: this.searchFilterFunction,
-      searchString : this.searchString
+      searchString: this.searchString
     });
     await this.getCategories();
-    await this.getItems();
+    // await this.getItems();
+    await this.getItemsByCategory();
     await this.setUserData();
   }
 
@@ -56,25 +57,37 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
-  getItems = () => {
-    this.setState({ loading: true })
-    api.get('/items/getItems').then((response) => {
-      this.setState({
-        items: response.data.data,
-        loading: false
-      })
-      this.arrayholder = response.data.data
-    })
-  }
+  // getItems = () => {
+  //   this.setState({ loading: true })
+  //   api.get('/items/getItems').then((response) => {
+  //     this.setState({
+  //       items: response.data.data,
+  //       loading: false
+  //     })
+  //     this.arrayholder = response.data.data
+  //   })
+  // }
 
   getItemsByCategory = () => {
     this.setState({ loading: true })
-    api.post('/items/getItemsByCategory', this.state.activeCategories).then((response) => {
-      this.setState({
-        items: response.data.data,
-        loading: false
-      })
-    })
+    {
+      (this.isEmpty(this.state.activeCategories)) ?
+        api.get('/items/getItems').then((response) => {
+          this.setState({
+            items: response.data.data,
+            loading: false
+          })
+          this.arrayholder = response.data.data
+        })
+        :
+        api.post('/items/getItemsByCategory', this.state.activeCategories).then((response) => {
+          this.setState({
+            items: response.data.data,
+            loading: false
+          })
+        })
+    }
+
   }
 
   setUserData() {
@@ -95,14 +108,14 @@ export default class ExploreScreen extends React.Component {
     });
   }
 
-  searchFilterFunction = text => {   
+  searchFilterFunction = text => {
     this.setState({
-      searchString:text,
-      loading:true
-    }) 
+      searchString: text,
+      loading: true
+    })
 
     this.props.navigation.setParams({
-      searchString:text
+      searchString: text
     })
 
     // let data = {searchString:text}
@@ -116,19 +129,19 @@ export default class ExploreScreen extends React.Component {
     //   });  
     // })
 
-    const newData = this.arrayholder.filter(item => {      
+    const newData = this.arrayholder.filter(item => {
       const itemData = `${item.title.toUpperCase()}   
       ${item.postedby.username.toUpperCase()}`;
-      
-       const textData = text.toUpperCase();
-        
-       return itemData.indexOf(textData) > -1;    
+
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
     });
-    
-    this.setState({ 
+
+    this.setState({
       items: newData,
-      loading:false
-    });  
+      loading: false
+    });
   };
 
 
@@ -157,7 +170,7 @@ export default class ExploreScreen extends React.Component {
               height: StatusBar.currentHeight,
               width: screen.width - 10
             }}
-            >
+          >
             <SearchBar
               round
               lightTheme
@@ -224,7 +237,7 @@ export default class ExploreScreen extends React.Component {
 
   }
 
-  refreshDetails=(data)=>{
+  refreshDetails = (data) => {
     let newItems = [...this.state.items];
 
     newItems[data.index] = data;
@@ -267,13 +280,14 @@ export default class ExploreScreen extends React.Component {
   }
 
   onRefresh() {
-    this.getItems();
+    // this.getItems();
+    this.getItemsByCategory();
   }
 
   handleLoadMore = () => {
     if (!this.state.loading) {
       this.page = this.page + 1; // increase page by 1
-      this.getItems(this.page); // method for API call 
+      this.getItemsByCategory(this.page); // method for API call 
     }
   };
 
@@ -298,7 +312,7 @@ export default class ExploreScreen extends React.Component {
         postedby={item.postedby}
         title={item.title}
         price={item.price}
-        posted={item.posted} 
+        posted={item.posted}
         liked={item.liked}
         favorited={item.favorited}
         id={item.id}
@@ -322,9 +336,7 @@ export default class ExploreScreen extends React.Component {
         activeCategories: newActiveCategories,
         activeCategoriesCount: this.state.activeCategoriesCount - 1
       }, () => {
-        (this.isEmpty(this.state.activeCategories)) ?
-          this.getItems() :
-          this.getItemsByCategory()
+        this.getItemsByCategory()
       })
     } else {
       newActiveCategories[id] = true;
@@ -333,9 +345,7 @@ export default class ExploreScreen extends React.Component {
         activeCategories: newActiveCategories,
         activeCategoriesCount: this.state.activeCategoriesCount + 1
       }, () => {
-        (this.isEmpty(this.state.activeCategories)) ?
-          this.getItems() :
-          this.getItemsByCategory()
+        this.getItemsByCategory()
       })
     }
 
@@ -352,27 +362,33 @@ export default class ExploreScreen extends React.Component {
         />
 
         {
-          (this.state.items && !this.state.loading) ?
-            <FlatList
-              data={this.state.items}
-              renderItem={this.renderItem}
-              keyExtractor={item => item.id}
-              contentContainerStyle={{ paddingBottom: 50 }}
-              extraData={this.state}
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.isRefreshing}
-                  onRefresh={this.onRefresh.bind(this)}
-                />
-              }
-              ListFooterComponent={this.renderFooter.bind(this)}
-              onEndReachedThreshold={0.4}
-            // onEndReached={this.handleLoadMore.bind(this)}
-            />
-            :
+          !(this.state.items && !this.state.loading) ?
             <View style={{ flex: 1, alignItems: 'center', padding: 10 }}>
               <ActivityIndicator />
             </View>
+            :
+            this.isEmpty(this.state.items) ?
+            <Text style={{textAlign:'center',fontSize:13,color:'lightgrey',margin:20}}>
+              No Items to Display
+              </Text>
+              :
+              <FlatList
+                data={this.state.items}
+                renderItem={this.renderItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={{ paddingBottom: 50 }}
+                extraData={this.state}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.isRefreshing}
+                    onRefresh={this.onRefresh.bind(this)}
+                  />
+                }
+                ListFooterComponent={this.renderFooter.bind(this)}
+                onEndReachedThreshold={0.4}
+              // onEndReached={this.handleLoadMore.bind(this)}
+              />
+
         }
 
       </View>

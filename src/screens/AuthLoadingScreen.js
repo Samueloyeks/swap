@@ -28,38 +28,42 @@ export default class AuthLoadingScreen extends React.Component {
 
   // Fetch the token from storage then navigate to our appropriate place
   _bootstrapAsync = async () => {
-    const userToken = await AsyncStorage.getItem('userData'); 
+    const userToken = await AsyncStorage.getItem('userData');
     const firstTime = await AsyncStorage.getItem('firstTime')
 
     // This will switch to the intro screen the first time app is opened
     // if not, then it will switch to login or main app depending on if user is logged in 
 
-    if (userToken) { 
-      this.props.navigation.navigate('Main')
-    } else {
-      this.props.navigation.navigate(firstTime ? 'SignIn' : 'Auth');
+    {
+      userToken ?
+        this.props.navigation.navigate('Main')
+        :
+        firstTime ?
+          this.props.navigation.navigate('SignIn')
+          :
+          this.props.navigation.navigate('Auth')
 
     }
 
-    // this.props.navigation.navigate('Main')
-     
+
+
   };
- 
+
   // Render any loading content that you like here
   render() {
-    return (   
+    return (
       <View style={styles.container}>
         <StatusBar barStyle="default" />
-        <ActivityIndicator size="large" color="black" style={{alignSelf:'center'}}/>
+        <ActivityIndicator size="large" color="black" style={{ alignSelf: 'center' }} />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container:{
-    justifyContent:'center',
-    alignItems:'center',
-    flex:1,
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
   }
 })

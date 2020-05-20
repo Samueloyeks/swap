@@ -57,12 +57,13 @@ export default class Filters extends Component {
         const velocityFactor = Math.abs(event.nativeEvent.velocity.x * 30);
 
         if (offsetX > 0 && offsetX < maxOffset / 2 - velocityFactor) {
-            this.scrollViewRef.scrollTo({ x: 0 });
+            this.scrollViewRef.current.scrollTo({ x: 0 });
         } else if (
             maxOffset / 2 + velocityFactor <= offsetX &&
             offsetX < maxOffset
         ) {
-            this.scrollViewRef.scrollTo({
+
+            this.scrollViewRef.current.scrollTo({
                 x: FILTERS_BUTTON_WIDTH
             });
         }

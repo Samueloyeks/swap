@@ -70,7 +70,14 @@ export default class SignUpScreen extends React.Component {
       try {
         api.post('/users/register', values).then((response) => {
           if (response.data) {
-            db.set('userData', response.data.data).then(() => {
+            var userData = {
+              "email":response.data.data.email,
+              "username":response.data.data.username,
+              "fullName":response.data.data.fullName,
+              "phoneNumber":response.data.data.phoneNumber,
+              "uid":response.data.data.uid
+            }
+            db.set('userData', userData).then(() => {
               this.props.navigation.navigate('Main')
             })
           }

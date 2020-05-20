@@ -22,7 +22,8 @@ export default class ExploreItemDetailsScreen extends Component {
 
     this.state = {
       itemDetails: {},
-      isImageViewVisible: true
+      isImageViewVisible: true,
+      userData:null
     }
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -44,21 +45,21 @@ export default class ExploreItemDetailsScreen extends Component {
     const { params = {} } = navigation.state;
     return {
 
-    title: `${navigation.state.params.itemDetails.title}`,
-    headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
-    headerBackTitleVisible: false,
-    headerStyle: {
-      backgroundColor: '#FF9D5C',
-      elevation: 0,
-      shadowOpacity: 0,
-      borderBottomWidth: 0,
-    },
-    headerLeft:()=> <HeaderBackButton onPress={() => {
-      navigation.goBack(null);
-      navigation.state.params.onGoBack(navigation.state.params.itemDetails);
+      title: `${navigation.state.params.itemDetails.title}`,
+      headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
+      headerBackTitleVisible: false,
+      headerStyle: {
+        backgroundColor: '#FF9D5C',
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+      },
+      headerLeft: () => <HeaderBackButton onPress={() => {
+        navigation.goBack(null);
+        navigation.state.params.onGoBack(navigation.state.params.itemDetails);
+      }
+      } />,
     }
-    } />,
-  }
   }
 
   async componentDidMount() {
@@ -206,11 +207,18 @@ export default class ExploreItemDetailsScreen extends Component {
                 </View>
               </View>
 
-              <View style={styles.stackedView}>
-                <TouchableOpacity style={styles.button}>
-                  <Text style={styles.buttonText} onPress={() => this.props.navigation.navigate('SelectItemsScreen')}>Make Offer</Text>
-                </TouchableOpacity>
-              </View>
+              {
+                !(this.state.itemDetails.posted && this.state.userData) ?
+                  null
+                  :
+                  !(this.state.itemDetails.postedby.uid == this.state.userData.uid) ?
+                    <View style={styles.stackedView}>
+                      <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('SelectItemsScreen')}>
+                        <Text style={styles.buttonText}>Make Offer</Text>
+                      </TouchableOpacity>
+                    </View> :
+                    null
+              }
             </View>
           </View>
 
