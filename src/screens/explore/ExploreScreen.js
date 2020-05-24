@@ -41,20 +41,30 @@ export default class ExploreScreen extends React.Component {
       searchFilterFunction: this.searchFilterFunction,
       searchString: this.searchString
     });
-    await this.getCategories();
+    await this.setUserData()
+     this.getCategories();
     // await this.getItems();
-    await this.getItemsByCategory();
-    await this.setUserData();
+     this.getItemsByCategory();
   }
 
 
 
   getCategories = () => {
-    api.get('/categories/getCategories').then((response) => {
-      this.setState({
-        categories: response.data.data
+    try{
+      api.post('/categories/getCategories').then((response) => {
+        this.setState({
+          categories: response.data.data
+        })
+      },err=>{
+        toast.show('Error')
+        console.log(err);
+        this.setState({loading:false})
       })
-    })
+    }catch(ex){
+      toast.show('Error')
+      console.log(err);
+      this.setState({loading:false})
+    }
   }
 
   // getItems = () => {
@@ -70,28 +80,41 @@ export default class ExploreScreen extends React.Component {
 
   getItemsByCategory = () => {
     this.setState({ loading: true })
+    var data={
+      "uid": this.state.userData.uid,
+      "categories":this.state.activeCategories
+    }
+
     {
       (this.isEmpty(this.state.activeCategories)) ?
-        api.get('/items/getItems').then((response) => {
+        api.post('/items/getItems',data).then((response) => {
           this.setState({
             items: response.data.data,
             loading: false
           })
           this.arrayholder = response.data.data
+        },err=>{
+          toast.show('Error')
+          console.log(err);
+          this.setState({loading:false})
         })
         :
-        api.post('/items/getItemsByCategory', this.state.activeCategories).then((response) => {
+        api.post('/items/getItemsByCategory', data).then((response) => {
           this.setState({
             items: response.data.data,
             loading: false
           })
+        },err=>{
+          toast.show('Error')
+          console.log(err);
+          this.setState({loading:false})
         })
     }
 
   }
 
-  setUserData() {
-    db.get('userData').then(data => {
+  async setUserData() {
+    return await db.get('userData').then(data => {
       this.setState({
         userData: JSON.parse(data)
       })
@@ -177,7 +200,6 @@ export default class ExploreScreen extends React.Component {
               platform={'default'}
               placeholder="Search"
               onChangeText={text => params.searchFilterFunction(text)}
-              // autoCorrect={false}
               value={params.searchString}
               containerStyle={{
                 flex: 1,
@@ -310,6 +332,7 @@ export default class ExploreScreen extends React.Component {
         refreshDetails={this.refreshDetails}
         images={item.images}
         postedby={item.postedby}
+        userId = {this.state.userData.uid}
         title={item.title}
         price={item.price}
         posted={item.posted}

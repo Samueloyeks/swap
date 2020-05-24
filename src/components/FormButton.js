@@ -15,6 +15,7 @@ const FormButton = ({ title, buttonType, buttonColor, ...rest }) => (
 
 const styles = {
   button: {
+    width:'100%',
     backgroundColor: '#000000',
     borderRadius: 35,
     height: 40,

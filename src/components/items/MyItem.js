@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import itemImage from '../../assets/imgs/item.png'
+import TimeAgo from 'react-native-timeago';
+
+
 
 export default class MyItem extends Component {
     constructor(props) {
@@ -18,11 +22,16 @@ export default class MyItem extends Component {
     render() {
         return (
             <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props })}
+                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails })}
             >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image style={{ alignSelf: 'center' }} resizeMode="stretch" source={this.props.images[0]} />
+                        <Image
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
@@ -32,10 +41,10 @@ export default class MyItem extends Component {
 
                         </View>
                         <View style={styles.stackedView}>
-                            <View ><Text style={{ fontSize: 10 }}>Posted:</Text></View>
-                            <View >
-                                <TouchableOpacity><Text style={{ fontSize: 10, paddingLeft: 5 }}>{this.props.postedOn}</Text></TouchableOpacity>
+                            <View style={{ flex: 0.25 }}>
+                                <TimeAgo time={this.props.posted} interval={20000} style={{ fontSize: 7, color: '#808080', position: 'absolute', bottom: 5 }} />
                             </View>
+
                         </View>
                         <View style={styles.stackedView}>
                             <View style={{ flex: 0.06 }}>
@@ -58,7 +67,7 @@ export default class MyItem extends Component {
                                 />
                             </View>
                             <View style={{ flex: 0.05 }}>
-                                <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute'}}>{this.props.likeCount}</Text>
+                                <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute' }}>{this.props.likes}</Text>
                             </View>
                             <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
                                 <TouchableOpacity>
@@ -71,7 +80,7 @@ export default class MyItem extends Component {
                             </View>
 
                             <View style={{ flex: 0.7, alignItems: 'flex-end' }}>
-                                <TouchableOpacity style={styles.offerButton}><Text style={{ textAlign: 'center', fontSize: 12,color:'#FF9D5C' }}>View Offers</Text></TouchableOpacity>
+                                <TouchableOpacity style={styles.offerButton}><Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>View Offers</Text></TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -91,7 +100,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         marginBottom: 3,
         marginTop: 3,
-        height:100
+        height: 100
     },
     ImgContainer: {
         flex: 0.35,
@@ -99,7 +108,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         flexDirection: 'column',
-        overflow:'hidden'
+        overflow: 'hidden'
 
     },
     content: {

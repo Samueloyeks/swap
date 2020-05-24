@@ -17,6 +17,7 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 import api from '../utils/api/ApiService'
 import db from '../utils/db/Storage'
+import toast from '../utils/SimpleToast'
 
 
 
@@ -57,6 +58,8 @@ export default class SignInScreen extends React.Component {
 
 
   handleSubmit = values => {
+    this.setState({ loading: true })
+
     if (values.email.length > 0 && values.password.length > 0) {
 
       try {
@@ -74,13 +77,15 @@ export default class SignInScreen extends React.Component {
             })
           }
         }, err => {
+          toast.show('Error Signing In')
           console.log(err);
           this.setState({loading:false})
         }
         )
       } catch (ex) {
+        toast.show('Error Signing In')
         this.setState({loading:false})
-        alert(ex)
+        console.log(ex)
       }
 
     }
@@ -154,8 +159,8 @@ export default class SignInScreen extends React.Component {
                             onPress={handleSubmit}
                             title='Log In'
                             buttonColor='#FF9D5C'
-                            disabled={!isValid || isSubmitting}
-                            loading={isSubmitting}
+                            disabled={!isValid}
+                            loading={this.state.loading}
                           />
 
                           <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>

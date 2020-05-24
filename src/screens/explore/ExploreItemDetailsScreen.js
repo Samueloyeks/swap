@@ -19,7 +19,7 @@ export default class ExploreItemDetailsScreen extends Component {
 
   constructor(props) {
     super(props);
-
+ 
     this.state = {
       itemDetails: {},
       isImageViewVisible: true,

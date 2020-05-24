@@ -41,6 +41,9 @@ const ExploreStack = createStackNavigator({
   },
   ChatsScreen: {
     screen: ChatsScreen,
+  },
+  MyItemDetailsScreen: {
+    screen: MyItemDetailsScreen,
   }
 })
 

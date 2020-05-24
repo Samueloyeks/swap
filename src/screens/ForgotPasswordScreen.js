@@ -18,6 +18,8 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 import api from '../utils/api/ApiService'
 import db from '../utils/db/Storage'
+import toast from '../utils/SimpleToast'
+
 
 
 
@@ -48,6 +50,8 @@ export default class ForgotPasswordScreen extends React.Component {
 
 
     handleSubmit = values => {
+        this.setState({ loading: true })
+
         if (values.email.length > 0 ) {
     
           try {
@@ -57,11 +61,13 @@ export default class ForgotPasswordScreen extends React.Component {
                   this.props.navigation.navigate('SignIn')
               }
             }, err => {
+                toast.show('Error Signing In')
                 console.log(err);
                 this.setState({loading:false})
               }
               )
             } catch (ex) {
+                toast.show('Error Signing In')
               this.setState({loading:false})
               alert(ex)
             }
@@ -127,8 +133,8 @@ export default class ForgotPasswordScreen extends React.Component {
                                                         onPress={handleSubmit}
                                                         title='Reset'
                                                         buttonColor='#FF9D5C'
-                                                        disabled={!isValid || isSubmitting}
-                                                        loading={isSubmitting}
+                                                        disabled={!isValid}
+                                                        loading={this.state.loading}
                                                     />
 
                                                 </View>

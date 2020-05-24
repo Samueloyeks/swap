@@ -38,7 +38,7 @@ class Api extends Component {
 
         return await axios.post(url, data, {
             headers: defaultHeader
-          });
+          })
     }
 
     async get(targetFunction){

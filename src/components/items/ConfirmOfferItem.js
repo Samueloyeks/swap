@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import itemImage from '../../assets/imgs/item.png'
+
+
 
 export default class ConfirmOfferItem extends Component {
     constructor(props) {
@@ -20,7 +23,9 @@ export default class ConfirmOfferItem extends Component {
             <TouchableOpacity>
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 79 }} resizeMode='cover' source={this.props.images[0]} />
+                    <Image
+                            style={{ position: 'absolute', right: 0, bottom: 0, width: '100%', zIndex: 1, height: '100%' }} 
+                            source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
@@ -33,7 +38,7 @@ export default class ConfirmOfferItem extends Component {
                                     style={{ alignSelf: 'flex-end' }}
                                     size={37}
                                     color="#FE3939"
-                                    onPress={() => this.props.removeFromOffer(this.props.id)}
+                                    onPress={() => this.props.removeFromOffer(this.props.index)}
                                 />
                                 </TouchableOpacity>
                             </View>
@@ -61,7 +66,9 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         flexDirection: 'column',
-        overflow:'hidden'
+        overflow:'hidden',
+        height:79,
+        width:70
     },
     content: {
         flex: 0.55,

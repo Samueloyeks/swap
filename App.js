@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import AnimatedSplash from "react-native-animated-splash-screen";
@@ -14,7 +14,9 @@ class App extends React.Component {
  
   async componentDidMount() {
     this.setState({ isLoaded: true }); 
-    await SplashScreen.hide()
+    //  useEffect(async()=>{
+      await SplashScreen.hide();
+    // })
   }
  
   render() {

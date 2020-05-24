@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Button, BackHandler, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
 import { SearchBar } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Filters from '../../components/Filters';
@@ -7,6 +7,14 @@ import SelectItem from '../../components/items/SelectItem'
 import demoImage from '../../assets/imgs/demo.png'
 import ConfirmOfferItem from '../../components/items/ConfirmOfferItem'
 import ConfirmItem from '../../components/items/ConfirmItem'
+import itemImage from '../../assets/imgs/item.png'
+import TimeAgo from 'react-native-timeago';
+import api from '../../utils/api/ApiService'
+import db from '../../utils/db/Storage'
+import toast from '../../utils/SimpleToast'
+import FormButton from '../../components/FormButton'
+
+
 
 
 
@@ -17,79 +25,18 @@ export default class ConfirmOfferScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userData: null,
             search: true,
-            offerItems: {
-                "1": {
-                    id: 1,
-                    title: 'New Nike Shoes',
-                    postedby: 'sam1234',
-                    price: '$20',
-                    timeAgo: '2 days',
-                    images: [demoImage, demoImage, demoImage, demoImage],
-                    liked: false,
-                    favorited: false,
-                    description:
-                        'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-                    preferences: ['New Watch', 'Black Snapback', 'A date'],
-                    categories: ['Men', 'Fashion', 'Footwear'],
-                    numberAvailable: 2,
-                    markAsOffered:true
-                },
-                "2": {
-                    id: 2,
-                    title: 'Used Wig',
-                    postedby: 'kemi999',
-                    price: '$50',
-                    timeAgo: '1 hour',
-                    images: [demoImage, demoImage, demoImage, demoImage],
-                    liked: false,
-                    favorited: false,
-                    description:
-                        'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-                    preferences: ['New Watch', 'Black Snapback', 'A date'],
-                    categories: ['Men', 'Fashion', 'Footwear'],
-                    numberAvailable: 2,
-                    markAsOffered:true
-                },
-                "3": {
-                    id: 3,
-                    title: 'Used Joggers',
-                    postedby: 'jones007',
-                    price: '$20',
-                    timeAgo: '1 week',
-                    images: [demoImage, demoImage, demoImage, demoImage],
-                    liked: false,
-                    favorited: false,
-                    description:
-                        'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-                    preferences: ['New Watch', 'Black Snapback', 'A date'],
-                    categories: ['Men', 'Fashion', 'Footwear'],
-                    numberAvailable: 2,
-                    markAsOffered:true
-                },
-            },
-            item:{
-                "1": {
-                    id: 1,
-                    title: 'New Nike Shoes',
-                    postedby: 'sam1234',
-                    price: '$20',
-                    timeAgo: '2 days',
-                    images: [demoImage, demoImage, demoImage, demoImage],
-                    liked: false,
-                    favorited: false,
-                    description:
-                        'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-                    preferences: ['New Watch', 'Black Snapback', 'A date'],
-                    categories: ['Men', 'Fashion', 'Footwear'],
-                    numberAvailable: 2,
-                    markAsOffered:true
-                },  
-            }
+            offerItems: [],
+            item: [],
+            loading: false
         }
 
         this.removeFromOffer = this.removeFromOffer.bind(this);
     }
+
+
+
 
     static navigationOptions = ({ navigation }) => {
         return {
@@ -108,44 +55,91 @@ export default class ConfirmOfferScreen extends Component {
         };
     };
 
-    removeFromOffer = id => {
-        let item = this.state.offerItems[id]
-        const { markAsOffered } = item
-    
-        const newItem = {
-          ...item,
-          markAsOffered: !markAsOffered,
-        }
-    
+    async componentDidMount() {
+        const { state } = await this.props.navigation;
         this.setState({
-          offerItems: {
-            ...this.state.offerItems,
-            [id]: newItem
-          }
+            offerItems: state.params.offerItems,
+            item: [state.params.item],
         })
-      }
+        await this.setUserData();
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+
+    async setUserData() {
+        return await db.get('userData').then(data => {
+            this.setState({
+                userData: JSON.parse(data)
+            })
+        })
+    }
+
+    removeFromOffer = index => {
+        if (this.state.offerItems.length == 1) {
+            toast.show('You must offer at least 1 item')
+        } else {
+            let newOfferItems = [...this.state.offerItems];
+
+            newOfferItems.splice(index, 1)
+
+
+            this.setState({
+                offerItems: newOfferItems
+            })
+        }
+    }
+
+    sendOffer = () => {
+        this.setState({ loading: true })
+        let itemId = this.state.item[0].id;
+        let postedby = this.state.item[0].postedby.uid
+        let offerItems = [...this.state.offerItems]
+        let offerItemIds = [];
+
+        for (var key in offerItems) {
+            offerItemIds.push({ id: offerItems[key].id })
+        }
+
+        let offerData = {
+            itemId,
+            offerItemIds,
+            offeredby: this.state.userData.uid,
+            accepted: false,
+            postedby: postedby
+        }
+
+        console.log(offerData)
+        api.post('/items/sendOffer', offerData).then((response) => {
+            if (response.data.status === 'success') {
+                toast.show('Offer Sent Successfully')
+                this.setState({ loading: false })
+                this.props.navigation.popToTop()
+                this.props.navigation.navigate('SwapsScreen')
+            }
+        }, err => {
+            toast.show('Unable to send offer')
+            this.setState({ loading: false })
+        })
+    }
 
     renderOfferItem = ({ item, index }) => {
         return (
-            item.markAsOffered?
             <ConfirmOfferItem
-            {...this.props}
-            removeFromOffer={this.removeFromOffer}
-            images={item.images}
-            postedby={item.postedby}
-            title={item.title}
-            price={item.price}
-            timeAgo={item.timeAgo}
-            liked={item.liked}
-            favorited={item.favorited}
-            id={item.id}
-            description={item.description}
-            preferences={item.preferences}
-            categories={item.categories}
-            numberAvailable={item.numberAvailable}
-            markAsOffered={item.markAsOffered}
-        />:
-        null
+                {...this.props}
+                removeFromOffer={this.removeFromOffer}
+                images={item.images}
+                postedby={item.postedby}
+                title={item.title}
+                price={item.price}
+                posted={item.posted}
+                liked={item.liked}
+                favorited={item.favorited}
+                id={item.id}
+                index={index}
+                description={item.description}
+                preferences={item.preferences}
+                categories={item.categories}
+                numberAvailable={item.quantity}
+            />
         )
     }
 
@@ -153,20 +147,19 @@ export default class ConfirmOfferScreen extends Component {
         return (
             <ConfirmItem
                 {...this.props}
-                favorite={this.favorite}
-                like={this.like}
                 images={item.images}
                 postedby={item.postedby}
                 title={item.title}
                 price={item.price}
-                timeAgo={item.timeAgo}
+                posted={item.posted}
                 liked={item.liked}
                 favorited={item.favorited}
                 id={item.id}
+                index={index}
                 description={item.description}
                 preferences={item.preferences}
                 categories={item.categories}
-                numberAvailable={item.numberAvailable}
+                numberAvailable={item.quantity}
             />
         )
     }
@@ -178,14 +171,14 @@ export default class ConfirmOfferScreen extends Component {
             <View style={{ flex: 1, flexDirection: 'row' }}>
                 <View style={styles.firstHalf}>
                     <FlatList
-                        data={Object.values(this.state.offerItems)}
+                        data={this.state.offerItems}
                         renderItem={this.renderOfferItem}
-                        keyExtractor={item => item.id.toString()}
+                        keyExtractor={item => item.id}
                         contentContainerStyle={{ paddingBottom: 50 }}
                         showsVerticalScrollIndicator={false}
 
                     />
-                    <View style={{ height: 100,backgroundColor:'transparent' }}>
+                    <View style={{ height: 100, backgroundColor: 'transparent' }}>
 
                     </View>
                 </View>
@@ -195,24 +188,29 @@ export default class ConfirmOfferScreen extends Component {
                     </View>
                 </View>
                 <View style={styles.secondHalf}>
-                <FlatList
-                        data={Object.values(this.state.item)}
+                    <FlatList
+                        data={this.state.item}
                         renderItem={this.renderItem}
-                        keyExtractor={item => item.id.toString()}
+                        keyExtractor={item => item.id}
                         contentContainerStyle={{ paddingBottom: 50 }}
                         showsVerticalScrollIndicator={false}
                         extraData={this.state}
 
                     />
-                    <View style={{ height: 100,backgroundColor:'transparent' }}>
+                    <View style={{ height: 100, backgroundColor: 'transparent' }}>
 
                     </View>
                 </View>
 
                 <View style={styles.floatingButton}>
-                    <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('SwapsScreen')}>
-                        <Text style={styles.buttonText}>Send Offer</Text
-                        ></TouchableOpacity>
+                    <FormButton
+                        buttonType='outline'
+                        onPress={this.sendOffer}
+                        title='Send Offer'
+                        buttonColor='#FF9D5C'
+                        disabled={this.state.loading}
+                        loading={this.state.loading}
+                    />
                 </View>
 
             </View>
@@ -267,7 +265,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         alignItems: 'center',
         justifyContent: 'center',
-        // marginTop: 10,
     },
     floatingButton: {
         position: 'absolute',

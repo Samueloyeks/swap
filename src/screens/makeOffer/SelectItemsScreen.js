@@ -1,10 +1,15 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, View, Text, Image, RefreshControl, ActivityIndicator, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
 import { SearchBar } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Filters from '../../components/Filters';
 import SelectItem from '../../components/items/SelectItem'
 import demoImage from '../../assets/imgs/demo.png'
+import itemImage from '../../assets/imgs/item.png'
+import TimeAgo from 'react-native-timeago';
+import api from '../../utils/api/ApiService'
+import db from '../../utils/db/Storage'
+import toast from '../../utils/SimpleToast'
 
 
 
@@ -13,59 +18,130 @@ export default class SelectItemsScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: {
-        "1": {
-          id: 1,
-          title: 'New Nike Shoes',
-          postedOn: '15th November 2019',
-          price: '$20',
-          likes: 20,
-          images: [demoImage, demoImage, demoImage, demoImage],
-          swapped: false,
-          description:
-            'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-          preferences: ['New Watch', 'Black Snapback', 'A date'],
-          categories: ['Men', 'Fashion', 'Footwear'],
-          numberAvailable: 2,
-          likeCount:5
-        },
-        "2": {
-          id: 2,
-          title: 'Sony Sound System',
-          postedOn: '15th November 2019',
-          price: '$200',
-          likes: 45,
-          images: [demoImage, demoImage, demoImage, demoImage],
-          swapped: false,
-          description:
-            'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-          preferences: ['New Watch', 'Black Snapback', 'A date'],
-          categories: ['Men', 'Music'],
-          numberAvailable: 3,
-          likeCount:7
-        },
-        "3": {
-          id: 3,
-          title: 'Used Car',
-          postedOn: '15th November 2019',
-          price: '$20',
-          likes: 40,
-          images: [demoImage, demoImage, demoImage, demoImage],
-          swapped: true,
-          description:
-            'Lorem ipsum dolor sit amet, tantas recusabo vim ea, tamquam fuisset ei vim. Sea in tota accusam, mea eu mentitum percipit. Ex nibh viris pro, duo eu natum ornatus periculis. At qui habeo feugiat percipit. Est labore omittam gloriatur ut, ex his idque equidem efficiantur, nisl sonet adipiscing an has.Et vim dicat adversarium, cu legere euismod suavitate vis, cibo fugit volumus ei eum. Ne diceret admodum sit. An sit integre prompta dissentiet, ut delectus contentiones vituperatoribus vis. An zril atomorum mel, ad usu aperiam virtute. Elit oportere gloriatur id nec.',
-          preferences: ['New Watch', 'Black Snapback', 'A date'],
-          categories: ['Accessories'],
-          numberAvailable: 1,
-          likeCount:2
-        },
-      }
+      userData: null,
+      search: true,
+      categories: [],
+      activeCategories: {},
+      activeCategoriesCount: 0,
+      items: [],
+      loading: false,
+      isRefreshing: false,
+      error: null,
+      searchString: '',
+      offerItems: {},
+      item: null
     }
-  
+
+    this.arrayholder = []
+
+
     this.markAsOffered = this.markAsOffered.bind(this);
   }
- 
 
+
+  async componentDidMount() {
+    const { state } = await this.props.navigation;
+    this.setState({
+      item: state.params.item,
+    })
+
+    await this.setUserData();
+    this.getItemsByUid();
+  }
+
+  async setUserData() {
+    return await db.get('userData').then(data => {
+      this.setState({
+        userData: JSON.parse(data)
+      })
+    })
+  }
+
+  getItemsByUid = () => {
+    this.setState({ loading: true })
+    var data = {
+      "uid": this.state.userData.uid,
+    }
+
+    api.post('/items/getItemsByUid', data).then((response) => {
+      this.setState({
+        items: response.data.data,
+        loading: false
+      })
+      this.arrayholder = response.data.data
+    })
+  }
+
+  searchFilterFunction = text => {
+    this.setState({
+      searchString: text,
+      loading: true
+    })
+
+    // let data = {searchString:text}
+
+    // api.post('/items/getItemsBySearch',data).then((response)=>{
+    //   console.log(data)
+    //   console.log(response.data.data)
+    //   this.setState({ 
+    //     items: response.data.data,
+    //     loading:false
+    //   });  
+    // })
+
+    const newData = this.arrayholder.filter(item => {
+      const itemData = `${item.title.toUpperCase()}`;
+
+      const textData = text.toUpperCase();
+
+      return itemData.indexOf(textData) > -1;
+    });
+
+    this.setState({
+      items: newData,
+      loading: false
+    });
+  };
+
+  isEmpty(obj) {
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key))
+        return false;
+    }
+    return true;
+  }
+
+  onRefresh() {
+    this.getItemsByUid();
+  }
+
+  handleLoadMore = () => {
+    if (!this.state.loading) {
+      this.page = this.page + 1; // increase page by 1
+      this.getItemsByUid(this.page); // method for API call 
+    }
+  };
+
+  renderFooter = () => {
+    //it will show indicator at the bottom of the list when data is loading otherwise it returns null
+    if (!this.state.loading) return null;
+    return (
+      <ActivityIndicator
+        style={{ color: '#000' }}
+      />
+    );
+  };
+
+
+  refreshDetails = (data) => {
+    let newItems = [...this.state.items];
+
+    newItems[data.index] = data;
+
+    this.setState({
+      items: newItems
+    })
+  }
 
 
   static navigationOptions = ({ navigation }) => {
@@ -87,40 +163,64 @@ export default class SelectItemsScreen extends React.Component {
     };
   };
 
-  markAsOffered = id => {
-    let item = this.state.items[id]
-    const { swapped } = item
+  markAsOffered = (index, id) => {
 
-    const newItem = {
-      ...item,
-      swapped: !swapped,
+    let newOfferItems = { ...this.state.offerItems }
+
+
+    if (newOfferItems[id]) {
+      delete newOfferItems[id];
+
+      this.setState({
+        offerItems: newOfferItems,
+      })
+    } else {
+      newOfferItems[id] = true;
+
+      this.setState({
+        offerItems: newOfferItems,
+      })
     }
 
-    this.setState({
-      items: {
-        ...this.state.items,
-        [id]: newItem
+  }
+
+  navigateToConfirm() {
+    if (this.isEmpty(this.state.offerItems)) {
+      toast.show('Please select at least 1 item')
+    } else {
+      let offerItems = [];
+      for (let i = 0; i < this.state.items.length; i++) {
+        if (this.state.offerItems[this.state.items[i].id]) {
+          offerItems.push(this.state.items[i])
+        }
       }
-    })
+
+      this.props.navigation.navigate('ConfirmOfferScreen', { offerItems: offerItems, item: this.state.item })
+    }
   }
 
   renderItem = ({ item, index }) => {
     return (
       <SelectItem
         {...this.props}
-        markAsOffered = {this.markAsOffered}
+        markAsOffered={this.markAsOffered}
+        offerItems={this.state.offerItems}
+        refreshDetails={this.refreshDetails}
         images={item.images}
+        postedby={item.postedby}
         title={item.title}
         price={item.price}
-        timeAgo={item.timeAgo}
+        posted={item.posted}
+        liked={item.liked}
+        favorited={item.favorited}
         id={item.id}
+        index={index}
         description={item.description}
         preferences={item.preferences}
         categories={item.categories}
-        numberAvailable={item.numberAvailable}
-        swapped = {item.swapped}
-        likeCount={item.likeCount}
-        postedOn={item.postedOn}
+        numberAvailable={item.quantity}
+        swapped={item.swapped}
+        likes={item.likes}
       />
     )
   }
@@ -128,38 +228,63 @@ export default class SelectItemsScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <View style={{ backgroundColor: 'transparent',flexDirection:'row' }}>
+        <View style={{ backgroundColor: 'transparent', flexDirection: 'row' }}>
           <SearchBar
             round
             lightTheme
             platform={'default'}
             placeholder="Search"
+            onChangeText={text => this.searchFilterFunction(text)}
+            value={this.state.searchString}
             containerStyle={{
               backgroundColor: '#FF9D5C',
               alignItems: "center",
               justifyContent: 'center',
               borderBottomColor: 'transparent',
               borderTopColor: 'transparent',
-              flex:0.8
+              flex: 0.8
             }}
             inputContainerStyle={{
               height: 30,
               alignSelf: 'center',
             }}
           />
-           <View style={{flex:0.2,backgroundColor: '#FF9D5C',}}>
-             <TouchableOpacity onPress={()=>this.props.navigation.navigate('ConfirmOfferScreen')}>
-             <Text style={styles.headerButton}>Done</Text>
-             </TouchableOpacity>
-             </View>
+          <View style={{ flex: 0.2, backgroundColor: '#FF9D5C', }}>
+            <TouchableOpacity onPress={() => this.navigateToConfirm()}>
+              <Text style={styles.headerButton}>Done</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <FlatList
-          data={Object.values(this.state.items)}
-          renderItem={this.renderItem}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 50 }}
-        />
+        {
+          !(this.state.items && !this.state.loading) ?
+            <View style={{ flex: 1, alignItems: 'center', padding: 10 }}>
+              <ActivityIndicator />
+            </View>
+            :
+            this.isEmpty(this.state.items) ?
+              <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
+                No Items to Display
+              </Text>
+              :
+              <FlatList
+                data={this.state.items}
+                renderItem={this.renderItem}
+                keyExtractor={item => item.id}
+                contentContainerStyle={{ paddingBottom: 50 }}
+                extraData={this.state}
+                refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.isRefreshing}
+                    onRefresh={this.onRefresh.bind(this)}
+                  />
+                }
+                ListFooterComponent={this.renderFooter.bind(this)}
+                onEndReachedThreshold={0.4}
+              // onEndReached={this.handleLoadMore.bind(this)}
+              />
+
+        }
 
       </View>
     )
@@ -176,16 +301,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
-  
+
   },
   bottomSpace: {
     marginBottom: 50
   },
-  headerButton:{
+  headerButton: {
     // fontSize:15,
-    alignSelf:'flex-end',
-    padding:10,
-    textAlignVertical:'center'
+    alignSelf: 'flex-end',
+    padding: 10,
+    textAlignVertical: 'center'
   }
 
 });

@@ -3,12 +3,16 @@ import { StyleSheet, View, FlatList, SafeAreaView, ListView, Text, Image, Toucha
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImageModal from 'react-native-image-modal';
 import ImageSlide from '../../components/ImageSlide'
+import { HeaderBackButton } from 'react-navigation-stack';
 import SegmentedControlTab from "react-native-segmented-control-tab";
 import demoImage from '../../assets/imgs/demo.png'
 import demoImage2 from '../../assets/imgs/demo2.png'
 import OfferItem from '../../components/items/OfferItem';
 import MultipleOfferItem from '../../components/items/MultipleOfferItem';
-
+import itemImage from '../../assets/imgs/item.png'
+import TimeAgo from 'react-native-timeago';
+import api from '../../utils/api/ApiService'
+import db from '../../utils/db/Storage'
 
 
 
@@ -111,25 +115,42 @@ export default class MyItemDetailsScreen extends Component {
     }
 
 
-    static navigationOptions = ({ navigation }) => ({
-        title: `${navigation.state.params.itemDetails.title}`,
-        headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
-        headerBackTitleVisible: false,
-        headerStyle: {
-            backgroundColor: '#FF9D5C',
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-        },
-    });
+    static navigationOptions = ({ navigation }) => {
+
+        return {
+            title: `${navigation.state.params.itemDetails.title}`,
+            headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
+            headerBackTitleVisible: false,
+            headerStyle: {
+                backgroundColor: '#FF9D5C',
+                elevation: 0,
+                shadowOpacity: 0,
+                borderBottomWidth: 0,
+            },
+            headerLeft: () => <HeaderBackButton onPress={() => {
+                navigation.goBack(null);
+                navigation.state.params.onGoBack(navigation.state.params.itemDetails);
+            }
+            } />,
+        }
+    }
 
     async componentDidMount() {
         const { state } = await this.props.navigation;
         this.setState({
             itemDetails: state.params.itemDetails,
         })
+        await this.setUserData();
         // alert(JSON.stringify(this.state.itemDetails))
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+    }
+
+    setUserData() {
+        db.get('userData').then(data => {
+            this.setState({
+                userData: JSON.parse(data)
+            })
+        })
     }
 
     handleIndexChange = index => {
@@ -142,16 +163,16 @@ export default class MyItemDetailsScreen extends Component {
     markAsSwapped = () => {
         let details = this.state.itemDetails
         const { swapped } = details
-    
+
         const newDetails = {
-          ...details,
-          swapped: !swapped,
+            ...details,
+            swapped: !swapped,
         }
-    
+
         this.setState({
-          itemDetails:newDetails
+            itemDetails: newDetails
         })
-      }
+    }
 
 
 
@@ -166,7 +187,7 @@ export default class MyItemDetailsScreen extends Component {
                     id={item.id}
                     items={item.items}
                 />
-                : 
+                :
                 <OfferItem
                     {...this.props}
                     offeredBy={item.offeredBy}
@@ -195,27 +216,27 @@ export default class MyItemDetailsScreen extends Component {
                 {(this.state.selectedIndex == 0) ? (
                     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                         <View style={{ flexDirection: 'row' }}>
-                            <View style={{ flex: 0.4, height: 140,overflow:'hidden',borderRadius: 5 }}>
+                            <View style={{ flex: 0.4, height: 150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
                                 <ImageModal
-                                    swipeToDismiss={true}
-                                    resizeMode="contain"
-                                    source={
-                                        this.state.itemDetails.images ? this.state.itemDetails.images[0] : null
-                                    }
+                                    resizeMode='contain'
+                                    imageBackgroundColor="lightgrey"
+                                    style={{
+                                        width: 150,
+                                        height: 150,
+                                    }}
+                                    source={this.state.itemDetails.images ? ({ uri: this.state.itemDetails.images[0] }) : itemImage}
                                 />
                             </View>
-                            <View style={{ flex: 0.6, flexDirection: 'column', padding: 7 }}>
+                            <View style={{ flex: 0.6, flexDirection: 'column', padding: 10 }}>
                                 <Text style={styles.titleText}>{this.state.itemDetails.title}</Text>
 
                                 <View style={styles.stackedView}>
-                                    <View ><Text style={{ fontSize: 12 }}>Posted:</Text></View>
-                                    <View >
-                                        <TouchableOpacity><Text style={{ fontSize: 10, paddingLeft: 5 }}>{this.state.itemDetails.postedOn}</Text></TouchableOpacity>
-                                    </View>
+                                    <TimeAgo time={this.state.itemDetails.posted} interval={20000} style={{ fontSize: 10, color: '#808080' }} />
+
                                 </View>
 
                                 <View style={styles.stackedViewPadded}>
-                                    <View style={{ flex: 0.14 }}>
+                                    <View style={{ flex: 0.08 }}>
                                         <Icon
                                             key={this.state.itemDetails.id}
                                             name="heart"
@@ -224,9 +245,9 @@ export default class MyItemDetailsScreen extends Component {
                                         />
                                     </View>
                                     <View style={{ flex: 0.14 }}>
-                                        <Text style={{ fontSize: 8, color: '#858585', bottom: 14, position: 'absolute' }}>{this.state.itemDetails.likeCount}</Text>
+                                        <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                     </View>
-                                    <View style={{ flex: 0.14 }}>
+                                    <View style={{ flex: 0.08 }}>
                                         <Icon name="check-circle"
                                             size={15}
                                             color={this.state.itemDetails.swapped ? '#40A459' : '#D6D8E0'}
@@ -234,13 +255,13 @@ export default class MyItemDetailsScreen extends Component {
                                         />
                                     </View>
                                     <View style={{ flex: 0.7 }}>
-                                        <Text style={{ fontSize: 8, bottom: 14, position: 'absolute', color: (this.state.itemDetails.swapped) ? '#40A459' : '#D6D8E0' }}>{this.state.itemDetails.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
+                                        <Text style={{ fontSize: 8, bottom: 16, position: 'absolute', color: (this.state.itemDetails.swapped) ? '#40A459' : '#D6D8E0' }}>{this.state.itemDetails.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
                                     </View>
                                 </View>
 
                                 <View style={styles.stackedView}>
-                                    <View style={{ flex: 0.5 }}><Text style={{fontSize:12}}>Offers: 5</Text></View>
-                                    <View style={{ flex: 0.5 }}><Text style={{fontSize:12}}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
+                                <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.itemDetails.offers?this.state.itemDetails.offers.length:0}</Text></View>
+                                    <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
                                 </View>
                             </View>
                         </View>
@@ -276,9 +297,9 @@ export default class MyItemDetailsScreen extends Component {
                                 data={this.state.itemDetails.images ? this.state.itemDetails.images.slice(1) : null}
                                 keyExtractor={(item, index) => index.toString()}
                                 renderItem={({ item, index }) =>
-                                 <View style={{ color: 'red', width: 112, margin: 10,borderRadius:5,overflow:'hidden' }}>
-                                     <ImageSlide image={item}></ImageSlide>
-                                     </View>}
+                                    <View style={{ color: 'red', width: 112, margin: 10, borderRadius: 5, overflow: 'hidden' }}>
+                                        <ImageSlide image={item}></ImageSlide>
+                                    </View>}
                             />
 
                         </View>
@@ -291,9 +312,10 @@ export default class MyItemDetailsScreen extends Component {
                             <View style={{ flex: 0.5 }}>
                                 <FlatList
                                     horizontal={true}
+                                    showsHorizontalScrollIndicator={false}
                                     data={this.state.itemDetails.categories ? this.state.itemDetails.categories : null}
                                     keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item, index }) => <Text> {(index == this.state.itemDetails.categories.length - 1) ? item : item + ','}</Text>}
+                                    renderItem={({ item, index }) => <Text> {(index == this.state.itemDetails.categories.length - 1) ? item.category : item.category + ','}</Text>}
                                 />
                             </View>
                         </View>
@@ -310,7 +332,7 @@ export default class MyItemDetailsScreen extends Component {
                         />
                     )}
             </View>
-        ); 
+        );
     }
 }
 

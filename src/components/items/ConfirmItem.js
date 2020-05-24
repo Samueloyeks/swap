@@ -1,26 +1,25 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import NumberFormat from 'react-number-format';
+import TimeAgo from 'react-native-timeago';
+import itemImage from '../../assets/imgs/item.png'
 
 export default class ConfirmItem extends Component {
     constructor(props) {
         super(props);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        const { liked, likeCount, favorited } = nextProps
-        const { liked: oldLiked, likeCount: oldLikeCount, favorited: oldFavorited } = this.props
 
-        // If "liked" or "likeCount" is different, then update                          
-        return liked !== oldLiked || likeCount !== oldLikeCount || favorited !== oldFavorited
-    }
 
     render() {
         return (
             <TouchableOpacity>
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 79 }} resizeMode='cover' source={this.props.images[0]} />
+                    <Image
+                            style={{ position: 'absolute', right: 0, bottom: 0, width: '100%', zIndex: 1, height: '100%' }} 
+                            source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
@@ -31,13 +30,14 @@ export default class ConfirmItem extends Component {
                             <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
                             <View >
                                 <TouchableOpacity onPress={() => this.props.navigation.navigate('UserProfileScreen')}>
-                                    <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby}</Text>
+                                    <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
 
-                        <View sttle={styles.stackedView}>
-                            <View style={{ flex: 0.35 }}><Text style={{ fontSize: 8, color: '#808080',  bottom: -5 }}>{this.props.timeAgo} ago</Text></View>
+                        <View style={styles.stackedView}>
+                            {/* <View style={{ flex: 0.35 }}><Text style={{ fontSize: 8, color: '#808080',  bottom: -5 }}>{this.props.timeAgo} ago</Text></View> */}
+                            <TimeAgo time={this.props.posted} interval={20000} style={{ fontSize: 8, color: '#808080', position: 'absolute', bottom: 5 }} />
 
                         </View>
 

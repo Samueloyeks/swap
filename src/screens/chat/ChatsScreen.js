@@ -128,6 +128,20 @@ export default class ChatsScreen extends React.Component {
   sendMessage = (type, content, isInverted) => {
       console.log(type, content, isInverted, 'msg')
     }
+
+    static navigationOptions = ({ navigation }) => {
+      return {
+        title: `${navigation.state.params.itemDetails.title}`,
+        headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
+        headerBackTitleVisible: false,
+        headerStyle: {
+          backgroundColor: '#FF9D5C',
+          elevation: 0,
+          shadowOpacity: 0,
+          borderBottomWidth: 0,
+        },
+      }
+    }
  
   render() {
     return (

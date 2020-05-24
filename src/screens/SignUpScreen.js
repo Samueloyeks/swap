@@ -20,6 +20,7 @@ import { Formik } from 'formik'
 import * as Yup from 'yup'
 import api from '../utils/api/ApiService'
 import db from '../utils/db/Storage'
+import toast from '../utils/SimpleToast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 
@@ -65,6 +66,7 @@ export default class SignUpScreen extends React.Component {
   }
 
   handleSubmit = values => {
+    this.setState({ loading: true })
     if (values.email.length > 0 && values.password.length > 0) {
 
       try {
@@ -82,11 +84,13 @@ export default class SignUpScreen extends React.Component {
             })
           }
         }, err => {
+          toast.show('Error Signing Up')
           console.log(err);
           this.setState({ loading: false })
         }
         )
       } catch (ex) {
+        toast.show('Error Signing Up')
         this.setState({ loading: false })
         alert(ex)
       }
@@ -198,8 +202,8 @@ export default class SignUpScreen extends React.Component {
                         onPress={handleSubmit}
                         title='Sign Up'
                         buttonColor='#FF9D5C'
-                        disabled={!isValid || isSubmitting}
-                        loading={isSubmitting}
+                        disabled={!isValid}
+                        loading={this.state.loading}
                       />
 
 

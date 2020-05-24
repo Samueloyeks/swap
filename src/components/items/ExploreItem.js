@@ -26,23 +26,26 @@ export default class ExploreItem extends Component {
             >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image 
-                        style={{    
-                            width:'100%',
-                            height:'100%',
-                        }}
-                        source={this.props.images?({uri:this.props.images[0]}):itemImage} />
+                        <Image
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
                             <View style={{ flex: 0.7 }}>
 
                                 <Text style={styles.titleText}>{this.props.title}</Text></View>
-                            <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen')}>
+                            {
+                                !(this.props.userId==this.props.postedby.uid)?
+                                <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
+                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props })}>
                                     <Icon name="message" color="#FF9D5C" size={20} />
                                 </TouchableOpacity>
-                            </View>
+                            </View>:null
+                            }
                         </View>
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Posted By</Text></View>
@@ -54,12 +57,12 @@ export default class ExploreItem extends Component {
                         </View>
                         <View style={styles.stackedView}>
                             <View >
-                                <NumberFormat  
-                                value={this.props.price} 
-                                displayType={'text'} 
-                                thousandSeparator={true} 
-                                prefix={'₦'} 
-                                renderText={value => <Text style={{ fontSize: 10, color: '#40A459' }}>{value}</Text>}
+                                <NumberFormat
+                                    value={this.props.price}
+                                    displayType={'text'}
+                                    thousandSeparator={true}
+                                    prefix={'₦'}
+                                    renderText={value => <Text style={{ fontSize: 10, color: '#40A459' }}>{value}</Text>}
                                 />
                             </View>
                         </View>
@@ -74,8 +77,8 @@ export default class ExploreItem extends Component {
                                     size={20}
                                     color="#D6D8E0"
                                     color={this.props.liked ? '#FF9D5C' : '#D6D8E0'}
-                                    onPress={() => this.props.like(this.props.index,this.props.id)} 
-                                    />
+                                    onPress={() => this.props.like(this.props.index, this.props.id)}
+                                />
                             </View>
 
                             <View style={{ flex: 0.15, paddingLeft: 5 }}>
@@ -85,15 +88,18 @@ export default class ExploreItem extends Component {
                                     size={20}
                                     color="#D6D8E0"
                                     color={this.props.favorited ? '#FFC107' : '#D6D8E0'}
-                                    onPress={() => this.props.favorite(this.props.index,this.props.id)}
-                                     />
+                                    onPress={() => this.props.favorite(this.props.index, this.props.id)}
+                                />
                             </View>
 
-                            <View style={{ flex: 0.45, alignItems: 'flex-end' }}>
-                                <TouchableOpacity style={styles.offerButton} onPress={() => this.props.navigation.navigate('SelectItemsScreen')}>
+                            {
+                                !(this.props.userId == this.props.postedby.uid)?
+                                <View style={{ flex: 0.45, alignItems: 'flex-end' }}>
+                                <TouchableOpacity style={styles.offerButton} onPress={() => this.props.navigation.navigate('SelectItemsScreen', { item: this.props })}>
                                     <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Make Offer</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </View>:null
+                            }
                         </View>
                     </View>
                 </View>
@@ -112,7 +118,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         marginBottom: 3,
         marginTop: 3,
-        height:100
+        height: 100
     },
     ImgContainer: {
         flex: 0.35,
