@@ -39,12 +39,12 @@ export default class ExploreItem extends Component {
 
                                 <Text style={styles.titleText}>{this.props.title}</Text></View>
                             {
-                                !(this.props.userId==this.props.postedby.uid)?
-                                <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props })}>
-                                    <Icon name="message" color="#FF9D5C" size={20} />
-                                </TouchableOpacity>
-                            </View>:null
+                                !(this.props.userId == this.props.postedby.uid) ?
+                                    <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props })}>
+                                            <Icon name="message" color="#FF9D5C" size={20} />
+                                        </TouchableOpacity>
+                                    </View> : null
                             }
                         </View>
                         <View style={styles.stackedView}>
@@ -54,6 +54,14 @@ export default class ExploreItem extends Component {
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>
                             </View>
+                            {
+                                this.props.distance ?
+                                    <Text style={{ fontSize: 10, color: 'red', marginLeft: 10 }}>
+                                        {Math.round(this.props.distance*1.60934)}km
+                                    </Text>
+                                    :
+                                    null
+                            }
                         </View>
                         <View style={styles.stackedView}>
                             <View >
@@ -93,12 +101,12 @@ export default class ExploreItem extends Component {
                             </View>
 
                             {
-                                !(this.props.userId == this.props.postedby.uid)?
-                                <View style={{ flex: 0.45, alignItems: 'flex-end' }}>
-                                <TouchableOpacity style={styles.offerButton} onPress={() => this.props.navigation.navigate('SelectItemsScreen', { item: this.props })}>
-                                    <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Make Offer</Text>
-                                </TouchableOpacity>
-                            </View>:null
+                                !(this.props.userId == this.props.postedby.uid) ?
+                                    <View style={{ flex: 0.45, alignItems: 'flex-end' }}>
+                                        <TouchableOpacity style={styles.offerButton} onPress={() => this.props.navigation.navigate('SelectItemsScreen', { item: this.props })}>
+                                            <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Make Offer</Text>
+                                        </TouchableOpacity>
+                                    </View> : null
                             }
                         </View>
                     </View>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, RefreshControl, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList, ActivityIndicator } from 'react-native';
-import { SearchBar } from 'react-native-elements'
+import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableHighlight, Modal, RefreshControl, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList, ActivityIndicator } from 'react-native';
+import { SearchBar, CheckBox } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Filters from '../../components/Filters';
 import ExploreItem from '../../components/items/ExploreItem'
@@ -8,7 +8,7 @@ import demoImage from '../../assets/imgs/demo.png';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
-import ModalSelector from 'react-native-modal-selector'
+import tracking from '../../utils/geolocation/Tracking'
 
 
 export default class ExploreScreen extends React.Component {
@@ -25,7 +25,14 @@ export default class ExploreScreen extends React.Component {
       loading: false,
       isRefreshing: false,
       error: null,
-      searchString: ''
+      searchString: '',
+      filterByLocation: false,
+      filterByPrice: false,
+      location: {
+        latitude: null,
+        longitude: null
+      },
+      modalVisible: false,
     }
 
     this.arrayholder = []
@@ -39,31 +46,35 @@ export default class ExploreScreen extends React.Component {
     this.props.navigation.setParams({
       updateSearch: this.updateSearch,
       searchFilterFunction: this.searchFilterFunction,
-      searchString: this.searchString
+      searchString: this.searchString,
+      setModalVisible: this.setModalVisible,
+      modalVisible: this.state.modalVisible,
+      filterByPrice: this.state.filterByPrice,
+      filterByLocation: this.state.filterByLocation
     });
     await this.setUserData()
-     this.getCategories();
+    this.getCategories();
     // await this.getItems();
-     this.getItemsByCategory();
+    this.getItems();
   }
 
 
 
   getCategories = () => {
-    try{
+    try {
       api.post('/categories/getCategories').then((response) => {
         this.setState({
           categories: response.data.data
         })
-      },err=>{
+      }, err => {
         toast.show('Error')
         console.log(err);
-        this.setState({loading:false})
+        this.setState({ loading: false })
       })
-    }catch(ex){
+    } catch (ex) {
       toast.show('Error')
       console.log(err);
-      this.setState({loading:false})
+      this.setState({ loading: false })
     }
   }
 
@@ -78,39 +89,73 @@ export default class ExploreScreen extends React.Component {
   //   })
   // }
 
-  getItemsByCategory = () => {
+  getItems = () => {
     this.setState({ loading: true })
-    var data={
+
+    var data = {
       "uid": this.state.userData.uid,
-      "categories":this.state.activeCategories
+      "categories": this.state.activeCategories,
+      "filterByLocation": this.state.filterByLocation ? true : false,
+      "filterByPrice": this.state.filterByPrice ? true : false,
+      "location": this.state.location
     }
 
-    {
-      (this.isEmpty(this.state.activeCategories)) ?
-        api.post('/items/getItems',data).then((response) => {
-          this.setState({
-            items: response.data.data,
-            loading: false
-          })
-          this.arrayholder = response.data.data
-        },err=>{
-          toast.show('Error')
-          console.log(err);
-          this.setState({loading:false})
-        })
-        :
-        api.post('/items/getItemsByCategory', data).then((response) => {
-          this.setState({
-            items: response.data.data,
-            loading: false
-          })
-        },err=>{
-          toast.show('Error')
-          console.log(err);
-          this.setState({loading:false})
-        })
+    api.post('/items/getItemsByFilters', data).then((response) => {
+      this.setState({
+        items: response.data.data,
+        loading: false
+      })
+      this.arrayholder = response.data.data
+    }, err => {
+      toast.show('Error')
+      console.log(err);
+      this.setState({ loading: false })
+    })
+
+  }
+
+  async applyFilters() {
+    this.setModalVisible(!this.state.modalVisible);
+    this.setState({ loading: true })
+
+    if(this.state.filterByLocation){
+      await this.setCoordinates()
     }
 
+    var data = {
+      "uid": this.state.userData.uid,
+      "categories": this.state.activeCategories,
+      "filterByLocation": this.state.filterByLocation ? true : false,
+      "filterByPrice": this.state.filterByPrice ? true : false,
+      "location": this.state.location
+    }
+
+
+    api.post('/items/getItemsByFilters', data).then((response) => {
+      this.setState({
+        items: response.data.data,
+        loading: false
+      })
+      this.arrayholder = response.data.data
+    }, err => {
+      toast.show('Error')
+      console.log(err);
+      this.setState({ loading: false })
+    })
+
+  }
+
+
+
+  async setCoordinates() {
+    await tracking.getLocation().then(data => {
+      this.setState({
+        location: {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude
+        }
+      })
+    })
   }
 
   async setUserData() {
@@ -141,20 +186,9 @@ export default class ExploreScreen extends React.Component {
       searchString: text
     })
 
-    // let data = {searchString:text}
-
-    // api.post('/items/getItemsBySearch',data).then((response)=>{
-    //   console.log(data)
-    //   console.log(response.data.data)
-    //   this.setState({ 
-    //     items: response.data.data,
-    //     loading:false
-    //   });  
-    // })
-
     const newData = this.arrayholder.filter(item => {
       const itemData = `${item.title.toUpperCase()}   
-      ${item.postedby.username.toUpperCase()}`;
+        ${item.postedby.username.toUpperCase()}`;
 
       const textData = text.toUpperCase();
 
@@ -165,6 +199,7 @@ export default class ExploreScreen extends React.Component {
       items: newData,
       loading: false
     });
+
   };
 
 
@@ -214,10 +249,10 @@ export default class ExploreScreen extends React.Component {
       ),
       headerRight: () => (
         params.search ? null :
-          (<TouchableOpacity style={{ paddingRight: 5 }} onPress={() => alert('Right Menu Clicked')}>
+          (<TouchableOpacity style={{ paddingRight: 5 }} onPress={() => params.setModalVisible(!params.modalVisible)}>
             <Icon
               name="filter"
-              color='#000'
+              color={(params.filterByLocation || params.filterByPrice) ? '#FF9D5C' : '#000'}
               size={24}
             />
           </TouchableOpacity>)
@@ -303,13 +338,13 @@ export default class ExploreScreen extends React.Component {
 
   onRefresh() {
     // this.getItems();
-    this.getItemsByCategory();
+    this.getItems();
   }
 
   handleLoadMore = () => {
     if (!this.state.loading) {
       this.page = this.page + 1; // increase page by 1
-      this.getItemsByCategory(this.page); // method for API call 
+      this.getItems(this.page); // method for API call 
     }
   };
 
@@ -323,6 +358,14 @@ export default class ExploreScreen extends React.Component {
     );
   };
 
+  setModalVisible = (visible) => {
+    this.setState({ modalVisible: visible });
+
+    this.props.navigation.setParams({
+      modalVisible: visible
+    })
+  }
+
   renderItem = ({ item, index }) => {
     return (
       <ExploreItem
@@ -332,7 +375,7 @@ export default class ExploreScreen extends React.Component {
         refreshDetails={this.refreshDetails}
         images={item.images}
         postedby={item.postedby}
-        userId = {this.state.userData.uid}
+        userId={this.state.userData.uid}
         title={item.title}
         price={item.price}
         posted={item.posted}
@@ -344,6 +387,7 @@ export default class ExploreScreen extends React.Component {
         preferences={item.preferences}
         categories={item.categories}
         numberAvailable={item.quantity}
+        distance = {item.distance}
       />
     )
   }
@@ -359,7 +403,7 @@ export default class ExploreScreen extends React.Component {
         activeCategories: newActiveCategories,
         activeCategoriesCount: this.state.activeCategoriesCount - 1
       }, () => {
-        this.getItemsByCategory()
+        this.getItems()
       })
     } else {
       newActiveCategories[id] = true;
@@ -368,7 +412,7 @@ export default class ExploreScreen extends React.Component {
         activeCategories: newActiveCategories,
         activeCategoriesCount: this.state.activeCategoriesCount + 1
       }, () => {
-        this.getItemsByCategory()
+        this.getItems()
       })
     }
 
@@ -377,6 +421,70 @@ export default class ExploreScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={this.state.modalVisible}
+
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Filter by:</Text>
+
+              <CheckBox
+                center
+                title='Location'
+                checkedIcon='dot-circle-o'
+                uncheckedIcon='circle-o'
+                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                checked={this.state.filterByLocation}
+                onIconPress={() => {
+                  this.setState({ filterByLocation: !this.state.filterByLocation })
+                  this.props.navigation.setParams({
+                    filterByLocation: !this.state.filterByLocation
+                  })
+                }}
+              />
+
+              <CheckBox
+                center
+                title='Price'
+                checkedIcon='dot-circle-o'
+                uncheckedIcon='circle-o'
+                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                checked={this.state.filterByPrice}
+                onIconPress={() => {
+                  this.setState({ filterByPrice: !this.state.filterByPrice })
+                  this.props.navigation.setParams({
+                    filterByPrice: !this.state.filterByPrice
+                  })
+                }}
+              />
+
+
+              <View style={{ flexDirection: 'row' }}>
+              <TouchableHighlight
+                  style={{ ...styles.openButton, backgroundColor: "#000000" }}
+                  onPress={() => {
+                    this.setModalVisible(!this.state.modalVisible);
+                  }}>
+                  <Text style={styles.textStyle}>Cancel</Text>
+                </TouchableHighlight>
+
+                <TouchableHighlight
+                  style={{ ...styles.openButton, backgroundColor: "#000000" }}
+                  onPress={() => {
+                    this.applyFilters()
+                  }}>
+                  <Text style={styles.textStyle}>Filter</Text>
+                </TouchableHighlight>
+
+              </View>
+            </View>
+          </View>
+        </Modal>
+
         <Filters
           filters={this.state.categories}
           activeFiltersCount={this.state.activeCategoriesCount}
@@ -391,8 +499,8 @@ export default class ExploreScreen extends React.Component {
             </View>
             :
             this.isEmpty(this.state.items) ?
-            <Text style={{textAlign:'center',fontSize:13,color:'lightgrey',margin:20}}>
-              No Items to Display
+              <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
+                No Items to Display
               </Text>
               :
               <FlatList
@@ -411,7 +519,6 @@ export default class ExploreScreen extends React.Component {
                 onEndReachedThreshold={0.4}
               // onEndReached={this.handleLoadMore.bind(this)}
               />
-
         }
 
       </View>
@@ -431,6 +538,43 @@ const styles = StyleSheet.create({
   },
   bottomSpace: {
     paddingBottom: 50
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  openButton: {
+    backgroundColor: "#000000",
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    margin: 10
+  },
+  textStyle: {
+    color: "#FF9D5C",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
   }
 
 });
