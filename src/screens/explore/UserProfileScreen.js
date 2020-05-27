@@ -66,10 +66,11 @@ export default class UserProfileScreen extends React.Component {
         shadowOpacity: 0,
         borderBottomWidth: 0,
       },
+      headerBackTitleVisible: false,
     };
   };
 
-  like = id => {
+  like = id => { 
     let item = this.state.items[id]
     const { liked, likeCount } = item
 

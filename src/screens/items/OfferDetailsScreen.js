@@ -13,13 +13,11 @@ import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
-import toast from '../../utils/SimpleToast'
 
 
 
 
-
-export default class MyItemDetailsScreen extends Component {
+export default class OfferDetailsScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -27,16 +25,14 @@ export default class MyItemDetailsScreen extends Component {
         this.state = {
             userData: null,
             itemDetails: {},
+            offerDetails: {},
             isImageViewVisible: true,
             selectedIndex: 0,
             isRefreshing: false,
-            offers: [],
-            loading: false,
-            sendingOfferResponse: false
+            loading: false
         }
 
         this.markAsSwapped = this.markAsSwapped.bind(this);
-        this.deleteItem = this.deleteItem.bind(this)
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -55,7 +51,7 @@ export default class MyItemDetailsScreen extends Component {
     static navigationOptions = ({ navigation }) => {
 
         return {
-            title: `${navigation.state.params.itemDetails.title}`,
+            title: `${navigation.state.params.offerDetails.items[0].title}`,
             headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
             headerBackTitleVisible: false,
             headerStyle: {
@@ -66,7 +62,7 @@ export default class MyItemDetailsScreen extends Component {
             },
             headerLeft: () => <HeaderBackButton onPress={() => {
                 navigation.goBack(null);
-                // navigation.state.params.onGoBack(navigation.state.params.itemDetails);
+                // navigation.state.params.onGoBack();
             }
             } />,
         }
@@ -75,39 +71,16 @@ export default class MyItemDetailsScreen extends Component {
     async componentDidMount() {
         const { state } = await this.props.navigation;
         this.setState({
-            itemDetails: state.params.itemDetails,
-            selectedIndex: state.params.selectedIndex,
+            offerDetails: state.params.offerDetails,
+            itemDetails: state.params.offerDetails.items[0],
+            selectedIndex: state.params.selectedIndex
         })
         await this.setUserData();
-        this.getOffers();
         // alert(JSON.stringify(this.state.itemDetails))
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
-    getOffers = () => {
-        this.setState({ loading: true })
 
-        let data = {
-            itemId: this.state.itemDetails.id
-        }
-
-        api.post('/items/getItemOffers', data).then((response) => {
-
-            this.setState({
-                offers: response.data.data,
-                loading: false
-            })
-
-        }, err => {
-            toast.show('Error')
-            console.log(err);
-            this.setState({ loading: false })
-        })
-    }
-
-    onRefresh() {
-        this.getOffers();
-    }
 
     async setUserData() {
         return await db.get('userData').then(data => {
@@ -117,12 +90,7 @@ export default class MyItemDetailsScreen extends Component {
         })
     }
 
-    handleIndexChange = index => {
-        this.setState({
-            ...this.state,
-            selectedIndex: index
-        });
-    };
+
 
     markAsSwapped = () => {
         let details = this.state.itemDetails
@@ -138,56 +106,7 @@ export default class MyItemDetailsScreen extends Component {
         })
     }
 
-    requestConfirmation = () => {
-        Alert.alert(
-            "Delete This Item?",
-            "Are you sure you want to delete this item?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "OK",
-                    onPress: () => this.deleteItem()
-
-                },
-
-            ],
-            { cancelable: false }
-        );
-    }
-
-    deleteItem() {
-        this.setState({ loading: true })
-
-        let data = {
-            itemId: this.state.itemDetails.id
-        }
-
-        api.post('/items/deleteItem', data)
-            .then((response) => {
-                this.props.navigation.goBack(null);
-                this.props.navigation.state.params.onGoBack()
-            })
-
-    }
-
-    renderFooter = () => {
-        //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-        if (!this.state.loading) return null;
-        return (
-            <ActivityIndicator
-                style={{ color: '#000' }}
-            />
-        );
-    };
-
-    refreshDetails = (ok) => {
-        this.getOffers();
-    }
-
-    requestAcceptConfirmation = (data) => {
+    requestAcceptConfirmation = () => {
         Alert.alert(
             "Accept Offer?",
             "Are you sure you want to accept this offer?",
@@ -198,7 +117,7 @@ export default class MyItemDetailsScreen extends Component {
                 },
                 {
                     text: "OK",
-                    onPress: () => this.acceptOffer(data)
+                    onPress: () => this.acceptOffer()
 
                 },
 
@@ -207,7 +126,7 @@ export default class MyItemDetailsScreen extends Component {
         );
     }
 
-    requestDeclineConfirmation = (data) => {
+    requestDeclineConfirmation = () => {
         Alert.alert(
             "Decline Offer?",
             "Decline this offer?",
@@ -218,7 +137,7 @@ export default class MyItemDetailsScreen extends Component {
                 },
                 {
                     text: "OK",
-                    onPress: () => this.declineOffer(data)
+                    onPress: () => this.declineOffer()
 
                 },
 
@@ -227,109 +146,55 @@ export default class MyItemDetailsScreen extends Component {
         );
     }
 
-    acceptOffer(data) {
-        this.setState({ sendingOfferResponse: true })
-        let index = data.index
+    acceptOffer() {
+        this.setState({ loading: true })
+
+        let data = {
+            offerId: this.state.offerDetails.id,
+            itemId: this.state.offerDetails.itemId,
+            swapId: this.state.offerDetails.swapId,
+        }
 
         api.post('/items/acceptOffer', data)
             .then((response) => {
-                if (response.data.status == 'success') {
-                    let newOffers = [...this.state.offers];
-
-                    newOffers[index] = { ...newOffers[index], accepted: !newOffers[index].accepted };
-
-                    this.setState({ offers: newOffers, sendingOfferResponse: false }, () => {
-                        Alert.alert('', `Meet up with ${data.offeredby} to swap your items`)
-                    });
-                } else {
-                    this.setState({ sendingOfferResponse: false });
-                    toast.show('Error Accepting Offer')
-                }
+                this.props.navigation.goBack(null);
+                this.props.navigation.state.params.onGoBack();
+                Alert.alert('',`Meet up with ${this.state.offerDetails.offeredBy.username} to swap your items`)
             })
 
     }
 
 
-    declineOffer(data) {
-        // this.setState({ sendingOfferResponse: true })
-        let index = data.index
+    declineOffer() {
+        this.setState({ loading: true })
 
-        const newOffers = this.state.offers.filter((item, arrIndex) =>
-            arrIndex !== index
-        );
-        this.setState({ offers: newOffers }, () => {
-            api.post('/items/declineOffer', data)
-        });
+        let data = {
+            offerId: this.state.offerDetails.id,
+            itemId: this.state.offerDetails.itemId,
+            swapId: this.state.offerDetails.swapId,
+        }
 
+        api.post('/items/declineOffer', data)
+            .then((response) => {
+                this.props.navigation.goBack(null);
+                this.props.navigation.state.params.onGoBack();
+            })
     }
 
 
-    renderItem = ({ item, index }) => {
-        return (
-            item.items.length > 1 ?
-                <MultipleOfferItem
-                    {...this.props}
-                    acceptOffer={this.requestAcceptConfirmation}
-                    declineOffer={this.requestDeclineConfirmation}
-                    refreshDetails={this.refreshDetails}
-                    offeredBy={item.offeredby}
-                    accepted={item.accepted}
-                    title={item.items[0].title}
-                    id={item.id}
-                    items={item.items}
-                    itemId={item.itemId}
-                    postedby={item.postedby}
-                    userId={this.state.userData.uid}
-                    offered={item.offered}
-                    id={item.offerId}
-                    swapId={item.swapId}
-                    index={index}
-                    sendingOfferResponse={this.state.sendingOfferResponse}
-                />
-                :
-                <OfferItem
-                    {...this.props}
-                    acceptOffer={this.requestAcceptConfirmation}
-                    declineOffer={this.requestDeclineConfirmation}
-                    refreshDetails={this.refreshDetails}
-                    offeredBy={item.offeredby}
-                    accepted={item.accepted}
-                    title={item.items[0].title}
-                    id={item.id}
-                    items={item.items}
-                    itemId={item.itemId}
-                    postedby={item.postedby}
-                    userId={this.state.userData.uid}
-                    offered={item.offered}
-                    id={item.offerId}
-                    swapId={item.swapId}
-                    index={index}
-                    sendingOfferResponse={this.state.sendingOfferResponse}
-                />
-        )
-    }
+
+
 
     render() {
         return (
             <View >
-                <View style={{ backgroundColor: '#FF9D5C', padding: 10 }}>
-                    <SegmentedControlTab
-                        values={["Item", "Offers"]}
-                        selectedIndex={this.state.selectedIndex}
-                        onTabPress={this.handleIndexChange}
-                        borderRadius={50}
-                        tabTextStyle={{ color: '#FF9D5C' }}
-                        activeTabStyle={{ backgroundColor: 'black' }}
-                        tabStyle={{ borderColor: 'transparent' }}
-                    />
-                </View>
                 {
                     (this.state.loading) ?
                         <View style={{ flex: 1, alignItems: 'center', padding: 10 }}>
                             <ActivityIndicator />
                         </View>
                         :
-                        ((this.state.selectedIndex == 0) ? (
+                        (
                             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                                 <View style={{ flexDirection: 'row' }}>
                                     <View style={{ flex: 0.4, height: 150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
@@ -345,6 +210,17 @@ export default class MyItemDetailsScreen extends Component {
                                     </View>
                                     <View style={{ flex: 0.6, flexDirection: 'column', padding: 10 }}>
                                         <Text style={styles.titleText}>{this.state.itemDetails.title}</Text>
+
+                                        <View style={styles.stackedView}>
+                                            <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
+                                            <View >
+                                                <TouchableOpacity>
+                                                    <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>
+                                                        {this.state.offerDetails.offeredBy? this.state.offerDetails.offeredBy.username:null}
+                                                        </Text>
+                                                        </TouchableOpacity>
+                                            </View>
+                                        </View>
 
                                         <View style={styles.stackedView}>
                                             <TimeAgo time={this.state.itemDetails.posted} interval={20000} style={{ fontSize: 10, color: '#808080' }} />
@@ -363,38 +239,36 @@ export default class MyItemDetailsScreen extends Component {
                                             <View style={{ flex: 0.14 }}>
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
-                                            <View style={{ flex: 0.08 }}>
-                                                <Icon name="check-circle"
-                                                    size={15}
-                                                    color={this.state.itemDetails.swapped ? '#40A459' : '#D6D8E0'}
-                                                    onPress={() => this.markAsSwapped()}
-                                                />
-                                            </View>
-                                            <View style={{ flex: 0.7 }}>
-                                                <Text style={{ fontSize: 8, bottom: 16, position: 'absolute', color: (this.state.itemDetails.swapped) ? '#40A459' : '#D6D8E0' }}>{this.state.itemDetails.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
-                                            </View>
+
                                         </View>
 
                                         <View style={styles.stackedView}>
-                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.itemDetails.offers ? this.state.itemDetails.offers.length : 0}</Text></View>
-                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
+                                            {
+                                                this.state.offerDetails.accepted?
+                                                <Text style={{color:'green'}}>Offer Accepted</Text>
+                                                :
+                                                <View style={{ flex: 1, flexDirection: 'row' }}>
+                                                <View style={{ flex: 0.5 }}>
+                                                    <TouchableOpacity style={styles.offerButton}
+                                                        onPress={() => this.requestAcceptConfirmation()}>
+                                                        <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+
+                                                <View style={{ flex: 0.5 }}>
+                                                    <TouchableOpacity style={styles.offerButton}
+                                                        onPress={() => this.requestDeclineConfirmation()}>
+                                                        <Text style={{ textAlign: 'center', fontSize: 12, color: '#FE3939' }}>Decline Offer</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                            </View>
+                                            }
                                         </View>
+
                                     </View>
                                 </View>
 
-                                <View style={{ flex: 1, flexDirection: 'row', marginBottom: 15 }}>
-                                    <View style={{ flex: 0.3 }}>
-                                        <TouchableOpacity style={styles.offerButton}>
-                                            <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Edit Item</Text>
-                                        </TouchableOpacity>
-                                    </View>
 
-                                    <View style={{ flex: 0.3 }}>
-                                        <TouchableOpacity style={styles.offerButton} onPress={() => this.requestConfirmation()}>
-                                            <Text style={{ textAlign: 'center', fontSize: 12, color: '#FE3939' }}>Delete Item</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
 
                                 <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Product Description</Text>
                                 <Text style={{ color: '#9F9F9F', marginBottom: 10 }}>{this.state.itemDetails.description}</Text>
@@ -441,30 +315,7 @@ export default class MyItemDetailsScreen extends Component {
 
                                 </View>
                             </ScrollView>
-                        ) : (
-                                (
-                                    this.state.offers.length == 0 ?
-                                        <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
-                                            No Offers to Display
-                                         </Text>
-                                        :
-                                        <FlatList
-                                            data={this.state.offers}
-                                            renderItem={this.renderItem}
-                                            keyExtractor={item => item.offerId}
-                                            contentContainerStyle={{ paddingBottom: 50 }}
-                                            extraData={this.state}
-                                            refreshControl={
-                                                <RefreshControl
-                                                    refreshing={this.state.isRefreshing}
-                                                    onRefresh={this.onRefresh.bind(this)}
-                                                />
-                                            }
-                                            ListFooterComponent={this.renderFooter.bind(this)}
-                                            onEndReachedThreshold={0.4}
-                                        />
-                                )
-                            ))
+                        )
                 }
             </View>
         );

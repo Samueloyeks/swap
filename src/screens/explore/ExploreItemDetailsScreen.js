@@ -10,7 +10,7 @@ import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 
 
-
+ 
 
 
 
@@ -213,7 +213,7 @@ export default class ExploreItemDetailsScreen extends Component {
                   :
                   !(this.state.itemDetails.postedby.uid == this.state.userData.uid) ?
                     <View style={styles.stackedView}>
-                      <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('SelectItemsScreen')}>
+                      <TouchableOpacity style={styles.button} onPress={() => this.props.navigation.navigate('SelectItemsScreen', { item: this.state.itemDetails })}>
                         <Text style={styles.buttonText}>Make Offer</Text>
                       </TouchableOpacity>
                     </View> :

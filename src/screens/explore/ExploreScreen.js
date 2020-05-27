@@ -337,7 +337,6 @@ export default class ExploreScreen extends React.Component {
   }
 
   onRefresh() {
-    // this.getItems();
     this.getItems();
   }
 
@@ -436,8 +435,9 @@ export default class ExploreScreen extends React.Component {
                 center
                 title='Location'
                 checkedIcon='dot-circle-o'
+                checkedColor="#FF9D5C"
                 uncheckedIcon='circle-o'
-                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                containerStyle={styles.checkboxContainer}
                 checked={this.state.filterByLocation}
                 onIconPress={() => {
                   this.setState({ filterByLocation: !this.state.filterByLocation })
@@ -451,8 +451,9 @@ export default class ExploreScreen extends React.Component {
                 center
                 title='Price'
                 checkedIcon='dot-circle-o'
+                checkedColor="#FF9D5C"
                 uncheckedIcon='circle-o'
-                containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
+                containerStyle={styles.checkboxContainer}
                 checked={this.state.filterByPrice}
                 onIconPress={() => {
                   this.setState({ filterByPrice: !this.state.filterByPrice })
@@ -477,7 +478,7 @@ export default class ExploreScreen extends React.Component {
                   onPress={() => {
                     this.applyFilters()
                   }}>
-                  <Text style={styles.textStyle}>Filter</Text>
+                  <Text style={styles.textStyle}>Done</Text>
                 </TouchableHighlight>
 
               </View>
@@ -549,7 +550,7 @@ const styles = StyleSheet.create({
     margin: 20,
     backgroundColor: "white",
     borderRadius: 10,
-    padding: 35,
+    padding: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: {
@@ -575,6 +576,12 @@ const styles = StyleSheet.create({
   modalText: {
     marginBottom: 15,
     textAlign: "center"
+  },
+  checkboxContainer:{
+    backgroundColor: 'transparent',
+     borderWidth: 0,
+     padding:0,
+     alignSelf:'flex-start'
   }
 
 });

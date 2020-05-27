@@ -17,6 +17,8 @@ import UserProfileScreen from '../screens/explore/UserProfileScreen'
 import SelectItemsScreen from '../screens/makeOffer/SelectItemsScreen'
 import ConfirmOfferScreen from '../screens/makeOffer/ConfirmOfferScreen'
 import ChatsScreen from '../screens/chat/ChatsScreen'
+import OfferDetailsScreen from '../screens/items/OfferDetailsScreen'
+
 
 
 
@@ -53,6 +55,9 @@ const ItemsStack = createStackNavigator({
   },
   MyItemDetailsScreen: {
     screen: MyItemDetailsScreen,
+  },
+  OfferDetailsScreen: {
+    screen: OfferDetailsScreen
   }
 });
 const SwapsStack = createStackNavigator({
@@ -75,7 +80,7 @@ ExploreStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible;
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName !== "ExploreScreen") { 
+      if (route.routeName !== "ExploreScreen") {
         tabBarVisible = false;
       } else {
         tabBarVisible = true;
@@ -92,13 +97,13 @@ ItemsStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible;
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName !== "ItemsScreen") { 
+      if (route.routeName !== "ItemsScreen") {
         tabBarVisible = false;
       } else {
         tabBarVisible = true;
       }
     });
-  }  
+  }
 
   return {
     tabBarVisible
@@ -109,13 +114,13 @@ SwapsStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible;
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName !== "SwapsScreen") { 
+      if (route.routeName !== "SwapsScreen") {
         tabBarVisible = false;
       } else {
         tabBarVisible = true;
       }
     });
-  }  
+  }
 
   return {
     tabBarVisible
@@ -126,13 +131,13 @@ ProfileStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible;
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName !== "ProfileScreen") { 
+      if (route.routeName !== "ProfileScreen") {
         tabBarVisible = false;
       } else {
         tabBarVisible = true;
       }
     });
-  }  
+  }
 
   return {
     tabBarVisible

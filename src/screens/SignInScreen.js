@@ -74,6 +74,7 @@ export default class SignInScreen extends React.Component {
             }
             db.set('userData', userData).then(() => {
               this.props.navigation.navigate('Main')
+              this.setState({ loading: false })
             })
           }
         }, err => {

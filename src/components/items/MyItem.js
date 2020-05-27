@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Animated, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
@@ -19,73 +20,93 @@ export default class MyItem extends Component {
         return swapped !== oldSwapped
     }
 
+
+
     render() {
         return (
-            <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails })}
-            >
-                <View style={styles.container}>
-                    <View style={styles.ImgContainer}>
-                        <Image
-                            style={{
-                                width: '100%',
-                                height: '100%',
+            <Swipeable
+                renderRightActions={() => {
+                    return (
+                        <TouchableOpacity style={styles.deleteButton}
+                            onPress={() => {
+                                this.props.deleteItem(this.props.index, this.props.id)
                             }}
-                            source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
-                    </View>
-                    <View style={styles.content}>
-                        <View style={styles.stackedView}>
-                            <View style={{ flex: 1 }}>
-
-                                <Text style={styles.titleText}>{this.props.title}</Text></View>
-
+                        >
+                            <Icon size={30} name="trash-can" style={styles.deleteIcon} />
+                        </TouchableOpacity>
+                    );
+                }}
+            >
+                <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails, selectedIndex: 0 })}
+                >
+                    <View style={styles.container}>
+                        <View style={styles.ImgContainer}>
+                            <Image
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                }}
+                                source={this.props.images ? ({ uri: this.props.images[0] }) : itemImage} />
                         </View>
-                        <View style={styles.stackedView}>
-                            <View style={{ flex: 0.25 }}>
-                                <TimeAgo time={this.props.posted} interval={20000} style={{ fontSize: 7, color: '#808080', position: 'absolute', bottom: 5 }} />
-                            </View>
+                        <View style={styles.content}>
+                            <View style={styles.stackedView}>
+                                <View style={{ flex: 1 }}>
 
-                        </View>
-                        <View style={styles.stackedView}>
-                            <View style={{ flex: 0.06 }}>
-                                <Icon name="check-circle"
-                                    color={this.props.swapped ? '#40A459' : '#D6D8E0'}
-                                    onPress={() => this.props.markAsSwapped(this.props.id)}
-                                />
+                                    <Text style={styles.titleText}>{this.props.title}</Text></View>
+
                             </View>
-                            <View style={{ flex: 0.94 }}>
-                                <Text style={{ fontSize: 10, color: (this.props.swapped) ? '#40A459' : '#D6D8E0' }}>{this.props.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
+                            <View style={styles.stackedView}>
+                                <View style={{ flex: 0.25 }}>
+                                    <TimeAgo time={this.props.posted} interval={20000} style={{ fontSize: 7, color: '#808080', position: 'absolute', bottom: 5 }} />
+                                </View>
+
                             </View>
-                        </View>
-                        <View style={styles.stackedView}>
-                            <View style={{ flex: 0.09, bottom: 0 }}>
-                                <Icon
-                                    key={this.props.id}
-                                    name="heart"
-                                    size={15}
-                                    color='#FF9D5C'
-                                />
+                            <View style={styles.stackedView}>
+                                <View style={{ flex: 0.06 }}>
+                                    <Icon name="check-circle"
+                                        color={this.props.swapped ? '#40A459' : '#D6D8E0'}
+                                        onPress={() => this.props.markAsSwapped(this.props.index, this.props.id)}
+                                    />
+                                </View>
+                                <View style={{ flex: 0.94 }}>
+                                    <Text style={{ fontSize: 10, color: (this.props.swapped) ? '#40A459' : '#D6D8E0' }}>{this.props.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
+                                </View>
                             </View>
-                            <View style={{ flex: 0.05 }}>
-                                <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute' }}>{this.props.likes}</Text>
-                            </View>
-                            <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
-                                <TouchableOpacity>
+                            <View style={styles.stackedView}>
+                                <View style={{ flex: 0.09, bottom: 0 }}>
                                     <Icon
                                         key={this.props.id}
-                                        name="wechat"
+                                        name="heart"
                                         size={15}
+                                        color='#FF9D5C'
                                     />
-                                </TouchableOpacity>
-                            </View>
+                                </View>
+                                <View style={{ flex: 0.05 }}>
+                                    <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute' }}>{this.props.likes}</Text>
+                                </View>
+                                <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
+                                    <TouchableOpacity>
+                                        <Icon
+                                            key={this.props.id}
+                                            name="wechat"
+                                            size={15}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
 
-                            <View style={{ flex: 0.7, alignItems: 'flex-end' }}>
-                                <TouchableOpacity style={styles.offerButton}><Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>View Offers</Text></TouchableOpacity>
+                                <View style={{ flex: 0.7, alignItems: 'flex-end' }}>
+                                    <TouchableOpacity style={styles.offerButton}
+                                        onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails, selectedIndex: 1 })}
+                                    >
+                                        <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>View Offers</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-            </TouchableOpacity>
+                </TouchableOpacity>
+            </Swipeable>
         );
     }
 }
@@ -133,6 +154,18 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 15,
         textTransform: 'uppercase'
+    },
+    deleteButton: {
+        backgroundColor: 'red',
+        textAlign: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 3,
+        marginBottom: 3
+    },
+    deleteIcon: {
+        alignSelf: 'center',
+        margin: 20,
     }
 
 });

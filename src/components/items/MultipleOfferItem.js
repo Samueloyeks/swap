@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import itemImage from '../../assets/imgs/item.png';
+import TimeAgo from 'react-native-timeago';
 
 export default class MultipleOfferItem extends Component {
     constructor(props) {
@@ -17,17 +19,16 @@ export default class MultipleOfferItem extends Component {
 
     render() {
         return (
-            <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('ExploreItemDetailsScreen', { itemDetails: this.props })}
-            >
+            <TouchableOpacity >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image style={{ position:'absolute',right:0,bottom:0,width:130,zIndex:1, height:90 }}  source={this.props.items[0].images[0]} />
-                        <Image style={{ position:'absolute',left:0,top:0, width:130}}  source={this.props.items[1].images[0]} />
+                        <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 130, zIndex: 1, height: 90, borderRadius: 10 }} source={this.props.items ? ({ uri: this.props.items[0].images[0] }) : itemImage} />
+                        <Image style={{ position: 'absolute', left: 0, top: 0, width: 130, height: 90 }} source={this.props.items ? ({ uri: this.props.items[1].images[0] }) : itemImage} />
+
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
- 
+
                             <View style={{ flex: 0.9 }}>
                                 <Text style={styles.titleText}>
                                     {(this.props.items.length == 2) ?
@@ -45,17 +46,25 @@ export default class MultipleOfferItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
                             <View >
-                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy}</Text></TouchableOpacity>
+                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
                             </View>
                         </View>
 
                         <View style={{ flex: 1, paddingVertical: 10 }}>
-                            <Text style={{ fontSize: 10, color: '#808080' }}> Offer Made: {this.props.timeAgo} ago</Text>
+                            <Text style={{ fontSize: 10, color: '#808080' }}> Offer Made: <TimeAgo time={this.props.offered} interval={20000} style={{ fontSize: 10, color: '#808080', }} /></Text>
                         </View>
 
                         <View style={styles.stackedView}>
                             <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
-                                <TouchableOpacity style={styles.offerButton}><Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text></TouchableOpacity>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <TouchableOpacity style={styles.offerButton}>
+                                        <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={styles.offerButton}>
+                                        <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -83,7 +92,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         flexDirection: 'column',
-        overflow:'hidden'
+        overflow: 'hidden'
 
     },
     content: {
@@ -99,6 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderColor: "black",
         padding: 1,
+        marginHorizontal:5
     },
     stackedView: {
         flex: 0.25,

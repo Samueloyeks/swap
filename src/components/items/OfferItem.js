@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import itemImage from '../../assets/imgs/item.png';
+import TimeAgo from 'react-native-timeago';
+
+
 
 export default class OfferItem extends Component {
     constructor(props) {
@@ -8,19 +12,27 @@ export default class OfferItem extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const { liked, likeCount, favorited } = nextProps
-        const { liked: oldLiked, likeCount: oldLikeCount, favorited: oldFavorited } = this.props
+        const { sendingOfferResponse } = nextProps
+        const { sendingOfferResponse: oldsendingOfferResponse} = this.props
 
         // If "liked" or "likeCount" is different, then update                          
-        return liked !== oldLiked || likeCount !== oldLikeCount || favorited !== oldFavorited
+        return sendingOfferResponse !== oldsendingOfferResponse 
     }
 
     render() {
         return (
-            <TouchableOpacity>
+            <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('OfferDetailsScreen', { offerDetails: this.props, onGoBack: this.props.refreshDetails })}
+
+            >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                        <Image style={{ alignSelf: 'center' }} resizeMode="stretch" source={this.props.items[0].images[0]} />
+                        <Image
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                            }}
+                            source={this.props.items ? ({ uri: this.props.items[0].images[0] }) : itemImage} />
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
@@ -37,18 +49,50 @@ export default class OfferItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
                             <View >
-                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy}</Text></TouchableOpacity>
+                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
                             </View>
                         </View>
 
-                        <View style={{flex:1,paddingVertical:10}}>
-                            <Text style={{ fontSize: 10, color: '#808080' }}> Offer Made: {this.props.timeAgo} ago</Text>
+                        <View style={{ flex: 1, paddingVertical: 10 }}>
+                            <Text style={{ fontSize: 10, color: '#808080' }}> Offer Made: <TimeAgo time={this.props.offered} interval={20000} style={{ fontSize: 10, color: '#808080', }} /></Text>
                         </View>
 
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 1, alignItems: 'flex-end',right:0 }}>
-                                <TouchableOpacity style={styles.offerButton}><Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text></TouchableOpacity>
-                            </View>
+                            {
+                                this.props.sendingOfferResponse ?
+                                    <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
+                                        <ActivityIndicator style={styles.acceptedText} />
+                                    </View>
+                                    : this.props.accepted ?
+                                        <Text style={styles.acceptedText}>Accepted</Text>
+                                        :
+                                        <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={styles.offerButton}
+                                                    onPress={() => this.props.acceptOffer(data={
+                                                        offerId: this.props.id,
+                                                        itemId: this.props.itemId,
+                                                        swapId: this.props.swapId,
+                                                        offeredby: this.props.offeredBy.username,
+                                                        index:this.props.index
+                                                    })}
+                                                >
+                                                    <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
+                                                </TouchableOpacity>
+
+                                                <TouchableOpacity style={styles.offerButton}
+                                                    onPress={() => this.props.declineOffer({
+                                                        offerId: this.props.id,
+                                                        itemId: this.props.itemId,
+                                                        swapId: this.props.swapId,
+                                                        index:this.props.index
+                                                    })}
+                                                >
+                                                    <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                            }
                         </View>
                     </View>
                 </View>
@@ -75,7 +119,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         borderBottomRightRadius: 10,
         flexDirection: 'column',
-        overflow:'hidden'
+        overflow: 'hidden'
 
     },
     content: {
@@ -91,6 +135,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderColor: "black",
         padding: 1,
+        marginHorizontal: 5
     },
     stackedView: {
         flex: 0.25,
@@ -100,6 +145,13 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 15,
         textTransform: 'uppercase'
+    },
+    acceptedText: {
+        fontSize: 12,
+        color: 'green',
+        alignSelf: 'flex-end',
+        textAlign: 'right',
+        flex: 1
     }
 
 });

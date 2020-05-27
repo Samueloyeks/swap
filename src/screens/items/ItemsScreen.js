@@ -63,17 +63,6 @@ export default class ItemsScreen extends React.Component {
       loading: true
     })
 
-    // let data = {searchString:text}
-
-    // api.post('/items/getItemsBySearch',data).then((response)=>{
-    //   console.log(data)
-    //   console.log(response.data.data)
-    //   this.setState({ 
-    //     items: response.data.data,
-    //     loading:false
-    //   });  
-    // })
-
     const newData = this.arrayholder.filter(item => {
       const itemData = `${item.title.toUpperCase()}   
       ${item.postedby.username.toUpperCase()}`;
@@ -119,15 +108,26 @@ export default class ItemsScreen extends React.Component {
   };
 
 
-  refreshDetails = (data) => {
-    let newItems = [...this.state.items];
-
-    newItems[data.index] = data;
-
-    this.setState({
-      items: newItems
-    })
+  refreshDetails = (data) => { 
+    this.getItemsByUid()
   }
+
+  deleteItem = (index, id) => {
+
+    const newItems = this.state.items.filter((item, arrIndex) =>
+    arrIndex !== index
+    );
+    this.setState({ items: newItems },()=>{
+      var data = {
+        "itemId": id
+      }
+  
+      api.post('/items/deleteItem', data)
+    });
+
+  }
+
+  
 
   static navigationOptions = ({ navigation }) => {
     const screen = Dimensions.get("window");
@@ -180,6 +180,7 @@ export default class ItemsScreen extends React.Component {
         {...this.props}
         markAsSwapped={this.markAsSwapped}
         refreshDetails={this.refreshDetails}
+        deleteItem={this.deleteItem}
         images={item.images}
         postedby={item.postedby}
         title={item.title}
