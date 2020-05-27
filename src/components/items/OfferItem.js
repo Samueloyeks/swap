@@ -76,7 +76,7 @@ export default class OfferItem extends Component {
                                                         offeredby: this.props.offeredBy.username,
                                                         index:this.props.index
                                                     })}
-                                                >
+                                                > 
                                                     <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
                                                 </TouchableOpacity>
 

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity,ActivityIndicator, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import itemImage from '../../assets/imgs/item.png';
 import TimeAgo from 'react-native-timeago';
@@ -10,16 +10,18 @@ export default class MultipleOfferItem extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const { liked, likeCount, favorited } = nextProps
-        const { liked: oldLiked, likeCount: oldLikeCount, favorited: oldFavorited } = this.props
+        const { sendingOfferResponse } = nextProps
+        const { sendingOfferResponse: oldsendingOfferResponse} = this.props
 
         // If "liked" or "likeCount" is different, then update                          
-        return liked !== oldLiked || likeCount !== oldLikeCount || favorited !== oldFavorited
+        return sendingOfferResponse !== oldsendingOfferResponse 
     }
 
     render() {
         return (
-            <TouchableOpacity >
+            <TouchableOpacity 
+            onPress={() => this.props.navigation.navigate('MultipleOffersScreen', { offerDetails: this.props, onGoBack: this.props.refreshDetails })}
+            >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
                         <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 130, zIndex: 1, height: 90, borderRadius: 10 }} source={this.props.items ? ({ uri: this.props.items[0].images[0] }) : itemImage} />
@@ -55,17 +57,41 @@ export default class MultipleOfferItem extends Component {
                         </View>
 
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <TouchableOpacity style={styles.offerButton}>
-                                        <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
-                                    </TouchableOpacity>
+                            {
+                                this.props.sendingOfferResponse ?
+                                    <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
+                                        <ActivityIndicator style={styles.acceptedText} />
+                                    </View>
+                                    : this.props.accepted ?
+                                        <Text style={styles.acceptedText}>Accepted</Text>
+                                        :
+                                        <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
+                                            <View style={{ flexDirection: 'row' }}>
+                                                <TouchableOpacity style={styles.offerButton}
+                                                    onPress={() => this.props.acceptOffer(data = {
+                                                        offerId: this.props.id,
+                                                        itemId: this.props.itemId,
+                                                        swapId: this.props.swapId,
+                                                        offeredby: this.props.offeredBy.username,
+                                                        index: this.props.index
+                                                    })}
+                                                >
+                                                    <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
+                                                </TouchableOpacity>
 
-                                    <TouchableOpacity style={styles.offerButton}>
-                                        <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
+                                                <TouchableOpacity style={styles.offerButton}
+                                                    onPress={() => this.props.declineOffer({
+                                                        offerId: this.props.id,
+                                                        itemId: this.props.itemId,
+                                                        swapId: this.props.swapId,
+                                                        index: this.props.index
+                                                    })}
+                                                >
+                                                    <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                            }
                         </View>
                     </View>
                 </View>
@@ -108,7 +134,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         borderColor: "black",
         padding: 1,
-        marginHorizontal:5
+        marginHorizontal: 5
     },
     stackedView: {
         flex: 0.25,
@@ -118,6 +144,13 @@ const styles = StyleSheet.create({
     titleText: {
         fontSize: 15,
         textTransform: 'uppercase'
+    },
+    acceptedText: {
+        fontSize: 12,
+        color: 'green',
+        alignSelf: 'flex-end',
+        textAlign: 'right',
+        flex: 1
     }
 
 });

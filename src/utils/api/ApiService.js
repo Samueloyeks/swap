@@ -7,6 +7,8 @@ import axios from 'axios';
 
 var baseURL = 'http://127.0.0.1:3000';
 // var baseURL =  'http://192.168.56.1:3000';
+// var baseURL = 'http://localhost:3000';
+
 
 
 var apiUsername = "am9objpzbWl0aA==";
@@ -39,6 +41,7 @@ class Api extends Component {
         return await axios.post(url, data, {
             headers: defaultHeader
           })
+
     }
 
     async get(targetFunction){

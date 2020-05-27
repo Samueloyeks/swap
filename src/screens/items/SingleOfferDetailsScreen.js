@@ -17,7 +17,7 @@ import db from '../../utils/db/Storage'
 
 
 
-export default class OfferDetailsScreen extends Component {
+export default class SingleOfferDetailsScreen extends Component {
 
     constructor(props) {
         super(props);
@@ -32,7 +32,6 @@ export default class OfferDetailsScreen extends Component {
             loading: false
         }
 
-        this.markAsSwapped = this.markAsSwapped.bind(this);
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -51,7 +50,7 @@ export default class OfferDetailsScreen extends Component {
     static navigationOptions = ({ navigation }) => {
 
         return {
-            title: `${navigation.state.params.offerDetails.items[0].title}`,
+            title: `${navigation.state.params.offerDetails.title}`,
             headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
             headerBackTitleVisible: false,
             headerStyle: {
@@ -71,9 +70,8 @@ export default class OfferDetailsScreen extends Component {
     async componentDidMount() {
         const { state } = await this.props.navigation;
         this.setState({
-            offerDetails: state.params.offerDetails,
-            itemDetails: state.params.offerDetails.items[0],
-            selectedIndex: state.params.selectedIndex
+            // offerDetails: state.params.offerDetails,
+            itemDetails: state.params.offerDetails,
         })
         await this.setUserData();
         // alert(JSON.stringify(this.state.itemDetails))
@@ -88,97 +86,6 @@ export default class OfferDetailsScreen extends Component {
                 userData: JSON.parse(data)
             })
         })
-    }
-
-
-
-    markAsSwapped = () => {
-        let details = this.state.itemDetails
-        const { swapped } = details
-
-        const newDetails = {
-            ...details,
-            swapped: !swapped,
-        }
-
-        this.setState({
-            itemDetails: newDetails
-        })
-    }
-
-    requestAcceptConfirmation = () => {
-        Alert.alert(
-            "Accept Offer?",
-            "Are you sure you want to accept this offer?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "OK",
-                    onPress: () => this.acceptOffer()
-
-                },
-
-            ],
-            { cancelable: false }
-        );
-    }
-
-    requestDeclineConfirmation = () => {
-        Alert.alert(
-            "Decline Offer?",
-            "Decline this offer?",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel"
-                },
-                {
-                    text: "OK",
-                    onPress: () => this.declineOffer()
-
-                },
-
-            ],
-            { cancelable: false }
-        );
-    }
-
-    acceptOffer() {
-        this.setState({ loading: true })
-
-        let data = {
-            offerId: this.state.offerDetails.id,
-            itemId: this.state.offerDetails.itemId,
-            swapId: this.state.offerDetails.swapId,
-        }
-
-        api.post('/items/acceptOffer', data)
-            .then((response) => {
-                this.props.navigation.goBack(null);
-                this.props.navigation.state.params.onGoBack();
-                Alert.alert('', `Meet up with ${this.state.offerDetails.offeredBy.username} to swap your items`)
-            })
-
-    }
-
-
-    declineOffer() {
-        this.setState({ loading: true })
-
-        let data = {
-            offerId: this.state.offerDetails.id,
-            itemId: this.state.offerDetails.itemId,
-            swapId: this.state.offerDetails.swapId,
-        }
-
-        api.post('/items/declineOffer', data)
-            .then((response) => {
-                this.props.navigation.goBack(null);
-                this.props.navigation.state.params.onGoBack();
-            })
     }
 
 
@@ -216,7 +123,7 @@ export default class OfferDetailsScreen extends Component {
                                             <View >
                                                 <TouchableOpacity>
                                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>
-                                                        {this.state.offerDetails.offeredBy ? this.state.offerDetails.offeredBy.username : null}
+                                                        {this.state.itemDetails.offeredBy ? this.state.itemDetails.offeredBy.username : null}
                                                     </Text>
                                                 </TouchableOpacity>
                                             </View>
@@ -235,36 +142,12 @@ export default class OfferDetailsScreen extends Component {
                                                     size={15}
                                                     color='#FF9D5C'
                                                 />
-                                            </View>
+                                            </View> 
                                             <View style={{ flex: 0.14 }}>
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
 
                                         </View>
-
-                                        <View style={styles.stackedView}>
-                                            {
-                                                this.state.offerDetails.accepted ?
-                                                    <Text style={{ color: 'green' }}>Offer Accepted</Text>
-                                                    :
-                                                    <View style={{ flex: 1, flexDirection: 'row' }}>
-                                                        <View style={{ flex: 0.5 }}>
-                                                            <TouchableOpacity style={styles.offerButton}
-                                                                onPress={() => this.requestAcceptConfirmation()}>
-                                                                <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
-                                                            </TouchableOpacity>
-                                                        </View>
-
-                                                        <View style={{ flex: 0.5 }}>
-                                                            <TouchableOpacity style={styles.offerButton}
-                                                                onPress={() => this.requestDeclineConfirmation()}>
-                                                                <Text style={{ textAlign: 'center', fontSize: 12, color: '#FE3939' }}>Decline Offer</Text>
-                                                            </TouchableOpacity>
-                                                        </View>
-                                                    </View>
-                                            }
-                                        </View>
-
                                     </View>
                                 </View>
 

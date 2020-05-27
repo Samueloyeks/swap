@@ -18,6 +18,10 @@ import SelectItemsScreen from '../screens/makeOffer/SelectItemsScreen'
 import ConfirmOfferScreen from '../screens/makeOffer/ConfirmOfferScreen'
 import ChatsScreen from '../screens/chat/ChatsScreen'
 import OfferDetailsScreen from '../screens/items/OfferDetailsScreen'
+import MultipleOffersScreen from '../screens/items/MultipleOffersScreen'
+import SingleOfferDetailsScreen from '../screens/items/SingleOfferDetailsScreen'
+
+
 
 
 
@@ -58,6 +62,12 @@ const ItemsStack = createStackNavigator({
   },
   OfferDetailsScreen: {
     screen: OfferDetailsScreen
+  },
+  MultipleOffersScreen: {
+    screen: MultipleOffersScreen
+  },
+  SingleOfferDetailsScreen: {
+    screen: SingleOfferDetailsScreen
   }
 });
 const SwapsStack = createStackNavigator({
