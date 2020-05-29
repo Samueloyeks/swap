@@ -5,8 +5,8 @@ import axios from 'axios';
 
 
 
-var baseURL = 'http://127.0.0.1:3000';
-// var baseURL =  'http://192.168.56.1:3000';
+// var baseURL = 'http://127.0.0.1:3000';
+var baseURL =  'http://192.168.56.1:3000';
 // var baseURL = 'http://localhost:3000';
 
 

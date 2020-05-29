@@ -17,6 +17,9 @@ import ImageModal from 'react-native-image-modal';
 import demoAvatar from '../../assets/imgs/demoAvatar.png'
 import ActionSheet from 'react-native-actionsheet'
 import ImagePicker from 'react-native-image-crop-picker';
+import api from '../../utils/api/ApiService'
+import db from '../../utils/db/Storage'
+import toast from '../../utils/SimpleToast'
 
 
 
@@ -30,18 +33,18 @@ const validationSchema = Yup.object().shape({
     username: Yup.string()
         .label('Username')
         .required(),
-    email: Yup.string()
-        .label('Email')
-        .email('Enter a valid email')
-        .required('Please enter a registered email'),
+    // email: Yup.string()
+    //     .label('Email')
+    //     .email('Enter a valid email')
+    //     .required('Please enter a registered email'),
     phoneNumber: Yup.string().matches(phoneRegExp, 'Phone number is not valid')
         .label('Phone Number')
         .required()
         .min(11),
-    password: Yup.string()
-        .label('Password')
-        .required()
-        .min(4, 'Password must have at least 4 characters ')
+    // password: Yup.string()
+    //     .label('Password')
+    //     .required()
+    //     .min(4, 'Password must have at least 4 characters ')
 })
 
 
@@ -53,6 +56,7 @@ export default class EditProfileScreen extends React.Component {
         super(props);
         this.state = {
             userData: null,
+            uid:'',
             fullName: '',
             username: '',
             email: '',
@@ -73,6 +77,7 @@ export default class EditProfileScreen extends React.Component {
         let userData = await state.params.userData
         this.setState({
             userData:userData,
+            uid:userData.uid,
             fullName: userData.fullName,
             username: userData.username,
             phoneNumber:userData.phoneNumber,
@@ -166,12 +171,36 @@ export default class EditProfileScreen extends React.Component {
     }
 
     handleSubmit = values => {
-        if (values.email.length > 0 && values.password.length > 0) {
-            setTimeout(() => {
-                this.props.navigation.navigate('Main')
-            }, 3000)
-        }
-    }
+        this.setState({ loading: true })
+    
+          try {
+            values.profilePicture ={
+                // image:this.state.profilePictureData,
+                imageUrl:this.state.profilePicture
+            }
+            values.uid=this.state.uid;
+
+            console.log(values)
+            api.post('/users/update', values).then((response) => {
+              if (response.data.status=='success') {
+
+                    this.setState({ loading: false })
+                  this.props.navigation.goBack(null);
+                  this.props.navigation.state.params.onGoBack();
+
+              }
+            }, err => {
+              toast.show('Error Updating Details')
+              console.log(err);
+              this.setState({ loading: false })
+            }
+            )
+          } catch (ex) {
+            toast.show('Error Updating Details')
+            this.setState({ loading: false })
+            alert(ex)
+          }
+      }
 
     render() {
         return (
@@ -181,7 +210,7 @@ export default class EditProfileScreen extends React.Component {
                         <View style={styles.avatarContainer}>
                             <ImageModal
                                 swipeToDismiss={true}
-                                resizeMode="contain"
+                                resizeMode='stretch'
                                 // source={demoAvatar} 
                                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                                 style={styles.avatar}
@@ -275,8 +304,8 @@ export default class EditProfileScreen extends React.Component {
                                                         onPress={handleSubmit}
                                                         title='Save'
                                                         buttonColor='#FF9D5C'
-                                                        disabled={!isValid || isSubmitting}
-                                                        loading={isSubmitting}
+                                                        disabled={!isValid || this.state.loading}
+                                                        loading={this.state.loading}
                                                     />
 
                                                     <View style={{ height: 180 }}>

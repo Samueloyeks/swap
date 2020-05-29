@@ -55,7 +55,7 @@ export default class ProfileScreen extends React.Component {
   }
 
   async setUserData() {
-    this.setState({ loading: true })
+    this.setState({ loading: true }) 
 
     await db.get('userData').then(udata => {
       let userData = JSON.parse(udata)
@@ -68,12 +68,24 @@ export default class ProfileScreen extends React.Component {
       api.post('/users/fetchUserById', data).then((response) => {
         if (response.data.status == "success") {
 
-          this.setState({
-            loading: false,
-            userData: response.data.data,
-            fullName: response.data.data.fullName,
-            username: response.data.data.username,
-            profilePicture: response.data.data.profilePicture
+
+          var userData = {
+            "email": response.data.data.email,
+            "username": response.data.data.username,
+            "fullName": response.data.data.fullName,
+            "phoneNumber": response.data.data.phoneNumber,
+            "uid": response.data.data.uid,
+            "profilePicture": response.data.data.profilePicture
+          }
+          db.set('userData', userData).then(() => {
+            this.setState({
+              loading: false,
+              userData: response.data.data,
+              fullName: response.data.data.fullName,
+              username: response.data.data.username,
+              phoneNumber:response.data.data.phoneNumber,
+              profilePicture: response.data.data.profilePicture
+            })
           })
 
         } else {
