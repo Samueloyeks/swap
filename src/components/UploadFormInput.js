@@ -28,6 +28,7 @@ const FormInput = ({
         inputContainerStyle={{ borderBottomWidth: 0 }}
         multiline={true}
         numberOfLines={4}
+        keyboardType={keyboardType}
       />
     </View>
   )

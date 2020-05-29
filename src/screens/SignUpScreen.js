@@ -70,14 +70,16 @@ export default class SignUpScreen extends React.Component {
     if (values.email.length > 0 && values.password.length > 0) {
 
       try {
+        values.profilePicture = null
         api.post('/users/register', values).then((response) => {
           if (response.data) {
             var userData = {
-              "email":response.data.data.email,
-              "username":response.data.data.username,
-              "fullName":response.data.data.fullName,
-              "phoneNumber":response.data.data.phoneNumber,
-              "uid":response.data.data.uid
+              "email": response.data.data.email,
+              "username": response.data.data.username,
+              "fullName": response.data.data.fullName,
+              "phoneNumber": response.data.data.phoneNumber,
+              "uid": response.data.data.uid,
+              "profilePicture": response.data.data.profilePicture
             }
             db.set('userData', userData).then(() => {
               this.props.navigation.navigate('Main')
@@ -106,11 +108,11 @@ export default class SignUpScreen extends React.Component {
 
   render() {
     return (
-      <KeyboardAvoidingView 
-      behavior="padding"
-      style={{flex:1}}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={{ flex: 1 }}>
         <View
-          style={{ alignItems: 'center', paddingVertical: 20, height:'100%' }}
+          style={{ alignItems: 'center', paddingVertical: 20, height: '100%' }}
         >
           <View style={{ height: 20 }}></View>
           <ScrollView
@@ -145,7 +147,6 @@ export default class SignUpScreen extends React.Component {
                         autoCapitalize='none'
                         iconName='accessibility'
                         iconColor='#2C384A'
-                        keyboardType='text'
                         placeholder='Full Name'
                         onBlur={handleBlur('fullName')}
                       />
@@ -180,7 +181,7 @@ export default class SignUpScreen extends React.Component {
                         autoCapitalize='none'
                         iconName='phone'
                         iconColor='#2C384A'
-                        keyboardType='phone'
+                        keyboardType='phone-pad'
                         placeholder='Phone Number'
                         onBlur={handleBlur('phoneNumber')}
                       />

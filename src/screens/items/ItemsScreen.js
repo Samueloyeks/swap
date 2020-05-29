@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, RefreshControl, ActivityIndicator, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, View, Alert, Text, RefreshControl, ActivityIndicator, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions, ScrollView, FlatList } from 'react-native';
 import { SearchBar } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Filters from '../../components/Filters';
@@ -7,6 +7,7 @@ import MyItem from '../../components/items/MyItem'
 import demoImage from '../../assets/imgs/demo.png'
 import db from '../../utils/db/Storage'
 import api from '../../utils/api/ApiService'
+import toast from '../../utils/SimpleToast';
 
 
 
@@ -22,6 +23,7 @@ export default class ItemsScreen extends React.Component {
       isRefreshing: false,
       error: null,
       searchString: '',
+      markingAsSwapped: false
     }
     this.arrayholder = []
 
@@ -30,6 +32,10 @@ export default class ItemsScreen extends React.Component {
   }
 
   async componentDidMount() {
+    this.props.navigation.setParams({
+      refreshDetails: this.refreshDetails
+    });
+
     await this.setUserData();
     this.getItemsByUid();
   }
@@ -108,29 +114,35 @@ export default class ItemsScreen extends React.Component {
   };
 
 
-  refreshDetails = (data) => { 
+  refreshDetails = (data) => {
     this.getItemsByUid()
   }
 
   deleteItem = (index, id) => {
 
     const newItems = this.state.items.filter((item, arrIndex) =>
-    arrIndex !== index
+      arrIndex !== index
     );
-    this.setState({ items: newItems },()=>{
+    this.setState({ items: newItems }, () => {
       var data = {
         "itemId": id
       }
-  
+
       api.post('/items/deleteItem', data)
     });
 
   }
 
-  
+
 
   static navigationOptions = ({ navigation }) => {
     const screen = Dimensions.get("window");
+
+    const { state, setParams, navigate } = navigation;
+    const params = state.params || {};
+
+
+    (params.refresh) ? params.refreshDetails() : null
 
     return {
       headerStyle: {
@@ -157,28 +169,63 @@ export default class ItemsScreen extends React.Component {
     };
   };
 
-  markAsSwapped = id => {
-    let item = this.state.items[id]
-    const { swapped } = item
+  requestConfirmation = (index, id) => {
+    Alert.alert(
+      "Mark as swapped?",
+      "You will no longer receive new offers for this item and pending offers will be removed",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => this.markAsSwapped(index, id)
 
-    const newItem = {
-      ...item,
-      swapped: !swapped,
+        },
+
+      ],
+      { cancelable: false }
+    );
+  }
+
+  markAsSwapped = (index, id) => {
+
+    this.setState({ markingAsSwapped: true })
+
+    let data = {
+      id: id
     }
 
-    this.setState({
-      items: {
-        ...this.state.items,
-        [id]: newItem
+    api.post('/items/markItemAsSwapped', data).then((response) => {
+
+      if (response.data.status == 'success') {
+        let newItems = [...this.state.items];
+
+        newItems[index] = { ...newItems[index], swapped: !newItems[index].swapped };
+
+        this.setState({
+          markingAsSwapped: false,
+          items: newItems
+        })
+
+      } else {
+
+        this.setState({ markingAsSwapped: false });
+        toast.show('Unable to mark as swapped');
+
       }
+
     })
+
   }
 
   renderItem = ({ item, index }) => {
     return (
       <MyItem
         {...this.props}
-        markAsSwapped={this.markAsSwapped}
+        markingAsSwapped={this.state.markingAsSwapped}
+        markAsSwapped={this.requestConfirmation}
         refreshDetails={this.refreshDetails}
         deleteItem={this.deleteItem}
         images={item.images}

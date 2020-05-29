@@ -32,7 +32,8 @@ export default class MyItemDetailsScreen extends Component {
             isRefreshing: false,
             offers: [],
             loading: false,
-            sendingOfferResponse: false
+            sendingOfferResponse: false,
+            markingAsSwapped: false
         }
 
         this.markAsSwapped = this.markAsSwapped.bind(this);
@@ -124,21 +125,57 @@ export default class MyItemDetailsScreen extends Component {
         });
     };
 
-    markAsSwapped = () => {
-        let details = this.state.itemDetails
-        const { swapped } = details
+    requestMarkingConfirmation = () => {
+        Alert.alert(
+            "Mark as swapped?",
+            "You will no longer receive new offers for this item and pending offers will be removed",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel"
+                },
+                {
+                    text: "OK",
+                    onPress: () => this.markAsSwapped()
 
-        const newDetails = {
-            ...details,
-            swapped: !swapped,
-        }
+                },
 
-        this.setState({
-            itemDetails: newDetails
-        })
+            ],
+            { cancelable: false }
+        );
     }
 
-    requestConfirmation = () => {
+    markAsSwapped = () => {
+        this.setState({ markingAsSwapped: true })
+
+        let data = {
+            id: this.state.itemDetails.id
+        }
+
+        api.post('/items/markItemAsSwapped', data).then((response) => {
+            if (response.data.status == 'success') {
+
+                let details = this.state.itemDetails
+                const { swapped } = details
+
+                const newDetails = {
+                    ...details,
+                    swapped: !swapped,
+                }
+
+                this.setState({
+                    markingAsSwapped:false,
+                    itemDetails: newDetails
+                })
+            } else {
+                this.setState({ markingAsSwapped: false });
+                toast.show('Unable to mark as swapped');
+            }
+        })
+
+    }
+
+    requestDeleteConfirmation = () => {
         Alert.alert(
             "Delete This Item?",
             "Are you sure you want to delete this item?",
@@ -363,20 +400,31 @@ export default class MyItemDetailsScreen extends Component {
                                             <View style={{ flex: 0.14 }}>
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
-                                            <View style={{ flex: 0.08 }}>
-                                                <Icon name="check-circle"
-                                                    size={15}
-                                                    color={this.state.itemDetails.swapped ? '#40A459' : '#D6D8E0'}
-                                                    onPress={() => this.markAsSwapped()}
-                                                />
-                                            </View>
-                                            <View style={{ flex: 0.7 }}>
-                                                <Text style={{ fontSize: 8, bottom: 16, position: 'absolute', color: (this.state.itemDetails.swapped) ? '#40A459' : '#D6D8E0' }}>{this.state.itemDetails.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
-                                            </View>
+                                            {
+                                                this.state.markingAsSwapped ?
+                                                    <View style={{ flex: 0.7 }}>
+                                                        <Text style={{ fontSize: 8, color: 'green', bottom: 16, position: 'absolute', }}>Marking...</Text>
+                                                    </View>
+                                                    :
+                                                    <View style={{ flexDirection: 'row', flex: 0.78 }}>
+                                                        <View style={{ flex: 0.08 }}>
+                                                            <Icon name="check-circle"
+                                                                size={15}
+                                                                color={this.state.itemDetails.swapped ? '#40A459' : '#D6D8E0'}
+                                                                onPress={!this.state.itemDetails.swapped ? () => this.requestMarkingConfirmation() : null}
+                                                            />
+                                                        </View>
+
+                                                        <View style={{ flex: 0.7 }}>
+                                                            <Text style={{ fontSize: 8, bottom: 16, position: 'absolute', color: (this.state.itemDetails.swapped) ? '#40A459' : '#D6D8E0' }}>{this.state.itemDetails.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
+                                                        </View>
+                                                    </View>
+                                            }
+
                                         </View>
 
                                         <View style={styles.stackedView}>
-                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.itemDetails.offers ? this.state.itemDetails.offers.length : 0}</Text></View>
+                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.offers ? this.state.offers.length : 0}</Text></View>
                                             <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
                                         </View>
                                     </View>
@@ -384,13 +432,15 @@ export default class MyItemDetailsScreen extends Component {
 
                                 <View style={{ flex: 1, flexDirection: 'row', marginBottom: 15 }}>
                                     <View style={{ flex: 0.3 }}>
-                                        <TouchableOpacity style={styles.offerButton}>
+                                        <TouchableOpacity style={styles.offerButton}
+                                            onPress={() => this.props.navigation.navigate("EditItemScreen", { itemDetails: this.state.itemDetails, onGoBack: this.refreshDetails })}
+                                        >
                                             <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Edit Item</Text>
                                         </TouchableOpacity>
                                     </View>
 
                                     <View style={{ flex: 0.3 }}>
-                                        <TouchableOpacity style={styles.offerButton} onPress={() => this.requestConfirmation()}>
+                                        <TouchableOpacity style={styles.offerButton} onPress={() => this.requestDeleteConfirmation()}>
                                             <Text style={{ textAlign: 'center', fontSize: 12, color: '#FE3939' }}>Delete Item</Text>
                                         </TouchableOpacity>
                                     </View>

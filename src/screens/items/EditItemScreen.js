@@ -14,6 +14,7 @@ import FormButton from '../../components/FormButton'
 import ErrorMessage from '../../components/ErrorMessage'
 import { Formik } from 'formik'
 import * as Yup from 'yup'
+import { HeaderBackButton } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import MultiSelect from 'react-native-multiple-select';
@@ -47,11 +48,12 @@ const validationSchema = Yup.object().shape({
 
 
 
-export default class UploadScreen extends React.Component {
+export default class EditItemScreen extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
+            id: null,
             userData: null,
             title: '',
             description: '',
@@ -67,15 +69,63 @@ export default class UploadScreen extends React.Component {
             image2: null,
             image3: null,
             image4: null,
+            imageData1: null,
+            imageData2: null,
+            imageData3: null,
+            imageData4: null,
             tags: {
                 tag: '',
                 tagsArray: []
             },
+            itemDetails: null
 
         }
     }
 
-    componentDidMount() {
+    static navigationOptions = ({ navigation }) => {
+
+        return {
+            title: ``,
+            headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
+            headerBackTitleVisible: false,
+            headerStyle: {
+                backgroundColor: '#FF9D5C',
+                elevation: 0,
+                shadowOpacity: 0,
+                borderBottomWidth: 0,
+            },
+            headerLeft: () => <HeaderBackButton onPress={() => {
+                navigation.goBack(null);
+            }
+            } />,
+        }
+    }
+
+    async componentDidMount() {
+        const { state } = await this.props.navigation;
+        let selectedCategories = state.params.itemDetails.categories;
+        let selectedCategoryIndices = [];
+        for (var key in selectedCategories) {
+            let selectedCategory = selectedCategories[key]
+            selectedCategoryIndices.push(selectedCategory.id)
+        }
+        // console.log(state.params.itemDetails.id)
+        this.setState({
+            id: state.params.itemDetails.id,
+            title: state.params.itemDetails.title,
+            selectedItems: selectedCategoryIndices,
+            description: state.params.itemDetails.description,
+            quantity: state.params.itemDetails.numberAvailable,
+            price: state.params.itemDetails.price,
+            tags: {
+                tagsArray: state.params.itemDetails.preferences
+            },
+            image1: state.params.itemDetails.images[0],
+            image2: state.params.itemDetails.images[1],
+            image3: state.params.itemDetails.images[2],
+            image4: state.params.itemDetails.images[3]
+
+        })
         this.getCategories();
         this.setUserData();
     }
@@ -118,43 +168,42 @@ export default class UploadScreen extends React.Component {
 
         const encodedImages = {
             images: [
-                { image: this.state.image1.data },
-                { image: this.state.image2.data },
-                { image: this.state.image3.data },
-                { image: this.state.image4.data },
+                { image: this.state.imageData1, imageUrl: this.state.image1 },
+                { image: this.state.imageData2, imageUrl: this.state.image2 },
+                { image: this.state.imageData3, imageUrl: this.state.image3 },
+                { image: this.state.imageData4, imageUrl: this.state.image4 },
             ]
         }
 
 
-        api.post('/services/multipleUpload', encodedImages).then(response => {
+        api.post('/services/multipleUploadEdit', encodedImages).then(response => {
 
-            tracking.getLocation().then(data => {
 
-                let location = {
-                    longitude:data.coords.longitude,
-                    latitude:data.coords.latitude
+            const item = {
+                id: this.state.id,
+                categories: this.state.selectedItems,
+                images: response.data.data.urls,
+                preferences: this.state.tags.tagsArray,
+                ...values
+            }
+
+            api.post('/items/editItem', item).then((response) => {
+                // console.log(response.data)
+                if (response.status == 200) {
+                    this.props.navigation.navigate("ItemsScreen", { refresh: true })
+                    toast.show('Item Edited')
+                }else{
+                    toast.show('Error editing Item')
                 }
-              
-                const item = {
-                    categories: this.state.selectedItems,
-                    images: response.data.data.urls,
-                    preferences: this.state.tags.tagsArray,
-                    postedby: this.state.userData.uid,
-                    location:location,
-                    ...values
-                } 
-    
-                api.post('/items/uploadItem', item).then((response) => {
-                    console.log(response.data)
-                    if (response.status == 200) {
-                        toast.show('Item Uploaded')
-                    }
-                })
-
             })
-        })
-        this.props.navigation.navigate('Explore')
 
+        })
+
+
+    }
+
+    handleChange = (value) => {
+        console.log(value)
     }
 
     onSelectedItemsChange = selectedItems => {
@@ -179,7 +228,8 @@ export default class UploadScreen extends React.Component {
             while (i < images.length && index <= 4) {
                 if (!this.state["image" + [index]]) {
                     this.setState({
-                        ["image" + [index]]: images[i]
+                        ["image" + [index]]: images[i].path,
+                        ["imageData" + [index]]: images[i].data
                     })
                     i++
                 }
@@ -200,14 +250,16 @@ export default class UploadScreen extends React.Component {
             showsSelectedCount: true
         }).then(image => {
             this.setState({
-                ["image" + [index]]: image
+                ["image" + [index]]: image.path,
+                ["imageData" + [index]]: image.data
             })
         });
     }
 
     removeImage = (index) => {
         this.setState({
-            ["image" + [index]]: null
+            ["image" + [index]]: null,
+            ["imageData" + [index]]: null,
         })
     }
 
@@ -243,7 +295,12 @@ export default class UploadScreen extends React.Component {
 
                         <ScrollView style={{ flex: 1, width: '85%' }} showsVerticalScrollIndicator={false}>
                             <Formik
-                                initialValues={{ title: '', description: '', quantity: '', price: '' }}
+                                initialValues={{
+                                    title: this.state.title,
+                                    description: this.state.description,
+                                    quantity: this.state.quantity,
+                                    price: this.state.price
+                                }}
                                 onSubmit={values => { this.handleSubmit(values) }}
                                 validationSchema={validationSchema}
                             >
@@ -262,8 +319,9 @@ export default class UploadScreen extends React.Component {
                                                 {/* input */}
                                                 <UploadFormInput
                                                     name='title'
-                                                    value={values.title}
-                                                    onChangeText={handleChange('title')}
+                                                    value={values.title = this.state.title}
+                                                    onChangeText={(title) => this.setState({ title })}
+                                                    onp
                                                     autoCapitalize='none'
                                                     iconName='asterisk'
                                                     iconColor='#CD2900'
@@ -282,7 +340,7 @@ export default class UploadScreen extends React.Component {
                                                     uniqueKey="id"
                                                     ref={(component) => { this.multiSelect = component }}
                                                     onSelectedItemsChange={this.onSelectedItemsChange}
-                                                    selectedItems={selectedItems}
+                                                    selectedItems={this.state.selectedItems}
                                                     selectText="Select Categories"
                                                     searchInputPlaceholderText="Search Categories..."
                                                     onChangeInput={(text) => console.log(text)}
@@ -304,12 +362,12 @@ export default class UploadScreen extends React.Component {
                                                     styleTextDropdownSelected={{ paddingLeft: 50 }}
                                                 />
                                                 <View>
-                                                    {() => this.multiSelect.getSelectedItemsExt(selectedItems)}
+                                                    {() => this.multiSelect.getSelectedItemsExt(this.state.selectedItems)}
                                                 </View>
                                                 <UploadFormInput
                                                     name='description'
-                                                    value={values.description}
-                                                    onChangeText={handleChange('description')}
+                                                    value={values.description = this.state.description}
+                                                    onChangeText={(description) => this.setState({ description })}
                                                     autoCapitalize='none'
                                                     iconName='asterisk'
                                                     iconColor='#CD2900'
@@ -320,8 +378,8 @@ export default class UploadScreen extends React.Component {
                                                 <ErrorMessage errorValue={touched.description && errors.description} />
                                                 <UploadFormInput
                                                     name='quantity'
-                                                    value={values.quantity}
-                                                    onChangeText={handleChange('quantity')}
+                                                    value={values.quantity = this.state.quantity.toString()}
+                                                    onChangeText={(quantity) => this.setState({ quantity })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
                                                     placeholder='Quantity'
@@ -330,8 +388,8 @@ export default class UploadScreen extends React.Component {
 
                                                 <UploadFormInput
                                                     name='price'
-                                                    value={values.price}
-                                                    onChangeText={handleChange('price')}
+                                                    value={values.price = this.state.price.toString()}
+                                                    onChangeText={(price) => this.setState({ price })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
                                                     placeholder='Price'
@@ -347,14 +405,14 @@ export default class UploadScreen extends React.Component {
                                                     <View style={styles.imgContainer}>
                                                         {
                                                             (!this.state.image1) ?
-                                                                <TouchableOpacity onPress={() =>this.showActionSheet(1)}>
+                                                                <TouchableOpacity onPress={() => this.showActionSheet(1)}>
                                                                     <Icon name="camera" size={20} />
                                                                 </TouchableOpacity> :
                                                                 <View style={styles.imgContainer}>
                                                                     <ImageModal
                                                                         style={{ width: 100, height: 100 }}
                                                                         swipeToDismiss={true}
-                                                                        source={{ uri: this.state.image1.path }}
+                                                                        source={{ uri: this.state.image1 }}
                                                                     />
                                                                     <TouchableOpacity style={styles.removeImage} onPress={() => this.removeImage(1)}>
                                                                         <MIcon name="cancel" color="#FE3939" size={30} />
@@ -373,7 +431,7 @@ export default class UploadScreen extends React.Component {
                                                                     <ImageModal
                                                                         style={{ width: 100, height: 100 }}
                                                                         swipeToDismiss={true}
-                                                                        source={{ uri: this.state.image2.path }}
+                                                                        source={{ uri: this.state.image2 }}
                                                                     />
                                                                     <TouchableOpacity style={styles.removeImage} onPress={() => this.removeImage(2)}>
                                                                         <MIcon name="cancel" color="#FE3939" size={30} />
@@ -391,7 +449,7 @@ export default class UploadScreen extends React.Component {
                                                                     <ImageModal
                                                                         style={{ width: 100, height: 100 }}
                                                                         swipeToDismiss={true}
-                                                                        source={{ uri: this.state.image3.path }}
+                                                                        source={{ uri: this.state.image3 }}
                                                                     />
                                                                     <TouchableOpacity style={styles.removeImage} onPress={() => this.removeImage(3)}>
                                                                         <MIcon name="cancel" color="#FE3939" size={30} />
@@ -409,7 +467,7 @@ export default class UploadScreen extends React.Component {
                                                                     <ImageModal
                                                                         style={{ width: 100, height: 100 }}
                                                                         swipeToDismiss={true}
-                                                                        source={{ uri: this.state.image4.path }}
+                                                                        source={{ uri: this.state.image4 }}
                                                                     />
                                                                     <TouchableOpacity style={styles.removeImage} onPress={() => this.removeImage(4)}>
                                                                         <MIcon name="cancel" color="#FE3939" size={30} />
@@ -440,7 +498,7 @@ export default class UploadScreen extends React.Component {
                                                 <FormButton
                                                     buttonType='outline'
                                                     onPress={handleSubmit}
-                                                    title='Upload'
+                                                    title='Submit'
                                                     buttonColor='#FF9D5C'
                                                     disabled={!isValid || this.state.loading}
                                                     loading={this.state.loading}

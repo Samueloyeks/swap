@@ -15,6 +15,10 @@ import * as Yup from 'yup'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ImageModal from 'react-native-image-modal';
 import demoAvatar from '../../assets/imgs/demoAvatar.png'
+import ActionSheet from 'react-native-actionsheet'
+import ImagePicker from 'react-native-image-crop-picker';
+
+
 
 
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
@@ -48,28 +52,118 @@ export default class EditProfileScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            userData: null,
             fullName: '',
             username: '',
             email: '',
             phoneNumber: '',
             password: '',
+            profilePicture:null,
+            profilePictureData:null,
             loading: false,
             isFocused: false
         }
     }
 
-    static navigationOptions = ({ navigation }) => {    
+
+    async componentDidMount() {
+        const { state } = await this.props.navigation;
+
+        // console.log(state.params.userData)
+        let userData = await state.params.userData
+        this.setState({
+            userData:userData,
+            fullName: userData.fullName,
+            username: userData.username,
+            phoneNumber:userData.phoneNumber,
+            profilePicture: userData.profilePicture
+          })
+        // await this.setUserData();
+    }
+
+    // async setUserData() {
+    //     return await db.get('userData').then(data => {
+    //         this.setState({
+    //             userData: JSON.parse(data)
+    //         })
+    //     })
+    // }
+
+    static navigationOptions = ({ navigation }) => {
         return {
-          headerStyle: {
-            backgroundColor: '#FF9D5C',
-            elevation: 0,
-            shadowOpacity: 0,
-            borderBottomWidth: 0,
-          },
-          headerBackTitleVisible: false,
-          headerTitle: () => null
+            headerStyle: {
+                backgroundColor: '#FF9D5C',
+                elevation: 0,
+                shadowOpacity: 0,
+                borderBottomWidth: 0,
+            },
+            headerBackTitleVisible: false,
+            headerTitle: () => null
         };
-      };
+    };
+
+    showActionSheet = () => {
+        this.ActionSheet.show()
+    }
+
+    getImageFrom(index) {
+        // let imageIndex = this.state.imageIndex
+        if (index === 0) {
+            this.selectCameraImage()
+        }
+        if (index === 1) {
+            this.selectGalleryImages()
+        }
+        if (index === 2) {
+            // this.selectGalleryImages()
+            this.removeImage()
+        }      
+    }
+
+    removeImage = () => {
+        this.setState({
+            profilePicture:null,
+            profilePictureData:null
+        })
+    }
+
+    selectGalleryImages = (index) => {
+        ImagePicker.openPicker({
+            width: 300,
+            height: 400,
+            cropping: true,
+            multiple: false,
+            title: 'Select a Picture',
+            includeBase64: true,
+            writeTempFile: true,
+            avoidEmptySpaceAroundImage: true,
+            loadingLabelText: 'Loading Images...',
+            showsSelectedCount: true
+        }).then(image => {
+            this.setState({
+                profilePicture:image.path,
+                profilePictureData:image.data
+            })
+        });
+    }
+
+    selectCameraImage = (index) => {
+        ImagePicker.openCamera({
+            width: 300,
+            height: 400,
+            cropping: true,
+            includeBase64: true,
+            writeTempFile: true,
+            avoidEmptySpaceAroundImage: true,
+            loadingLabelText: 'Loading Images...',
+            showsSelectedCount: true
+        }).then(image => {
+            this.setState({
+                profilePicture:image.path,
+                profilePictureData:image.data
+            })
+        });
+    }
 
     handleSubmit = values => {
         if (values.email.length > 0 && values.password.length > 0) {
@@ -88,14 +182,15 @@ export default class EditProfileScreen extends React.Component {
                             <ImageModal
                                 swipeToDismiss={true}
                                 resizeMode="contain"
-                                source={demoAvatar}
+                                // source={demoAvatar} 
+                                source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                                 style={styles.avatar}
                             />
-                        </View> 
-                        <TouchableOpacity  style={styles.editButton} onPress={()=>alert('done')}>
-                                <View>
-                                    <Icon name="pencil" color="#FF9D5C" size={30} style={styles.editIcon} />
-                                </View>
+                        </View>
+                        <TouchableOpacity style={styles.editButton} onPress={() => this.showActionSheet()}>
+                            <View>
+                                <Icon name="pencil" color="#FF9D5C" size={30} style={styles.editIcon} />
+                            </View>
                         </TouchableOpacity>
                     </View>
 
@@ -103,7 +198,13 @@ export default class EditProfileScreen extends React.Component {
 
                         <SafeAreaView style={{ flex: 1, width: '85%' }}>
                             <Formik
-                                initialValues={{ fullName: '', username: '', email: '', phoneNumber: '', password: '' }}
+                                initialValues={{ 
+                                    fullName: this.state.fullName, 
+                                    username: this.state.username, 
+                                    // email: '', 
+                                    phoneNumber: this.state.phoneNumber,
+                                    //  password: '' 
+                                    }}
                                 onSubmit={values => { this.handleSubmit(values) }}
                                 validationSchema={validationSchema}
                             >
@@ -122,24 +223,23 @@ export default class EditProfileScreen extends React.Component {
                                                     {/* input */}
                                                     <FormInput
                                                         name='fullName'
-                                                        value={values.fullName}
-                                                        onChangeText={handleChange('fullName')}
+                                                        value={values.fullName=this.state.fullName}
+                                                        onChangeText={(fullName)=>this.setState({fullName:fullName})}
                                                         autoCapitalize='none'
-                                                        keyboardType='text'
                                                         placeholder='Full Name'
                                                         onBlur={handleBlur('fullName')}
                                                     />
                                                     <ErrorMessage errorValue={touched.fullName && errors.fullName} />
                                                     <FormInput
                                                         name='username'
-                                                        value={values.username}
-                                                        onChangeText={handleChange('username')}
+                                                        value={values.username=this.state.username}
+                                                        onChangeText={(username)=>this.setState({username})}
                                                         autoCapitalize='none'
                                                         placeholder='Username'
                                                         onBlur={handleBlur('username')}
                                                     />
                                                     <ErrorMessage errorValue={touched.username && errors.username} />
-                                                    <FormInput
+                                                    {/* <FormInput
                                                         name='email'
                                                         value={values.email}
                                                         onChangeText={handleChange('email')}
@@ -148,18 +248,18 @@ export default class EditProfileScreen extends React.Component {
                                                         placeholder='Email'
                                                         onBlur={handleBlur('email')}
                                                     />
-                                                    <ErrorMessage errorValue={touched.email && errors.email} />
+                                                    <ErrorMessage errorValue={touched.email && errors.email} /> */}
                                                     <FormInput
                                                         name='phoneNumber'
-                                                        value={values.phoneNumber}
-                                                        onChangeText={handleChange('phoneNumber')}
+                                                        value={values.phoneNumber=this.state.phoneNumber}
+                                                        onChangeText={(phoneNumber)=>this.setState({phoneNumber})}
                                                         autoCapitalize='none'
-                                                        keyboardType='phone'
+                                                        keyboardType='phone-pad'
                                                         placeholder='Phone Number'
                                                         onBlur={handleBlur('phoneNumber')}
                                                     />
                                                     <ErrorMessage errorValue={touched.phoneNumber && errors.phoneNumber} />
-                                                    <FormInput
+                                                    {/* <FormInput
                                                         name='password'
                                                         value={values.password}
                                                         onChangeText={handleChange('password')}
@@ -168,7 +268,7 @@ export default class EditProfileScreen extends React.Component {
                                                         placeholder='Password'
                                                         onBlur={handleBlur('password')}
                                                     />
-                                                    <ErrorMessage errorValue={touched.password && errors.password} />
+                                                    <ErrorMessage errorValue={touched.password && errors.password} /> */}
 
                                                     <FormButton
                                                         buttonType='outline'
@@ -190,6 +290,14 @@ export default class EditProfileScreen extends React.Component {
                         </SafeAreaView>
                     </View>
                 </View>
+                <ActionSheet
+                    ref={o => this.ActionSheet = o}
+                    title={'Select Image From'}
+                    options={['Camera', 'Gallery','Remove Image', 'cancel']}
+                    cancelButtonIndex={2}
+                    destructiveButtonIndex={2}
+                    onPress={(index) => this.getImageFrom(index)}
+                />
             </View>
         )
     }
@@ -211,17 +319,19 @@ const styles = {
         bottom: -10
     },
     avatar: {
-        alignSelf: 'center'
+        // alignSelf: 'center',
+        height: 130,
+        width: 130
     },
     editIcon: {
-        padding:3
+        padding: 3
     },
     editButton: {
-        backgroundColor:'black',
-        bottom :-20,
-        zIndex:1,
-        right:'33%',
-        borderRadius:50,
-        position:'absolute'
+        backgroundColor: 'black',
+        bottom: -20,
+        zIndex: 1,
+        right: '33%',
+        borderRadius: 50,
+        position: 'absolute'
     }
 }

@@ -70,7 +70,8 @@ export default class SignInScreen extends React.Component {
               "username":response.data.data.username,
               "fullName":response.data.data.fullName,
               "phoneNumber":response.data.data.phoneNumber,
-              "uid":response.data.data.uid
+              "uid":response.data.data.uid,
+              "profilePicture":response.data.data.profilePicture
             }
             db.set('userData', userData).then(() => {
               this.props.navigation.navigate('Main')

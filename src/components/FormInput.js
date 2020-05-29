@@ -25,6 +25,7 @@ const FormInput = ({
         containerStyle={styles.input}
         value={value}
         inputContainerStyle={{ borderBottomWidth: 0 }}
+        keyboardType={keyboardType}
       />
     </View>
   )

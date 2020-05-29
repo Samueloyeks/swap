@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Animated, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Animated, View, Text,ActivityIndicator, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
@@ -13,11 +13,11 @@ export default class MyItem extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        const { swapped } = nextProps
-        const { swapped: oldSwapped } = this.props
+        const { markingAsSwapped } = nextProps
+        const { markingAsSwapped: oldmarkingAsSwapped } = this.props
 
-        // If "swapped" is different, then update                          
-        return swapped !== oldSwapped
+        // If "liked" or "likeCount" is different, then update                          
+        return markingAsSwapped !== oldmarkingAsSwapped
     }
 
 
@@ -62,17 +62,24 @@ export default class MyItem extends Component {
                                 </View>
 
                             </View>
-                            <View style={styles.stackedView}>
-                                <View style={{ flex: 0.06 }}>
-                                    <Icon name="check-circle"
-                                        color={this.props.swapped ? '#40A459' : '#D6D8E0'}
-                                        onPress={() => this.props.markAsSwapped(this.props.index, this.props.id)}
-                                    />
-                                </View>
-                                <View style={{ flex: 0.94 }}>
-                                    <Text style={{ fontSize: 10, color: (this.props.swapped) ? '#40A459' : '#D6D8E0' }}>{this.props.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
-                                </View>
-                            </View>
+                            {
+                                this.props.markingAsSwapped ?
+                                    <View style={styles.stackedView}>
+                                        <Text style={{fontSize:7,color:'green'}}>Marking...</Text>
+                                    </View>
+                                    :
+                                    <View style={styles.stackedView}>
+                                        <View style={{ flex: 0.06 }}>
+                                            <Icon name="check-circle"
+                                                color={this.props.swapped ? '#40A459' : '#D6D8E0'}
+                                                onPress={!this.props.swapped ? () => this.props.markAsSwapped(this.props.index, this.props.id) : null}
+                                            />
+                                        </View>
+                                        <View style={{ flex: 0.94 }}>
+                                            <Text style={{ fontSize: 10, color: (this.props.swapped) ? '#40A459' : '#D6D8E0' }}>{this.props.swapped ? 'Marked as Swapped' : 'Mark as Swapped'}</Text>
+                                        </View>
+                                    </View>
+                            }
                             <View style={styles.stackedView}>
                                 <View style={{ flex: 0.09, bottom: 0 }}>
                                     <Icon
@@ -166,6 +173,13 @@ const styles = StyleSheet.create({
     deleteIcon: {
         alignSelf: 'center',
         margin: 20,
+    },
+    acceptedText: {
+        fontSize: 12,
+        color: 'green',
+        alignSelf: 'flex-end',
+        textAlign: 'right',
+        flex: 1
     }
 
 });
