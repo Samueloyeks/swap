@@ -20,6 +20,7 @@ class Storage extends Component {
     async set(targetName, data) {
 
         await AsyncStorage.setItem(targetName, JSON.stringify(data));
+        return;
 
     }
 
@@ -33,7 +34,7 @@ class Storage extends Component {
     async delete(targetName){
 
         await AsyncStorage.removeItem(targetName)
-
+        return;
     }
 
     render() {

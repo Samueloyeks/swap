@@ -21,6 +21,8 @@ import OfferDetailsScreen from '../screens/items/OfferDetailsScreen'
 import MultipleOffersScreen from '../screens/items/MultipleOffersScreen'
 import SingleOfferDetailsScreen from '../screens/items/SingleOfferDetailsScreen'
 import EditItemScreen from '../screens/items/EditItemScreen'
+import SettingsScreen from '../screens/profile/SettingsScreen'
+
 
 
 
@@ -88,6 +90,9 @@ const ProfileStack = createStackNavigator({
   EditProfileScreen: {
     screen: EditProfileScreen,
   },
+  SettingsScreen: {
+    screen: SettingsScreen
+  }
 
 });
 

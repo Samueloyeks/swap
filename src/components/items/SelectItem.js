@@ -40,11 +40,11 @@ export default class SelectItem extends Component {
 
                         </View>
                         <View style={styles.stackedView}>
-                        <View style={{ flex: 0.25 }}>
+                        <View style={{ flex: 0.5 }}>
                                 <TimeAgo time={this.props.posted} interval={20000} style={{ fontSize: 10, color: '#808080', position: 'absolute', bottom: 5 }} />
                             </View>
 
-                            <View style={{flex:0.8 }}>
+                            <View style={{flex:0.5 }}>
                                 <Icon name="check-circle"
                                 style={{alignSelf:'flex-end',paddingBottom:7}}
                                 size={37}

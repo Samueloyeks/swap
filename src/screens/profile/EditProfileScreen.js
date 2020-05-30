@@ -56,19 +56,27 @@ export default class EditProfileScreen extends React.Component {
         super(props);
         this.state = {
             userData: null,
-            uid:'',
+            uid: '',
             fullName: '',
             username: '',
             email: '',
             phoneNumber: '',
             password: '',
-            profilePicture:null,
-            profilePictureData:null,
+            profilePicture: null,
+            profilePictureData: null,
             loading: false,
             isFocused: false
         }
+
+        this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
+        this.setUserData = this.setUserData.bind(this);
+
     }
 
+    handleBackButtonClick() {
+        this.props.navigation.goBack(null);
+        return true;
+    }
 
     async componentDidMount() {
         const { state } = await this.props.navigation;
@@ -80,19 +88,32 @@ export default class EditProfileScreen extends React.Component {
             uid:userData.uid,
             fullName: userData.fullName,
             username: userData.username,
-            phoneNumber:userData.phoneNumber,
+            phoneNumber:userData.phoneNumber, 
             profilePicture: userData.profilePicture
           })
         // await this.setUserData();
     }
 
-    // async setUserData() {
-    //     return await db.get('userData').then(data => {
-    //         this.setState({
-    //             userData: JSON.parse(data)
-    //         })
-    //     })
-    // }
+    async setUserData() {
+        return await db.get('userData').then(data => {
+            let userData = JSON.parse(data)
+
+
+            // this.setState({
+            //     userData: JSON.parse(data)
+            // })
+            this.setState({
+                userData: userData,
+                uid: userData.uid,
+                fullName: userData.fullName,
+                username: userData.username,
+                phoneNumber: userData.phoneNumber,
+                profilePicture: userData.profilePicture
+            })
+
+
+        })
+    }
 
     static navigationOptions = ({ navigation }) => {
         return {
@@ -122,13 +143,13 @@ export default class EditProfileScreen extends React.Component {
         if (index === 2) {
             // this.selectGalleryImages()
             this.removeImage()
-        }      
+        }
     }
 
     removeImage = () => {
         this.setState({
-            profilePicture:null,
-            profilePictureData:null
+            profilePicture: null,
+            profilePictureData: null
         })
     }
 
@@ -146,8 +167,8 @@ export default class EditProfileScreen extends React.Component {
             showsSelectedCount: true
         }).then(image => {
             this.setState({
-                profilePicture:image.path,
-                profilePictureData:image.data
+                profilePicture: image.path,
+                profilePictureData: image.data
             })
         });
     }
@@ -164,43 +185,43 @@ export default class EditProfileScreen extends React.Component {
             showsSelectedCount: true
         }).then(image => {
             this.setState({
-                profilePicture:image.path,
-                profilePictureData:image.data
+                profilePicture: image.path,
+                profilePictureData: image.data
             })
         });
     }
 
     handleSubmit = values => {
         this.setState({ loading: true })
-    
-          try {
-            values.profilePicture ={
-                // image:this.state.profilePictureData,
-                imageUrl:this.state.profilePicture
-            }
-            values.uid=this.state.uid;
 
-            console.log(values)
+        try {
+            values.profilePicture = {
+                image: this.state.profilePictureData,
+                imageUrl: this.state.profilePicture
+            }
+            values.uid = this.state.uid;
+
+            // console.log(values)
             api.post('/users/update', values).then((response) => {
-              if (response.data.status=='success') {
+                if (response.data.status == 'success') {
 
                     this.setState({ loading: false })
-                  this.props.navigation.goBack(null);
-                  this.props.navigation.state.params.onGoBack();
+                    this.props.navigation.goBack(null);
+                    this.props.navigation.state.params.onGoBack();
 
-              }
+                }
             }, err => {
-              toast.show('Error Updating Details')
-              console.log(err);
-              this.setState({ loading: false })
+                toast.show('Error Updating Details')
+                console.log(err);
+                this.setState({ loading: false })
             }
             )
-          } catch (ex) {
+        } catch (ex) {
             toast.show('Error Updating Details')
             this.setState({ loading: false })
             alert(ex)
-          }
-      }
+        }
+    }
 
     render() {
         return (
@@ -210,8 +231,7 @@ export default class EditProfileScreen extends React.Component {
                         <View style={styles.avatarContainer}>
                             <ImageModal
                                 swipeToDismiss={true}
-                                resizeMode='stretch'
-                                // source={demoAvatar} 
+                                resizeMode='contain'
                                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                                 style={styles.avatar}
                             />
@@ -227,13 +247,13 @@ export default class EditProfileScreen extends React.Component {
 
                         <SafeAreaView style={{ flex: 1, width: '85%' }}>
                             <Formik
-                                initialValues={{ 
-                                    fullName: this.state.fullName, 
-                                    username: this.state.username, 
+                                initialValues={{
+                                    fullName: this.state.fullName,
+                                    username: this.state.username,
                                     // email: '', 
                                     phoneNumber: this.state.phoneNumber,
                                     //  password: '' 
-                                    }}
+                                }}
                                 onSubmit={values => { this.handleSubmit(values) }}
                                 validationSchema={validationSchema}
                             >
@@ -252,8 +272,8 @@ export default class EditProfileScreen extends React.Component {
                                                     {/* input */}
                                                     <FormInput
                                                         name='fullName'
-                                                        value={values.fullName=this.state.fullName}
-                                                        onChangeText={(fullName)=>this.setState({fullName:fullName})}
+                                                        value={values.fullName = this.state.fullName}
+                                                        onChangeText={(fullName) => this.setState({ fullName: fullName })}
                                                         autoCapitalize='none'
                                                         placeholder='Full Name'
                                                         onBlur={handleBlur('fullName')}
@@ -261,8 +281,8 @@ export default class EditProfileScreen extends React.Component {
                                                     <ErrorMessage errorValue={touched.fullName && errors.fullName} />
                                                     <FormInput
                                                         name='username'
-                                                        value={values.username=this.state.username}
-                                                        onChangeText={(username)=>this.setState({username})}
+                                                        value={values.username = this.state.username}
+                                                        onChangeText={(username) => this.setState({ username })}
                                                         autoCapitalize='none'
                                                         placeholder='Username'
                                                         onBlur={handleBlur('username')}
@@ -280,8 +300,8 @@ export default class EditProfileScreen extends React.Component {
                                                     <ErrorMessage errorValue={touched.email && errors.email} /> */}
                                                     <FormInput
                                                         name='phoneNumber'
-                                                        value={values.phoneNumber=this.state.phoneNumber}
-                                                        onChangeText={(phoneNumber)=>this.setState({phoneNumber})}
+                                                        value={values.phoneNumber = this.state.phoneNumber}
+                                                        onChangeText={(phoneNumber) => this.setState({ phoneNumber })}
                                                         autoCapitalize='none'
                                                         keyboardType='phone-pad'
                                                         placeholder='Phone Number'
@@ -322,7 +342,7 @@ export default class EditProfileScreen extends React.Component {
                 <ActionSheet
                     ref={o => this.ActionSheet = o}
                     title={'Select Image From'}
-                    options={['Camera', 'Gallery','Remove Image', 'cancel']}
+                    options={['Camera', 'Gallery', 'Remove Image', 'cancel']}
                     cancelButtonIndex={2}
                     destructiveButtonIndex={2}
                     onPress={(index) => this.getImageFrom(index)}
@@ -345,7 +365,8 @@ const styles = {
         alignItems: 'center',
         height: 130,
         width: 130,
-        bottom: -10
+        bottom: -10,
+        backgroundColor:'grey'
     },
     avatar: {
         // alignSelf: 'center',
