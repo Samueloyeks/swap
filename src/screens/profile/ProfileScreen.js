@@ -9,6 +9,9 @@ import TimeAgo from 'react-native-timeago';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
+import firebaseService from '../../utils/firebase/FirebaseService'
+import { EventRegister } from 'react-native-event-listeners'
+
 
 
 
@@ -34,16 +37,15 @@ export default class ProfileScreen extends React.Component {
       profilePicture: null,
       loading: false,
       isFocused: false,
-      likes: null,
-      rating: null,
-      swapsCompleted: null
+      likes: 0,
+      rating: 0,
+      swapsCompleted: 0
     }
 
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
     this.setUserData = this.setUserData.bind(this);
 
   }
-
 
 
   handleBackButtonClick() {
@@ -56,9 +58,27 @@ export default class ProfileScreen extends React.Component {
     const { state } = await this.props.navigation;
 
     await this.setUserData();
-    // this.activateListener();
-    // console.log(JSON.stringify(this.state.userData))
+
+    this.likesListener = EventRegister.addEventListener('likes', (likes) => {
+      this.setState({
+        likes: likes,
+      })
+    })
+
+    this.swapsListener = EventRegister.addEventListener('swapsCompleted', (swapsCompleted) => {
+      this.setState({
+        swapsCompleted: swapsCompleted,
+      })
+    })
+
+    this.ratingListener = EventRegister.addEventListener('rating', (rating) => {
+      this.setState({
+        rating: rating,
+      })
+    })
+
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
+
   }
 
   async setUserData() {
@@ -96,7 +116,7 @@ export default class ProfileScreen extends React.Component {
               email: response.data.data.email,
               profilePicture: (response.data.data.profilePicture == undefined ? null : response.data.data.profilePicture)
             }, () => {
-              // this.activateLikesListener()
+              this.activateListeners()
             })
           })
 
@@ -120,21 +140,22 @@ export default class ProfileScreen extends React.Component {
     })
   }
 
-  async activateLikesListener() {
+  async activateListeners() {
 
     let data = {
       uid: this.state.uid
-    } 
+    }
 
-    api.post('/users/activateLikesListener', data).then((response) => {
+    firebaseService.activateListeners(data);
+    // api.post('/users/activateLikesListener', data).then((response) => {
 
-      if (response.data.status == "success") {
-        this.setState({
-          likes: response.data.data
-        }) 
-      }
+    //   if (response.data.status == "success") {
+    //     this.setState({
+    //       likes: response.data.data
+    //     }) 
+    //   }
 
-    })
+    // })
   }
 
 
@@ -169,7 +190,7 @@ export default class ProfileScreen extends React.Component {
   requestLogoutConfirmation = () => {
     Alert.alert(
       "Log out?",
-      "Are yousure you want to log out?",
+      "Are you sure you want to log out?",
       [
         {
           text: "Cancel",
@@ -235,11 +256,11 @@ export default class ProfileScreen extends React.Component {
           <View style={styles.iconContainer}>
             <View style={{ paddingHorizontal: 25, borderRightWidth: 1, borderRightColor: '#C4C4C4' }}>
               <Icon name="star" size={40} color="#FF9D5C" />
-              <Text style={{ textAlign: 'center' }}>4</Text>
+              <Text style={{ textAlign: 'center' }}>{this.state.rating}</Text>
             </View>
             <View style={{ paddingHorizontal: 25 }}>
               <Icon name="swap-horizontal" size={40} color="#FF9D5C" />
-              <Text style={{ textAlign: 'center' }}>57</Text>
+              <Text style={{ textAlign: 'center' }}>{this.state.swapsCompleted}</Text>
             </View>
             <View style={{ paddingHorizontal: 25, borderLeftWidth: 1, borderLeftColor: '#C4C4C4' }}>
               <Icon name="heart" size={40} color="#FF9D5C" />

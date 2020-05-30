@@ -50,14 +50,23 @@ export default class ExploreItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Posted By</Text></View>
                             <View >
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('UserProfileScreen')}>
+                                <TouchableOpacity
+                                    onPress={
+                                        !(this.props.userId == this.props.postedby.uid) ?
+                                            () =>
+                                                this.props.navigation.navigate('UserProfileScreen',
+                                                    {
+                                                        userId: this.props.postedby.uid,
+                                                        username: this.props.postedby.username,
+                                                        onGoBack: this.props.onRefresh
+                                                    }) : null}>
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>
                             </View>
                             {
                                 this.props.distance ?
                                     <Text style={{ fontSize: 10, color: 'red', marginLeft: 10 }}>
-                                        {Math.round(this.props.distance*1.60934)}km
+                                        {Math.round(this.props.distance * 1.60934)}km
                                     </Text>
                                     :
                                     null

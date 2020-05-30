@@ -336,7 +336,7 @@ export default class ExploreScreen extends React.Component {
     return true;
   }
 
-  onRefresh() {
+  onRefresh=()=> {
     this.getItems();
   }
 
@@ -372,6 +372,7 @@ export default class ExploreScreen extends React.Component {
         favorite={this.favorite}
         like={this.like}
         refreshDetails={this.refreshDetails}
+        onRefresh={this.onRefresh}
         images={item.images}
         postedby={item.postedby}
         userId={this.state.userData.uid}

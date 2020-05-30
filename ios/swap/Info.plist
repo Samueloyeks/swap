@@ -77,5 +77,10 @@
 		<string>Righteous-Regular.ttf</string>
 		<string>Fontisto.ttf</string>
 	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>telprompt</string>
+	</array>
 </dict>
 </plist>
