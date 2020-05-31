@@ -23,7 +23,8 @@ export default class ItemsScreen extends React.Component {
       isRefreshing: false,
       error: null,
       searchString: '',
-      markingAsSwapped: false
+      markingAsSwapped: false,
+
     }
     this.arrayholder = []
 
@@ -209,6 +210,8 @@ export default class ItemsScreen extends React.Component {
           items: newItems
         })
 
+        this.props.navigation.navigate('SwapsScreen', { refresh: true,tabOne:false,tabTwo:true })
+
       } else {
 
         this.setState({ markingAsSwapped: false });
@@ -247,7 +250,7 @@ export default class ItemsScreen extends React.Component {
     )
   }
 
-  reloadPage=()=>{
+  reloadPage = () => {
     this.getItemsByUid()
   }
 
@@ -284,14 +287,14 @@ export default class ItemsScreen extends React.Component {
             </View>
             :
             this.isEmpty(this.state.items) ?
-            <View>
+              <View>
                 <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
-                No Items to Display
+                  No Items to Display
               </Text>
-              <TouchableOpacity onPress={()=>this.reloadPage()}>
-              <Icon style={{textAlign:'center'}} name="rotate-right" size={20}/>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity onPress={() => this.reloadPage()}>
+                  <Icon style={{ textAlign: 'center' }} name="rotate-right" size={20} />
+                </TouchableOpacity>
+              </View>
               :
               <FlatList
                 data={this.state.items}

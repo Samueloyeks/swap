@@ -81,6 +81,9 @@ const ItemsStack = createStackNavigator({
   UserProfileScreen: {
     screen: UserProfileScreen,
   },
+  // SwapsScreen: {
+  //   screen: SwapsScreen,
+  // },
 });
 const SwapsStack = createStackNavigator({
   SwapsScreen: {

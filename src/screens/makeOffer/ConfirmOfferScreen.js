@@ -113,7 +113,7 @@ export default class ConfirmOfferScreen extends Component {
                 toast.show('Offer Sent Successfully')
                 this.setState({ loading: false })
                 this.props.navigation.popToTop()
-                this.props.navigation.navigate('SwapsScreen', { refresh: true })
+                this.props.navigation.navigate('SwapsScreen', { refresh: true, tabOne: true, tabTwo:false })
             }
         }, err => {
             toast.show('Unable to send offer')

@@ -41,30 +41,27 @@ export default class SwapsScreen extends React.Component {
     this.markAsCompleted = this.markAsCompleted.bind(this)
     this.toggleModal = this.toggleModal.bind(this);
     this.submitRating = this.submitRating.bind(this)
-    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
-
   }
 
-  componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this.handleBackButtonClick);
-  }
-
-  handleBackButtonClick() {
-    this.props.navigation.goBack(null);
-    return true;
-  }
 
 
   async componentDidMount() {
 
-    this.props.navigation.setParams({
-      refreshDetails: this.refreshDetails
+    // const { state } = await this.props.navigation;
+    // this.setState({
+    //   selectedIndex: state.params.selectedIndex ? state.params.selectedIndex : 0,
+    // })
+
+
+    await this.props.navigation.setParams({
+      refreshDetails: this.refreshDetails,
+      changeIndex: this.changeIndex
     });
+
 
     await this.setUserData();
     this.getSwaps();
 
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 
 
@@ -79,20 +76,22 @@ export default class SwapsScreen extends React.Component {
 
 
   getSwaps = () => {
-    this.setState({ loading: true })
+    if (this.state.userData) {
+      this.setState({ loading: true })
 
-    var data = {
-      "uid": this.state.userData.uid,
-    }
+      var data = {
+        "uid": this.state.userData.uid,
+      }
 
-    api.post('/items/getSwaps', data).then((response) => {
+      api.post('/items/getSwaps', data).then((response) => {
 
-      this.setState({
-        swaps: response.data.data,
-        loading: false
+        this.setState({
+          swaps: response.data.data,
+          loading: false
+        })
+
       })
-
-    })
+    }
   }
 
   handleIndexChange = index => {
@@ -102,14 +101,22 @@ export default class SwapsScreen extends React.Component {
     });
   };
 
+
   static navigationOptions = ({ navigation }) => {
     const screen = Dimensions.get("window");
 
-    const { state, setParams, navigate } = navigation;
-    const params = state.params || {};
+    const { params = {} } = navigation.state;
 
 
-    (params.refresh) ? params.refreshDetails() : null
+    (params.refresh) ? params.refreshDetails() : null;
+
+    (params.tabOne) ? params.changeIndex('one') : null;
+
+    (params.tabTwo) ? params.changeIndex('two') : null;
+
+
+
+
 
     return {
       headerStyle: {
@@ -175,19 +182,28 @@ export default class SwapsScreen extends React.Component {
   }
 
   withdrawOffer = (data) => {
-    this.setState({ loading: true })
+    // this.setState({ loading: true })
 
-    api.post('/items/withdrawOffer', data).then((response) => {
+    const newSwaps = this.state.swaps.filter((item, arrIndex) =>
+      arrIndex !== data.index
+    );
 
-      if (response.data.status == 'success') {
+    this.setState({ swaps: newSwaps }, () => {
+
+      api.post('/items/withdrawOffer', data).then((response) => {
+
+        if (response.data.status == 'success') {
+          toast.show('Offer Withdrawn')
+
+        } else {
+          this.getSwaps()
+          toast.show('Unable to withdraw offer')
+        }
+
+      }, error => {
         this.getSwaps()
-      } else {
         toast.show('Unable to withdraw offer')
-      }
-
-    }, error => {
-      toast.show('Unable to withdraw offer')
-
+      })
     })
 
   }
@@ -198,8 +214,12 @@ export default class SwapsScreen extends React.Component {
     this.getSwaps();
   }
 
-  refreshDetails = (data) => {
-    this.getSwaps()
+  refreshDetails = () => {
+    this.getSwaps();
+  }
+
+  changeIndex = (index) => {
+    this.setState({ selectedIndex: (index == 'one') ? 0 : 1 })
   }
 
   renderItem = ({ item, index }) => {
