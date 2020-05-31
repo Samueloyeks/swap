@@ -72,18 +72,23 @@ export default class SwapItem  extends Component {
                     <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute'}}>{this.props.item.likes}</Text>
                             </View>
 
+                        {
+                            !this.props.completed?
                             <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                                <TouchableOpacity style={styles.offerButton}
-                                                    onPress={() => this.props.withdrawOffer({
-                                                        offerId: this.props.offerId,
-                                                        itemId: this.props.item.id,
-                                                        swapId: this.props.swapId,
-                                                        index: this.props.index
-                                                    })}
-                                >
-                                    <Text style={{ textAlign: 'center', fontSize: 12,color:'#FF9D5C' }}>Withdraw Offer</Text>
-                                </TouchableOpacity>
-                            </View>
+                            <TouchableOpacity style={styles.offerButton}
+                                                onPress={() => this.props.withdrawOffer({
+                                                    offerId: this.props.offerId,
+                                                    itemId: this.props.item.id,
+                                                    swapId: this.props.swapId,
+                                                    index: this.props.index
+                                                })}
+                            >
+                                <Text style={{ textAlign: 'center', fontSize: 12,color:'#FF9D5C' }}>Withdraw Offer</Text>
+                            </TouchableOpacity>
+                        </View>
+                        :
+                        null
+                        }
                         </View>
                     </View>
                 </View>

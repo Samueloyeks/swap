@@ -60,7 +60,7 @@ export default class SwapsScreen extends React.Component {
 
 
     await this.setUserData();
-    this.getSwaps();
+    this.getAllSwaps();
 
   }
 
@@ -75,7 +75,7 @@ export default class SwapsScreen extends React.Component {
   }
 
 
-  getSwaps = () => {
+  getAllSwaps = () => {
     if (this.state.userData) {
       this.setState({ loading: true })
 
@@ -83,7 +83,7 @@ export default class SwapsScreen extends React.Component {
         "uid": this.state.userData.uid,
       }
 
-      api.post('/items/getSwaps', data).then((response) => {
+      api.post('/items/getAllSwaps', data).then((response) => {
 
         this.setState({
           swaps: response.data.data,
@@ -196,12 +196,12 @@ export default class SwapsScreen extends React.Component {
           toast.show('Offer Withdrawn')
 
         } else {
-          this.getSwaps()
+          this.getAllSwaps()
           toast.show('Unable to withdraw offer')
         }
 
       }, error => {
-        this.getSwaps()
+        this.getAllSwaps()
         toast.show('Unable to withdraw offer')
       })
     })
@@ -211,11 +211,11 @@ export default class SwapsScreen extends React.Component {
 
 
   onRefresh = () => {
-    this.getSwaps();
+    this.getAllSwaps();
   }
 
   refreshDetails = () => {
-    this.getSwaps();
+    this.getAllSwaps();
   }
 
   changeIndex = (index) => {
@@ -224,57 +224,44 @@ export default class SwapsScreen extends React.Component {
 
   renderItem = ({ item, index }) => {
     return (
-      !item.completed ?
         <SwapItem
           {...this.props}
           withdrawOffer={this.requestWithdrawConfirmation}
-          id={item.swapId}
-          offered={item.offered}
           refreshDetails={this.refreshDetails}
-          // swapDate={item.swapDate}
-          completed={item.completed}
-          item={item.item}
-
-
           onRefresh={this.onRefresh}
           userId={this.state.userData.uid}
-          // images={item.item.images}
+          id={item.swapId}
+          offered={item.offered}
+          completed={item.completed}
+          item={item.item}
           postedby={item.postedby}
           offerId={item.offerId}
           swapId={item.swapId}
-          // title={item.item.title}
-          // price={item.item.price}
-          // posted={item.item.posted}
-          // liked={item.item.liked}
-          // favorited={item.item.favorited}
-          // id={item.item.id}
           index={index}
-          // description={item.item.description}
-          // preferences={item.item.preferences}
-          // categories={item.item.categories}
-          // numberAvailable={item.item.quantity}
           offerItems={item.offerItems}
         />
-        :
-        null
     )
   }
 
   renderCompletedItem = ({ item, index }) => {
+    // console.log(item)
     return (
-      item.completed ?
+      item.completed ? 
         <CompletedSwapItem
           {...this.props}
-          markAsCompleted={this.markAsCompleted}
           toggleModal={this.toggleModal}
-          timeAgo={item.timeAgo}
-          id={item.id}
+          userId={this.state.userData.uid}
+          swapped={item.swapped}
+          rating={item.rating}
+          id={item.swapId}
           offered={item.offered}
-          swapDate={item.swapDate}
           completed={item.completed}
           item={item.item}
+          postedby={item.postedby}
+          offerId={item.offerId}
+          swapId={item.swapId}
+          index={index}
           offerItems={item.offerItems}
-          rating={item.rating}
         />
         :
         null
@@ -321,7 +308,7 @@ export default class SwapsScreen extends React.Component {
   }
 
   reloadPage = () => {
-    this.getSwaps()
+    this.getAllSwaps()
   }
 
   render() {
@@ -330,7 +317,7 @@ export default class SwapsScreen extends React.Component {
 
         <View style={{ backgroundColor: '#FFF', padding: 10 }}>
           <SegmentedControlTab
-            values={["Pending", "Completed"]}
+            values={["All Swaps", "Completed"]}
             selectedIndex={this.state.selectedIndex}
             onTabPress={this.handleIndexChange}
             borderRadius={50}

@@ -161,7 +161,7 @@ export default class SwapDetailsScreen extends Component {
 
             this.props.navigation.goBack(null);
             this.props.navigation.state.params.onGoBack()
-            
+
           } else {
             toast.show('Unable to withdraw offer')
           }
@@ -362,12 +362,14 @@ export default class SwapDetailsScreen extends Component {
                                         </View>
 
                                         {
-
+                                            (this.state.swapDetails && !this.state.swapDetails.completed)?
                                             <View style={styles.stackedView}>
                                                 <TouchableOpacity style={styles.button} onPress={() => this.requestWithdrawConfirmation()}>
                                                     <Text style={styles.buttonText}>Withdraw Offer</Text>
                                                 </TouchableOpacity>
                                             </View>
+                                            :
+                                            null
                                         }
                                     </View>
                                 </View>
