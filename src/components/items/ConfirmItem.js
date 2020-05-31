@@ -10,7 +10,9 @@ export default class ConfirmItem extends Component {
         super(props);
     }
 
-
+    onRefresh=()=>{
+        return;
+    }
 
     render() {
         return (
@@ -29,7 +31,16 @@ export default class ConfirmItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
                             <View >
-                                <TouchableOpacity onPress={() => this.props.navigation.navigate('UserProfileScreen')}>
+                                <TouchableOpacity 
+                                onPress={
+                                      () =>
+                                        this.props.navigation.navigate('UserProfileScreen',
+                                          {
+                                            userId: this.props.postedby.uid,
+                                            username: this.props.postedby.username,
+                                            onGoBack: this.onRefresh
+                                          })
+                                  }>
                                     <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>
                             </View>

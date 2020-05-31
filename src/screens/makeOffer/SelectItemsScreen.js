@@ -225,6 +225,10 @@ export default class SelectItemsScreen extends React.Component {
     )
   }
 
+  reloadPage=()=>{
+    this.getItemsByUid()
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -263,9 +267,14 @@ export default class SelectItemsScreen extends React.Component {
             </View>
             :
             this.isEmpty(this.state.items) ?
-              <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
+            <View>
+                <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
                 No Items to Display
               </Text>
+              <TouchableOpacity onPress={()=>this.reloadPage()}>
+              <Icon style={{textAlign:'center'}} name="rotate-right" size={20}/>
+              </TouchableOpacity>
+            </View>
               :
               <FlatList
                 data={this.state.items}

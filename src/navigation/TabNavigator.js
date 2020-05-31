@@ -22,6 +22,8 @@ import MultipleOffersScreen from '../screens/items/MultipleOffersScreen'
 import SingleOfferDetailsScreen from '../screens/items/SingleOfferDetailsScreen'
 import EditItemScreen from '../screens/items/EditItemScreen'
 import SettingsScreen from '../screens/profile/SettingsScreen'
+import SwapDetailsScreen from '../screens/swaps/SwapDetailsScreen'
+
 
 
 
@@ -75,11 +77,23 @@ const ItemsStack = createStackNavigator({
   },
   EditItemScreen: {
     screen: EditItemScreen
-  }
+  },
+  UserProfileScreen: {
+    screen: UserProfileScreen,
+  },
 });
 const SwapsStack = createStackNavigator({
   SwapsScreen: {
     screen: SwapsScreen,
+  },
+  UserProfileScreen: {
+    screen: UserProfileScreen,
+  },
+  SwapDetailsScreen: {
+    screen: SwapDetailsScreen
+  },
+  MyItemDetailsScreen: {
+    screen: MyItemDetailsScreen,
   }
 });
 

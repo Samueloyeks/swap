@@ -7,7 +7,7 @@ import itemImage from '../../assets/imgs/item.png'
 
 
 
-export default class ExploreItem extends Component {
+export default class UserItem extends Component {
     constructor(props) {
         super(props);
     }
@@ -59,7 +59,7 @@ export default class ExploreItem extends Component {
                                                         userId: this.props.postedby.uid,
                                                         username: this.props.postedby.username,
                                                         onGoBack: this.props.onRefresh
-                                                    }) 
+                                                    })
                                                      : null
                                                      }>
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
@@ -112,13 +112,13 @@ export default class ExploreItem extends Component {
                             </View> 
 
                             {
-                                !(this.props.userId == this.props.postedby.uid) ?
+                                // !(this.props.userId == this.props.postedby.uid) ?
                                     <View style={{ flex: 0.45, alignItems: 'flex-end' }}>
                                         <TouchableOpacity style={styles.offerButton} onPress={() => this.props.navigation.navigate('SelectItemsScreen', { item: this.props })}>
                                             <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Make Offer</Text>
                                         </TouchableOpacity>
                                     </View> 
-                                    : null
+                                    // : null
                             }
                         </View>
                     </View>
@@ -126,7 +126,7 @@ export default class ExploreItem extends Component {
             </TouchableOpacity>
         );
     }
-} 
+}
 
 const styles = StyleSheet.create({
     container: {

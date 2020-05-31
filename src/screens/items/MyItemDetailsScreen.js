@@ -77,7 +77,7 @@ export default class MyItemDetailsScreen extends Component {
         const { state } = await this.props.navigation;
         this.setState({
             itemDetails: state.params.itemDetails,
-            selectedIndex: state.params.selectedIndex,
+            selectedIndex: state.params.selectedIndex ? state.params.selectedIndex : 0,
         })
         await this.setUserData();
         this.getOffers();
@@ -164,7 +164,7 @@ export default class MyItemDetailsScreen extends Component {
                 }
 
                 this.setState({
-                    markingAsSwapped:false,
+                    markingAsSwapped: false,
                     itemDetails: newDetails
                 })
             } else {
@@ -346,6 +346,11 @@ export default class MyItemDetailsScreen extends Component {
         )
     }
 
+    reloadPage=()=>{
+        this.getOffers()
+      }
+
+
     render() {
         return (
             <View >
@@ -446,7 +451,7 @@ export default class MyItemDetailsScreen extends Component {
                                     </View>
                                 </View>
 
-                                <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Product Description</Text>
+                                <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Item Description</Text>
                                 <Text style={{ color: '#9F9F9F', marginBottom: 10 }}>{this.state.itemDetails.description}</Text>
 
                                 <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Would Trade For:</Text>
@@ -494,9 +499,14 @@ export default class MyItemDetailsScreen extends Component {
                         ) : (
                                 (
                                     this.state.offers.length == 0 ?
-                                        <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
-                                            No Offers to Display
-                                         </Text>
+                                        <View>
+                                            <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
+                                                No Offers to Display
+                                        </Text>
+                                            <TouchableOpacity onPress={() => this.reloadPage()}>
+                                                <Icon style={{ textAlign: 'center' }} name="rotate-right" size={20} />
+                                            </TouchableOpacity>
+                                        </View>
                                         :
                                         <FlatList
                                             data={this.state.offers}

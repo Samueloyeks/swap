@@ -6,7 +6,7 @@ import { HeaderBackButton } from 'react-navigation-stack';
 import { SearchBar, CheckBox } from 'react-native-elements'
 import ImageModal from 'react-native-image-modal';
 import demoAvatar from '../../assets/imgs/demoAvatar.png'
-import ExploreItem from '../../components/items/ExploreItem'
+import UserItem from '../../components/items/UserItem'
 import demoImage from '../../assets/imgs/demo.png'
 import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
@@ -335,7 +335,7 @@ export default class UserProfileScreen extends React.Component {
 
   renderItem = ({ item, index }) => {
     return (
-      <ExploreItem
+      <UserItem
         {...this.props}
         favorite={this.favorite}
         like={this.like}

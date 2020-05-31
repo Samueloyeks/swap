@@ -10,7 +10,7 @@ import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 
 
- 
+
 
 
 
@@ -19,11 +19,11 @@ export default class ExploreItemDetailsScreen extends Component {
 
   constructor(props) {
     super(props);
- 
+
     this.state = {
       itemDetails: {},
       isImageViewVisible: true,
-      userData:null
+      userData: null
     }
     this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
 
@@ -141,6 +141,9 @@ export default class ExploreItemDetailsScreen extends Component {
     })
   }
 
+  onRefresh = () => {
+    return;
+  }
 
   render() {
     return (
@@ -162,11 +165,21 @@ export default class ExploreItemDetailsScreen extends Component {
               <Text style={styles.titleText}>{this.state.itemDetails.title}</Text>
 
               {
-                this.state.itemDetails.postedby ?
+                (this.state.itemDetails.postedby && this.state.userData) ?
                   <View style={styles.stackedView}>
                     <View ><Text style={{ fontSize: 12 }}>Posted By</Text></View>
                     <View >
-                      <TouchableOpacity>
+                      <TouchableOpacity onPress={
+                        !(this.state.itemDetails.postedby.uid == this.state.userData.uid) ?
+                          () =>
+                            this.props.navigation.navigate('UserProfileScreen',
+                              {
+                                userId: this.state.itemDetails.postedby.uid,
+                                username: this.state.itemDetails.postedby.username,
+                                onGoBack: this.onRefresh
+                              })
+                          : null
+                      }>
                         <Text style={{ fontSize: 12, color: '#FF9D5C', paddingLeft: 5 }}>
                           {this.state.itemDetails.postedby.username}
                         </Text>
@@ -222,7 +235,7 @@ export default class ExploreItemDetailsScreen extends Component {
             </View>
           </View>
 
-          <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Product Description</Text>
+          <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Item Description</Text>
           <Text style={{ color: '#9F9F9F', marginBottom: 10 }}>{this.state.itemDetails.description}</Text>
 
           <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Would Trade For:</Text>

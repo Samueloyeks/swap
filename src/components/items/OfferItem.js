@@ -13,10 +13,14 @@ export default class OfferItem extends Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         const { sendingOfferResponse } = nextProps
-        const { sendingOfferResponse: oldsendingOfferResponse} = this.props
+        const { sendingOfferResponse: oldsendingOfferResponse } = this.props
 
         // If "liked" or "likeCount" is different, then update                          
-        return sendingOfferResponse !== oldsendingOfferResponse 
+        return sendingOfferResponse !== oldsendingOfferResponse
+    }
+
+    onRefresh = () => {
+        return;
     }
 
     render() {
@@ -49,7 +53,17 @@ export default class OfferItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
                             <View >
-                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={
+                                        () =>
+                                            this.props.navigation.navigate('UserProfileScreen',
+                                                {
+                                                    userId: this.props.offeredBy.uid,
+                                                    username: this.props.offeredBy.username,
+                                                    onGoBack: this.onRefresh
+                                                })
+                                    }
+                                ><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
                             </View>
                         </View>
 
@@ -69,14 +83,14 @@ export default class OfferItem extends Component {
                                         <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
                                             <View style={{ flexDirection: 'row' }}>
                                                 <TouchableOpacity style={styles.offerButton}
-                                                    onPress={() => this.props.acceptOffer(data={
+                                                    onPress={() => this.props.acceptOffer(data = {
                                                         offerId: this.props.id,
                                                         itemId: this.props.itemId,
                                                         swapId: this.props.swapId,
                                                         offeredby: this.props.offeredBy.username,
-                                                        index:this.props.index
+                                                        index: this.props.index
                                                     })}
-                                                > 
+                                                >
                                                     <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Accept Offer</Text>
                                                 </TouchableOpacity>
 
@@ -85,7 +99,7 @@ export default class OfferItem extends Component {
                                                         offerId: this.props.id,
                                                         itemId: this.props.itemId,
                                                         swapId: this.props.swapId,
-                                                        index:this.props.index
+                                                        index: this.props.index
                                                     })}
                                                 >
                                                     <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>

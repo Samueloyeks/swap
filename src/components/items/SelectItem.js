@@ -21,7 +21,7 @@ export default class SelectItem extends Component {
     render() {
         return (
             <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props })}
+                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props,selectedIndex: 0  })}
             >
                 <View style={styles.container}>
                 <View style={styles.ImgContainer}>
@@ -69,8 +69,8 @@ export default class SelectItem extends Component {
 
 
                             <View style={{ flex: 0.9, alignItems: 'flex-end' }}>
-                                <TouchableOpacity 
-                                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails })}
+                                <TouchableOpacity  
+                                onPress={() => this.props.navigation.navigate('MyItemDetailsScreen', { itemDetails: this.props, onGoBack: this.props.refreshDetails,selectedIndex: 0  })}
                                 style={styles.offerButton}>
                                     <Text style={{ textAlign: 'center', fontSize: 12,color:'#FF9D5C' }}>View</Text>
                                     </TouchableOpacity>

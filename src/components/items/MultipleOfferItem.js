@@ -16,7 +16,11 @@ export default class MultipleOfferItem extends Component {
         // If "liked" or "likeCount" is different, then update                          
         return sendingOfferResponse !== oldsendingOfferResponse 
     }
-
+ 
+    onRefresh = () => {
+        return;
+    }
+    
     render() {
         return (
             <TouchableOpacity 
@@ -48,7 +52,17 @@ export default class MultipleOfferItem extends Component {
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
                             <View >
-                                <TouchableOpacity><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
+                                <TouchableOpacity
+                                onPress={
+                                    () =>
+                                        this.props.navigation.navigate('UserProfileScreen',
+                                            {
+                                                userId: this.props.offeredBy.uid,
+                                                username: this.props.offeredBy.username,
+                                                onGoBack: this.onRefresh
+                                            })
+                                }
+                                ><Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.offeredBy.username}</Text></TouchableOpacity>
                             </View>
                         </View>
 
