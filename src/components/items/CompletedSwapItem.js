@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import itemImage from '../../assets/imgs/item.png'
+import TimeAgo from 'react-native-timeago';
+
 
 
 export default class CompletedSwapItem extends Component {
@@ -20,17 +22,17 @@ export default class CompletedSwapItem extends Component {
     render() {
         return (
             <TouchableOpacity style={{ marginBottom: 10 }}>
-                    {
-                        (this.props.postedby == this.props.userId) ?
+                {
+                    (this.props.postedby == this.props.userId) ?
 
                         <View style={styles.container}>
 
-                        {/* // RIGHT HALF  */}
+                            {/* // LEFT HALF  */}
                             <View style={styles.item}>
                                 <View style={styles.ImgContainer}>
                                     <Image
                                         style={{
-                                            borderWidth:2,
+                                            borderWidth: 2,
                                             width: 77,
                                             height: 77
                                         }}
@@ -39,83 +41,24 @@ export default class CompletedSwapItem extends Component {
                                 <View style={styles.content}>
                                     <Text style={{ textTransform: 'uppercase', fontSize: 9, flex: 1, flexDirection: 'row' }}>{this.props.item.title}</Text>
 
-                                    <View style={styles.stackedView}>
-                                        <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
-                                        <View >
-                                            <TouchableOpacity><Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.item.postedby}</Text></TouchableOpacity>
-                                        </View>
-                                    </View>
                                 </View>
                             </View>
 
-                            {/* // LEFT HALF  */}
-                            <View style={styles.offerItem}>
-                            <View style={styles.ImgContainer}>
-                                {this.props.offerItems.length > 1 ?
-                                    <View>
-                                        <Image
-                                            style={{ borderWidth:2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
-                                            resizeMode="stretch"
-                                            source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
-
-                                        <Image
-                                            style={{ borderWidth:2, left: 0, top: 0, width: 70, height: 77 }} 
-                                            resizeMode="stretch"
-                                            source={this.props.offerItems ? ({ uri: this.props.offerItems[1].images[0] }) : itemImage} />
-                                            
-                                        {/* <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }} source={this.props.offerItems[0].images[0]} /> */}
-                                        {/* <Image style={{ position: 'absolute', left: 0, top: 0, width: 70, height: 77 }} source={this.props.offerItems[1].images[0]} /> */}
-                                    </View>
-                                    :
-                                    <Image
-                                        style={{
-                                            width: 77,
-                                            height: 77
-                                        }}
-                                        resizeMode="stretch"
-                                        source={this.props.offerItems.images ? ({ uri: this.props.offerItems.images[0] }) : itemImage} />
-                                    // <Image style={{ width: 77, height: 77 }} resizeMode="stretch" source={this.props.offerItems[0].images[0]} />
-                                }
-                            </View>
-                            <View style={styles.content}>
-                                <Text style={{ textTransform: 'uppercase', fontSize: 9 }}>
-                                    {(this.props.offerItems.length == 1) ?
-                                        (this.props.offerItems[0].title)
-                                        :
-                                        (this.props.offerItems[0].title + ` & ${this.props.offerItems.length - 1} more`)}
-                                </Text>
-
-                                <View style={styles.stackedView}>
-                                    <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
-                                    <View>
-                                        <TouchableOpacity>
-                                            <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5,}}>
-                                                {this.props.item.postedby}
-                                                </Text>
-                                                </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                                        </View>
-                            :
-                            <View style={styles.container}>
-
-                                        {/* RIGHT HALF  */}
+                            {/* // RIGHT HALF  */}
                             <View style={styles.offerItem}>
                                 <View style={styles.ImgContainer}>
                                     {this.props.offerItems.length > 1 ?
                                         <View>
                                             <Image
-                                                style={{ borderWidth:2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
+                                                style={{ borderWidth: 2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
 
                                             <Image
-                                                style={{ borderWidth:2, left: 0, top: 0, width: 70, height: 77 }} 
+                                                style={{ borderWidth: 2, left: 0, top: 0, width: 70, height: 77 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[1].images[0] }) : itemImage} />
-                                                
+
                                             {/* <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }} source={this.props.offerItems[0].images[0]} /> */}
                                             {/* <Image style={{ position: 'absolute', left: 0, top: 0, width: 70, height: 77 }} source={this.props.offerItems[1].images[0]} /> */}
                                         </View>
@@ -131,7 +74,7 @@ export default class CompletedSwapItem extends Component {
                                     }
                                 </View>
                                 <View style={styles.content}>
-                                    <Text style={{ textTransform: 'uppercase', fontSize: 9 }}>
+                                    <Text style={{ textTransform: 'uppercase', fontSize: 9, flex: 1, flexDirection: 'row' }}>
                                         {(this.props.offerItems.length == 1) ?
                                             (this.props.offerItems[0].title)
                                             :
@@ -139,25 +82,69 @@ export default class CompletedSwapItem extends Component {
                                     </Text>
 
                                     <View style={styles.stackedView}>
-                                        <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
+                                        <View ><Text style={{ fontSize: 8 }}>Offered By:</Text></View>
                                         <View>
                                             <TouchableOpacity>
-                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5,}}>
-                                                    {this.props.item.postedby}
-                                                    </Text>
-                                                    </TouchableOpacity>
+                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5, flex: 1 }}>
+                                                    {this.props.postedby.username}
+                                                </Text>
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 </View>
                             </View>
+                        </View>
+                        :
+                        <View style={styles.container}>
 
-                            {/* LEF HALF  */}
-                   
+                            {/* LEFT HALF  */}
+                            <View style={styles.offerItem}>
+                                <View style={styles.ImgContainer}>
+                                    {this.props.offerItems.length > 1 ?
+                                        <View>
+                                            <Image
+                                                style={{ borderWidth: 2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
+                                                resizeMode="stretch"
+                                                source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
+
+                                            <Image
+                                                style={{ borderWidth: 2, left: 0, top: 0, width: 70, height: 77 }}
+                                                resizeMode="stretch"
+                                                source={this.props.offerItems ? ({ uri: this.props.offerItems[1].images[0] }) : itemImage} />
+
+                                            {/* <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }} source={this.props.offerItems[0].images[0]} /> */}
+                                            {/* <Image style={{ position: 'absolute', left: 0, top: 0, width: 70, height: 77 }} source={this.props.offerItems[1].images[0]} /> */}
+                                        </View>
+                                        :
+                                        <Image
+                                            style={{
+                                                borderWidth: 2,
+                                                width: 77,
+                                                height: 77
+                                            }}
+                                            resizeMode="stretch"
+                                            source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
+                                        // <Image style={{ width: 77, height: 77 }} resizeMode="stretch" source={this.props.offerItems[0].images[0]} />
+                                    }
+                                </View>
+                                <View style={styles.content}>
+                                    <Text style={{ textTransform: 'uppercase', fontSize: 9, flex: 1, flexDirection: 'row' }}>
+                                        {(this.props.offerItems.length == 1) ?
+                                            (this.props.offerItems[0].title)
+                                            :
+                                            (this.props.offerItems[0].title + ` & ${this.props.offerItems.length - 1} more`)}
+                                    </Text>
+
+                                </View>
+                            </View>
+
+                            {/* RIGHT HALF  */}
+
                             <View style={styles.item}>
                                 <View style={styles.ImgContainer}>
                                     <Image
                                         style={{
-                                            borderWidth:2,
+                                            borderWidth: 2,
                                             width: 77,
                                             height: 77
                                         }}
@@ -167,21 +154,34 @@ export default class CompletedSwapItem extends Component {
                                     <Text style={{ textTransform: 'uppercase', fontSize: 9, flex: 1, flexDirection: 'row' }}>{this.props.item.title}</Text>
 
                                     <View style={styles.stackedView}>
-                                        <View ><Text style={{ fontSize: 8 }}>Posted By</Text></View>
+                                        <View ><Text style={{ fontSize: 8 }}>Posted By:</Text></View>
                                         <View >
-                                            <TouchableOpacity><Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.item.postedby}</Text></TouchableOpacity>
+                                            <TouchableOpacity
+                                                onPress={
+                                                        () =>
+                                                            this.props.navigation.navigate('UserProfileScreen',
+                                                                {
+                                                                    userId: this.props.postedby.uid,
+                                                                    username: this.props.postedby.username,
+                                                                    onGoBack: this.props.onRefresh
+                                                                })
+                                                }>
+                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>
+                                                    {this.props.postedby.username}
+                                                </Text>
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-                   </View>
-                    }
+                        </View>
+                }
 
 
                 <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
                     <View style={{ flex: 0.95, backgroundColor: '#FFF', height: 25, flexDirection: 'row', borderRadius: 50, paddingHorizontal: 10 }}>
                         <Text style={{ alignSelf: 'center', fontSize: 7, color: '#40A459', flex: 0.4 }}>
-                            Offer Date: <Text style={{ color: 'black' }}>{this.props.offered}</Text>
+                            Offered: <Text style={{color:'black'}}><TimeAgo time={this.props.offered} interval={20000} style={{ color: 'black' }} /></Text>
                         </Text>
                         {!this.props.rating ?
                             <TouchableOpacity style={styles.rateButton} onPress={() => this.props.toggleModal(this.props)}><Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Rate</Text></TouchableOpacity>
@@ -189,7 +189,7 @@ export default class CompletedSwapItem extends Component {
                             <View style={styles.rated}><Icon name="star"><Text>{this.props.rating}</Text></Icon></View>
                         }
                         <Text style={{ alignSelf: 'center', fontSize: 7, color: '#FE3939', flex: 0.4, textAlign: 'right' }}>
-                            Swapped: <Text style={{ color: 'black' }}>{this.props.swapDate ? this.props.swapDate : 'Not Set'}</Text>
+                        Swapped: <Text style={{color:'black'}}><TimeAgo time={this.props.swapped} interval={20000} style={{ color: 'black' }} /></Text>
                         </Text>
                     </View>
                 </View>
@@ -248,9 +248,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     stackedView: {
-        flex: 0.25,
+        margin: 5,
+        // flex: 0.25,
         // backgroundColor: 'blue',
-        flexDirection: 'row',
+        // flexDirection: 'row',
     },
     titleText: {
         fontSize: 15,

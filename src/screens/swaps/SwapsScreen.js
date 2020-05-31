@@ -30,6 +30,7 @@ export default class SwapsScreen extends React.Component {
       selectedIndex: 0,
       isModalVisible: false,
       rateableSwap: null,
+      rateableSwapIndex: null,
       userData: null,
       loading: false,
       isRefreshing: false,
@@ -224,33 +225,34 @@ export default class SwapsScreen extends React.Component {
 
   renderItem = ({ item, index }) => {
     return (
-        <SwapItem
-          {...this.props}
-          withdrawOffer={this.requestWithdrawConfirmation}
-          refreshDetails={this.refreshDetails}
-          onRefresh={this.onRefresh}
-          userId={this.state.userData.uid}
-          id={item.swapId}
-          offered={item.offered}
-          completed={item.completed}
-          item={item.item}
-          postedby={item.postedby}
-          offerId={item.offerId}
-          swapId={item.swapId}
-          index={index}
-          offerItems={item.offerItems}
-        />
+      <SwapItem
+        {...this.props}
+        withdrawOffer={this.requestWithdrawConfirmation}
+        refreshDetails={this.refreshDetails}
+        onRefresh={this.onRefresh}
+        userId={this.state.userData.uid}
+        id={item.swapId}
+        offered={item.offered}
+        completed={item.completed}
+        item={item.item}
+        postedby={item.postedby}
+        offerId={item.offerId}
+        swapId={item.swapId}
+        index={index}
+        offerItems={item.offerItems}
+      />
     )
   }
 
   renderCompletedItem = ({ item, index }) => {
     // console.log(item)
     return (
-      item.completed ? 
+      item.completed ?
         <CompletedSwapItem
           {...this.props}
           toggleModal={this.toggleModal}
           userId={this.state.userData.uid}
+          onRefresh={this.onRefresh}
           swapped={item.swapped}
           rating={item.rating}
           id={item.swapId}
@@ -258,6 +260,7 @@ export default class SwapsScreen extends React.Component {
           completed={item.completed}
           item={item.item}
           postedby={item.postedby}
+          offeredby={item.offeredby}
           offerId={item.offerId}
           swapId={item.swapId}
           index={index}
@@ -286,25 +289,31 @@ export default class SwapsScreen extends React.Component {
   };
 
   submitRating = (reviewObject) => {
-    let swap = this.state.swaps[reviewObject.id]
+    // let swap = this.state.swaps[reviewObject.index]
 
-    const newSwap = {
-      ...swap,
-      rating: reviewObject.rating,
-      review: reviewObject.review
-    }
+    let newSwaps = [...this.state.swaps];
+    newSwaps[reviewObject.index] = { ...newSwaps[reviewObject.index], rating: reviewObject.rating };
 
     this.setState({
-      swaps: {
-        ...this.state.swaps,
-        [reviewObject.id]: newSwap
-      },
+      swaps: newSwaps
     }, () => {
       this.setState({
-        rateableSwap: newSwap
+        rateableSwap: newSwaps[reviewObject.index]
       })
-      this.toggleModal(newSwap)
+      this.toggleModal(newSwaps[reviewObject.index])
+
+      let data = reviewObject
+      data.uid = (data.postedby==this.state.userData.uid)?data.offeredby:data.postedby;
+
+      api.post('/items/rateSwap', data).then((response) => {
+
+        if (response.data.status == 'success') {
+          toast.show('Thank you')
+        }
+      })
+
     })
+
   }
 
   reloadPage = () => {

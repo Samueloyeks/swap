@@ -213,6 +213,7 @@ export default class ProfileScreen extends React.Component {
     this.setState({ loading: true })
     db.delete('userData').then(() => {
       this.setState({ loading: false })
+      db.delete('userData')
       this.props.navigation.popToTop()
       // this.props.navigation.reset()
       this.props.navigation.navigate('SignIn');

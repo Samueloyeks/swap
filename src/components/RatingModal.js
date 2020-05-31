@@ -43,7 +43,7 @@ export default class RatingModal extends Component {
       >
         <View style={styles.modalContainer}>
           <View>
-            <Text style={{ textAlign: 'center' }}>{this.props.swap ? `Rate ${this.props.swap.item.postedby} for this swap` : null}</Text>
+            <Text style={{ textAlign: 'center' }}>{this.props.swap ? `Rate your swap experience` : null}</Text>
           </View>
           <AirbnbRating
             selectedColor='#FF9D5C'
@@ -55,15 +55,24 @@ export default class RatingModal extends Component {
           />
 
           <View style={{ paddingHorizontal: 15 }}>
-            <Text style={{ textAlign: 'center' }}>Leave a comment or complaint</Text>
+            {/* <Text style={{ textAlign: 'center' }}>Leave a comment or complaint</Text>
             <TextInput
               multiline={true}
               numberOfLines={4}
               onChangeText={(review) => this.setState({ review })}
               value={this.state.review}
               style={{ backgroundColor: '#D6D8E0', borderRadius: 15, marginVertical: 10, padding: 5 }}
-            />
-            <TouchableOpacity style={styles.button} onPress={() => this.props.submitRating({ id: this.props.swap.id, rating: this.state.rating, review: this.state.review })} ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
+            /> */}
+            <TouchableOpacity style={styles.button}
+             onPress={() => 
+             this.props.submitRating({
+                id: this.props.swap.id,
+                index:this.props.swap.index, 
+                rating: this.state.rating, 
+                review: this.state.review,
+                postedby:this.props.swap.postedby.uid,
+                offeredby:this.props.swap.offeredby
+                })} ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
           </View>
         </View>
       </Modal>

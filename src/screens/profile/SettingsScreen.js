@@ -199,6 +199,7 @@ export default class SettingsScreen extends Component {
             if (response.data.status == 'success') {
                 this.setState({ loading: false });
 
+                db.delete('userData')
                 this.props.navigation.popToTop()
                 this.props.navigation.navigate('SignIn');
             } else {
