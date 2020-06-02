@@ -23,8 +23,9 @@ export default class CompletedSwapItem extends Component {
         return (
             <TouchableOpacity style={{ marginBottom: 10 }}>
                 {
-                    (this.props.postedby == this.props.userId) ?
+                    (this.props.postedby.uid == this.props.userId) ?
 
+                    // OFFERED TO YOU 
                         <View style={styles.container}>
 
                             {/* // LEFT HALF  */}
@@ -65,11 +66,12 @@ export default class CompletedSwapItem extends Component {
                                         :
                                         <Image
                                             style={{
+                                                borderWidth: 2,
                                                 width: 77,
                                                 height: 77
                                             }}
                                             resizeMode="stretch"
-                                            source={this.props.offerItems.images ? ({ uri: this.props.offerItems.images[0] }) : itemImage} />
+                                            source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
                                         // <Image style={{ width: 77, height: 77 }} resizeMode="stretch" source={this.props.offerItems[0].images[0]} />
                                     }
                                 </View>
@@ -82,11 +84,21 @@ export default class CompletedSwapItem extends Component {
                                     </Text>
 
                                     <View style={styles.stackedView}>
-                                        <View ><Text style={{ fontSize: 8 }}>Offered By:</Text></View>
+                                            <Text style={{ fontSize: 8 }}>
+                                                Offered By:
+                                                </Text>
                                         <View>
-                                            <TouchableOpacity>
-                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5, flex: 1 }}>
-                                                    {this.props.postedby.username}
+                                            <TouchableOpacity onPress={
+                                            () =>
+                                                this.props.navigation.navigate('UserProfileScreen',
+                                                    {
+                                                        userId: this.props.offeredby.uid,
+                                                        username: this.props.offeredby.username,
+                                                        onGoBack: this.props.onRefresh
+                                                    }) 
+                                                     } >
+                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 1 }}>
+                                                    {this.props.offeredby.username}
                                                 </Text>
                                             </TouchableOpacity>
                                         </View>
@@ -95,6 +107,8 @@ export default class CompletedSwapItem extends Component {
                             </View>
                         </View>
                         :
+
+                    // OFFERED BY YOU 
                         <View style={styles.container}>
 
                             {/* LEFT HALF  */}
@@ -155,18 +169,17 @@ export default class CompletedSwapItem extends Component {
 
                                     <View style={styles.stackedView}>
                                         <View ><Text style={{ fontSize: 8 }}>Posted By:</Text></View>
-                                        <View >
-                                            <TouchableOpacity
-                                                onPress={
-                                                        () =>
-                                                            this.props.navigation.navigate('UserProfileScreen',
-                                                                {
-                                                                    userId: this.props.postedby.uid,
-                                                                    username: this.props.postedby.username,
-                                                                    onGoBack: this.props.onRefresh
-                                                                })
-                                                }>
-                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 5 }}>
+                                        <View>
+                                            <TouchableOpacity onPress={
+                                            () =>
+                                                this.props.navigation.navigate('UserProfileScreen',
+                                                    {
+                                                        userId: this.props.postedby.uid,
+                                                        username: this.props.postedby.username,
+                                                        onGoBack: this.props.onRefresh
+                                                    }) 
+                                                     } >
+                                                <Text style={{ fontSize: 8, color: '#FF9D5C', paddingLeft: 1 }}>
                                                     {this.props.postedby.username}
                                                 </Text>
                                             </TouchableOpacity>

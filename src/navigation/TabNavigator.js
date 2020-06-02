@@ -23,6 +23,10 @@ import SingleOfferDetailsScreen from '../screens/items/SingleOfferDetailsScreen'
 import EditItemScreen from '../screens/items/EditItemScreen'
 import SettingsScreen from '../screens/profile/SettingsScreen'
 import SwapDetailsScreen from '../screens/swaps/SwapDetailsScreen'
+import MyFavoritesScreen from '../screens/profile/MyFavoritesScreen'
+import MyItemChatsScreen from '../screens/items/MyItemChatsScreen'
+
+
 
 
 
@@ -81,6 +85,9 @@ const ItemsStack = createStackNavigator({
   UserProfileScreen: {
     screen: UserProfileScreen,
   },
+  MyItemChatsScreen: {
+    screen: MyItemChatsScreen
+  }
   // SwapsScreen: {
   //   screen: SwapsScreen,
   // },
@@ -109,7 +116,13 @@ const ProfileStack = createStackNavigator({
   },
   SettingsScreen: {
     screen: SettingsScreen
-  }
+  },
+  MyFavoritesScreen: {
+    screen: MyFavoritesScreen
+  },
+  ExploreItemDetailsScreen: {
+    screen: ExploreItemDetailsScreen,
+  },
 
 });
 

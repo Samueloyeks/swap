@@ -18,7 +18,7 @@ import MyItem from '../../components/items/MyItem'
 
 
 
-
+ 
 
 
 export default class SwapDetailsScreen extends Component {

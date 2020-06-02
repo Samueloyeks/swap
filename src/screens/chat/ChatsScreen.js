@@ -5,7 +5,8 @@ import {
   Text,
   View,
   StatusBar,
-  PermissionsAndroid
+  PermissionsAndroid,
+  TouchableOpacity
 } from 'react-native';
 // import { Header, NavigationActions } from 'react-navigation'
 // import {AudioRecorder, AudioUtils} from 'react-native-audio'
@@ -13,150 +14,170 @@ import {
 // import Sound from 'react-native-sound'
 import { ChatScreen } from 'react-native-easy-chat-ui'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
- 
- 
+import { GiftedChat, Bubble, } from 'react-native-gifted-chat'
+import db from '../../utils/db/Storage'
+import demoAvatar from '../../assets/imgs/demoAvatar.png'
+import firebaseService from '../../utils/firebase/FirebaseService';
+
+
+
+
+
+
 export default class ChatsScreen extends React.Component {
+
   state = {
-     messages: [
-            {
-              id: `1`,
-              type: 'text',
-              content: 'hello world',
-              targetId: '12345678',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678',
-                nickName: 'Test'
-              },
-              renderTime: true,
-              sendStatus: 0,
-              time: '1542006036549'
-            },
-            {
-              id: `2`,
-              type: 'text',
-              content: 'hi/{se}',
-              targetId: '12345678',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678',
-                nickName: 'Test'
-              },
-              renderTime: true,
-              sendStatus: 0,
-              time: '1542106036549'
-            },
-            {
-              id: `3`,
-              type: 'image',
-              content: {
-                uri: 'https://upload-images.jianshu.io/upload_images/11942126-044bd33212dcbfb8.jpg?imageMogr2/auto-orient/strip|imageView2/1/w/300/h/240',
-                width: 100,
-                height: 80,
-              } ,
-              targetId: '12345678',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678',
-                nickName: 'Test'
-              },
-              renderTime: false,
-              sendStatus: 0,
-              time: '1542106037000'
-            },
-            {
-              id: `4`,
-              type: 'text',
-              content: 'how u doing',
-              targetId: '88886666',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678'
-              },
-              renderTime: true,
-              sendStatus: -2,
-              time: '1542177036549'
-            },
-            {
-              id: `5`,
-              type: 'voice',
-              content: {
-                uri: 'http://m10.music.126.net/20190810141311/78bf2f6e1080052bc0259afa91cf030d/ymusic/d60e/d53a/a031/1578f4093912b3c1f41a0bfd6c10115d.mp3',
-                length: 10
-              },
-              targetId: '12345678',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678',
-                nickName: 'Test'
-              },
-              renderTime: true,
-              sendStatus: 1,
-              time: '1542260667161'
-            },
-            {
-              id: `6`,
-              type: 'voice',
-              content: {
-                uri: 'http://m10.music.126.net/20190810141311/78bf2f6e1080052bc0259afa91cf030d/ymusic/d60e/d53a/a031/1578f4093912b3c1f41a0bfd6c10115d.mp3',
-                length: 30
-              },
-              targetId: '88886666',
-              chatInfo: {
-                avatar: require('../../assets/imgs/demoAvatar.png'),
-                id: '12345678'
-              },
-              renderTime: true,
-              sendStatus: 0,
-              time: '1542264667161'
-            },
-          ],
-          // chatBg: require('../../source/bg.jpg'),
-          inverted: false,  // require
-          voiceHandle: true,
-          currentTime: 0,
-          recording: false,
-          paused: false,
-          stoppedRecording: false,
-          finished: false,
-          audioPath: '',
-          voicePlaying: false,
-          voiceLoading: false
+    userData: null,
+    uid: null,
+    username: null,
+    posterData: null,
+    itemDetails: null,
+    profilePicture: null,
+    messages: [],
   }
- 
- 
-  sendMessage = (type, content, isInverted) => {
-      console.log(type, content, isInverted, 'msg')
+
+
+  async componentDidMount() {
+    const { state } = await this.props.navigation;
+
+    let posterData = await state.params.itemDetails.postedby
+    let itemDetails = await state.params.itemDetails;
+
+    this.setState({
+      posterData: posterData,
+      itemDetails: itemDetails
+    })
+
+    await this.setUserData()
+
+    let data = {
+      uid: this.state.userData.uid,
+      chatToId: this.state.posterData.uid,
+      itemId: this.state.itemDetails.id
     }
 
-    static navigationOptions = ({ navigation }) => {
-      return {
-        title: `${navigation.state.params.itemDetails.title}`,
-        headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
-        headerBackTitleVisible: false,
-        headerStyle: {
-          backgroundColor: '#FF9D5C',
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 0,
-        },
+    await firebaseService.setRef(data);
+
+    firebaseService.updateMessages(message => {
+      if (message) {
+        this.setState(previousState => ({
+          messages: GiftedChat.append(previousState.messages, message),
+        })
+        )
       }
     }
- 
+
+    );
+
+
+
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text:
+            <Text
+              style={styles.itemTitle}
+              onPress={() => this.props.navigation.navigate('ExploreItemDetailsScreen', { itemDetails: state.params.itemDetails, onGoBack: () => { return } })}
+            >
+              {state.params.itemDetails.title}
+            </Text>,
+          createdAt: new Date(),
+          image: state.params.itemDetails.images[0],
+          user: {
+            _id: state.params.itemDetails.postedby.uid,
+            name: state.params.itemDetails.postedby.username,
+            avatar: state.params.itemDetails.postedby.profilePicture,
+          },
+        },
+      ],
+    })
+
+  }
+
+
+  componentWillUnmount() {
+    firebaseService.removeRef()
+  }
+
+  async setUserData() {
+    await db.get('userData').then(data => {
+      let userData = JSON.parse(data)
+      this.setState({
+        userData: userData,
+        uid: userData.uid,
+        username: userData.username,
+        profilePicture: userData.profilePicture
+      })
+      return
+    })
+  }
+
+  onSend(message = []) {
+    let messageBody = message[0]
+    firebaseService.appendMessage(messageBody)
+  }
+
+
+  static navigationOptions = ({ navigation }) => {
+    return {
+      title:
+        <Text
+          onPress={() => navigation.navigate('ExploreItemDetailsScreen', { itemDetails: navigation.state.params.itemDetails, onGoBack: () => { return } })}
+        >{navigation.state.params.itemDetails.title}</Text>,
+      headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
+      headerBackTitleVisible: false,
+      headerStyle: {
+        backgroundColor: '#FF9D5C',
+        elevation: 0,
+        shadowOpacity: 0,
+        borderBottomWidth: 0,
+      },
+    }
+  }
+
+  renderBubble = (props) => {
+    return (
+      <Bubble
+        {...props}
+        textStyle={{
+          left: {
+            color: '#FFF',
+          },
+        }}
+        wrapperStyle={{
+          left: {
+            backgroundColor: '#000',
+          },
+          right: {
+            backgroundColor: "#FF9D5C",
+          },
+        }}
+      />
+    );
+  }
+
+
   render() {
     return (
-      <ChatScreen
-        ref={(e) => this.chat = e}
-        messageList={this.state.messages}
-        // androidHeaderHeight={androidHeaderHeight}
-        sendMessage={this.sendMessage}
-        leftMessageBackground	="black"
-        rightMessageBackground="#FF9D5C"
-        leftMessageTextStyle={{color:'#FFF'}}
-        rightMessageTextStyle={{color:'#FFF'}}
-        placeholder="Send Message..."
-        sendIcon={<Icon name="send-circle" color="black" size={40}/>}
+      <GiftedChat
+        messages={this.state.messages}
+        onSend={message => this.onSend(message)}
+        renderBubble={(props) => this.renderBubble(props)}
+        user={{
+          _id: this.state.uid,
+          name: this.state.username,
+          avatar: (this.state.profilePicture !== undefined) ? this.state.profilePicture : null
+        }}
       />
     )
   }
 }
+
+
+const styles = StyleSheet.create({
+
+  itemTitle: {
+    color: '#FF9D5C'
+  }
+})

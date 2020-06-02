@@ -12,6 +12,8 @@ import { ListItem } from 'react-native-elements'
 import AuthDialog from '../../components/AuthDialog'
 import PasswordDialog from '../../components/PasswordDialog'
 import EmailDialog from '../../components/EmailDialog'
+import firebaseService from '../../utils/firebase/FirebaseService'
+
 
 
 
@@ -165,6 +167,12 @@ export default class SettingsScreen extends Component {
         this.setState({ emailDialogVisible: false })
     }
 
+    async deactivateListeners(){
+
+        firebaseService.deactivateListeners();
+    
+      }
+
     submitCredentials = (password) => {
 
         // if (email == '' || password == '') {
@@ -195,13 +203,13 @@ export default class SettingsScreen extends Component {
         }
 
 
-        api.post('/users/deleteAccount', data).then((response) => {
+        api.post('/users/deleteAccount', data).then(async (response) => {
             if (response.data.status == 'success') {
                 this.setState({ loading: false });
 
-                db.delete('userData')
-                this.props.navigation.popToTop()
-                this.props.navigation.navigate('SignIn');
+                await db.delete('userData')
+                await this.props.navigation.popToTop()
+                 this.props.navigation.navigate('SignIn');
             } else {
                 let message = response.data.message
                 Alert.alert(

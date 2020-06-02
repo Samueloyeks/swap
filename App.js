@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Text } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Text,YellowBox } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import AnimatedSplash from "react-native-animated-splash-screen";
 import SplashScreen from 'react-native-splash-screen';
 
+
+YellowBox.ignoreWarnings(
+  ['VirtualizedLists should never be nested'],
+  ['Functions are not valid as a React child.'],
+  ['Failed child context type:'], 
+  ["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"], 
+  ['The "UMNativeModulesProxy" native module is not exported through NativeModules;']
+  );
 
 
 

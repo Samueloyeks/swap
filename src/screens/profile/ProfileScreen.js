@@ -81,6 +81,13 @@ export default class ProfileScreen extends React.Component {
 
   }
 
+  componentWillUnmount() {
+    EventRegister.removeEventListener(this.likesListener)
+    EventRegister.removeEventListener(this.swapsListener)
+    EventRegister.removeEventListener(this.ratingListener)
+
+}
+
   async setUserData() {
     this.setState({ loading: true })
 
@@ -147,15 +154,13 @@ export default class ProfileScreen extends React.Component {
     }
 
     firebaseService.activateListeners(data);
-    // api.post('/users/activateLikesListener', data).then((response) => {
 
-    //   if (response.data.status == "success") {
-    //     this.setState({
-    //       likes: response.data.data
-    //     }) 
-    //   }
+  }
 
-    // })
+  async deactivateListeners(){
+
+    firebaseService.deactivateListeners();
+
   }
 
 
@@ -212,7 +217,14 @@ export default class ProfileScreen extends React.Component {
   logOut() {
     this.setState({ loading: true })
     db.delete('userData').then(() => {
-      this.setState({ loading: false })
+      this.setState({ loading: false }) 
+
+      EventRegister.removeEventListener(this.likesListener)
+      EventRegister.removeEventListener(this.swapsListener)
+      EventRegister.removeEventListener(this.ratingListener)
+      EventRegister.removeAllListeners()
+      this.deactivateListeners();
+
       db.delete('userData')
       this.props.navigation.popToTop()
       // this.props.navigation.reset()
@@ -270,6 +282,23 @@ export default class ProfileScreen extends React.Component {
           </View>
 
           <ScrollView >
+
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('MyFavoritesScreen')}>
+              <View style={styles.item}>
+                <Icon name="star" size={30} color="#000" style={{ marginHorizontal: 10 }} />
+                <Text style={{ fontSize: 17, marginTop: 8, color: "#858585" }}>My Favorites</Text>
+              </View>
+            </TouchableOpacity>
+
+
+          <TouchableOpacity onPress={() => api.openURL()}>
+              <View style={styles.item}>
+                <Icon name="headphones" size={30} color="#000" style={{ marginHorizontal: 10 }} />
+                <Text style={{ fontSize: 17, marginTop: 8, color: "#858585" }}>Support</Text>
+              </View>
+            </TouchableOpacity>
+
+
             <TouchableOpacity onPress={() => this.props.navigation.navigate('SettingsScreen')}>
               <View style={styles.item}>
                 <Icon name="settings" size={30} color="#000" style={{ marginHorizontal: 10 }} />
@@ -277,12 +306,6 @@ export default class ProfileScreen extends React.Component {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => api.openURL()}>
-              <View style={styles.item}>
-                <Icon name="headphones" size={30} color="#000" style={{ marginHorizontal: 10 }} />
-                <Text style={{ fontSize: 17, marginTop: 8, color: "#858585" }}>Support</Text>
-              </View>
-            </TouchableOpacity>
 
             <TouchableOpacity onPress={this.requestLogoutConfirmation}>
               <View style={styles.item}>

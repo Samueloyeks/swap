@@ -210,7 +210,7 @@ export default class ItemsScreen extends React.Component {
           items: newItems
         })
 
-        this.props.navigation.navigate('SwapsScreen', { refresh: true,tabOne:false,tabTwo:true })
+        // this.props.navigation.navigate('SwapsScreen', { refresh: true,tabOne:false,tabTwo:true })
 
       } else {
 

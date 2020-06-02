@@ -69,9 +69,9 @@ export default class RatingModal extends Component {
                 id: this.props.swap.id,
                 index:this.props.swap.index, 
                 rating: this.state.rating, 
-                review: this.state.review,
+                // review: this.state.review,
                 postedby:this.props.swap.postedby.uid,
-                offeredby:this.props.swap.offeredby
+                offeredby:this.props.swap.offeredby.uid
                 })} ><Text style={styles.buttonText}>Submit</Text></TouchableOpacity>
           </View>
         </View>

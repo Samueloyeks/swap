@@ -62,6 +62,7 @@ export default class EditProfileScreen extends React.Component {
             email: '',
             phoneNumber: '',
             password: '',
+            usernameTaken: false,
             profilePicture: null,
             profilePictureData: null,
             loading: false,
@@ -84,13 +85,13 @@ export default class EditProfileScreen extends React.Component {
         // console.log(state.params.userData)
         let userData = await state.params.userData
         this.setState({
-            userData:userData,
-            uid:userData.uid,
+            userData: userData,
+            uid: userData.uid,
             fullName: userData.fullName,
             username: userData.username,
-            phoneNumber:userData.phoneNumber, 
+            phoneNumber: userData.phoneNumber,
             profilePicture: userData.profilePicture
-          })
+        })
         // await this.setUserData();
     }
 
@@ -192,6 +193,22 @@ export default class EditProfileScreen extends React.Component {
     }
 
     handleSubmit = values => {
+
+        if(this.state.usernameTaken){
+            Alert.alert(
+              "Chnage Username",
+              "The username you provided is not available",
+              [
+                {
+                  text: "Ok",
+                  style: "cancel"
+                },  
+              ],
+              { cancelable: false }
+            );
+            return;
+          }
+
         this.setState({ loading: true })
 
         try {
@@ -221,6 +238,29 @@ export default class EditProfileScreen extends React.Component {
             this.setState({ loading: false })
             alert(ex)
         }
+    }
+
+
+    checkAvailability(username) {
+        this.setState({
+            username,
+            usernameTaken: false
+        });
+
+        let data = {
+            username: username,
+            uid:this.state.userData.uid
+        }
+
+        api.post('/users/isUsernameTaken', data).then((response) => {
+
+            if (response.data.status) {
+                this.setState({ usernameTaken: true })
+            } else {
+                this.setState({ usernameTaken: false })
+            }
+
+        })
     }
 
     render() {
@@ -282,11 +322,17 @@ export default class EditProfileScreen extends React.Component {
                                                     <FormInput
                                                         name='username'
                                                         value={values.username = this.state.username}
-                                                        onChangeText={(username) => this.setState({ username })}
+                                                        onChangeText={(username) => this.checkAvailability(username)}
+                                                        // onChangeText={(username) => this.setState({ username })}
                                                         autoCapitalize='none'
                                                         placeholder='Username'
                                                         onBlur={handleBlur('username')}
                                                     />
+                                                    {this.state.usernameTaken ?
+                                                        <ErrorMessage errorValue='Username is taken' />
+                                                        :
+                                                        null
+                                                    }
                                                     <ErrorMessage errorValue={touched.username && errors.username} />
                                                     {/* <FormInput
                                                         name='email'
@@ -366,7 +412,7 @@ const styles = {
         height: 130,
         width: 130,
         bottom: -10,
-        backgroundColor:'grey'
+        backgroundColor: 'grey'
     },
     avatar: {
         // alignSelf: 'center',

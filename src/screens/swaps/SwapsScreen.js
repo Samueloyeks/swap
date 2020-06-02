@@ -225,6 +225,7 @@ export default class SwapsScreen extends React.Component {
 
   renderItem = ({ item, index }) => {
     return (
+      item.offeredby.uid == this.state.userData.uid?
       <SwapItem
         {...this.props}
         withdrawOffer={this.requestWithdrawConfirmation}
@@ -241,6 +242,8 @@ export default class SwapsScreen extends React.Component {
         index={index}
         offerItems={item.offerItems}
       />
+      :
+      null
     )
   }
 

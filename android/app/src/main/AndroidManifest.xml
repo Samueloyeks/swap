@@ -14,7 +14,9 @@ xmlns:tools="http://schemas.android.com/tools"
       android:allowBackup="false"
       android:theme="@style/AppTheme"
       tools:replace="android:allowBackup"
-      android:usesCleartextTraffic="true">
+      android:usesCleartextTraffic="true"
+      android:windowSoftInputMode="adjustResize"
+      >
       <activity
         android:name=".SplashActivity"
         android:theme="@style/SplashTheme"

@@ -8,6 +8,7 @@ import {
   ScrollView,
   Button,
   TextInput,
+  Alert,
   KeyboardAvoidingView,
   KeyboardAvoidingViewBase
 } from 'react-native';
@@ -61,11 +62,28 @@ export default class SignUpScreen extends React.Component {
       phoneNumber: '',
       password: '',
       loading: false,
-      isFocused: false
+      isFocused: false,
+      usernameTaken: false
     }
   }
 
   handleSubmit = values => {
+
+    if(this.state.usernameTaken){
+      Alert.alert(
+        "Chnage Username",
+        "The username you provided is not available",
+        [
+          {
+            text: "Ok",
+            style: "cancel"
+          },  
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
+
     this.setState({ loading: true })
     if (values.email.length > 0 && values.password.length > 0) {
 
@@ -82,6 +100,17 @@ export default class SignUpScreen extends React.Component {
               "profilePicture": response.data.data.profilePicture
             }
             db.set('userData', userData).then(() => {
+              Alert.alert(
+                "Important",
+                "Please check your email to verify your account",
+                [
+                  {
+                    text: "Ok",
+                    style: "cancel"
+                  },  
+                ],
+                { cancelable: false }
+              );
               this.props.navigation.navigate('Main')
               this.setState({ loading: false })
             })
@@ -104,6 +133,28 @@ export default class SignUpScreen extends React.Component {
   _scrollToInput(reactNode) {
     // Add a 'scroll' ref to your ScrollView
     this.scroll.props.scrollToFocusedInput(reactNode)
+  }
+
+  checkAvailability(username) {
+    this.setState({
+      username,
+      usernameTaken: false
+    });
+
+    let data = {
+      username: username,
+      uid:null
+    }
+
+    api.post('/users/isUsernameTaken', data).then((response) => {
+
+      if (response.data.status) {
+        this.setState({ usernameTaken: true })
+      } else {
+        this.setState({ usernameTaken: false })
+      }
+
+    })
   }
 
   render() {
@@ -153,14 +204,19 @@ export default class SignUpScreen extends React.Component {
                       <ErrorMessage errorValue={touched.fullName && errors.fullName} />
                       <FormInput
                         name='username'
-                        value={values.username}
-                        onChangeText={handleChange('username')}
+                        value={values.username = this.state.username}
+                        onChangeText={(username) => this.checkAvailability(username)}
                         autoCapitalize='none'
                         iconName='face'
                         iconColor='#2C384A'
                         placeholder='Username'
                         onBlur={handleBlur('username')}
                       />
+                      {this.state.usernameTaken ?
+                        <ErrorMessage errorValue='Username is taken' />
+                        :
+                        null
+                      }
                       <ErrorMessage errorValue={touched.username && errors.username} />
                       <FormInput
                         name='email'
