@@ -240,7 +240,21 @@ export default class OfferDetailsScreen extends Component {
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
 
+                                            <View style={{ flex: 0.33 }}>
+                                                <TouchableOpacity
+                                                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo: this.state.offerDetails.offeredBy })}
+                                                >
+                                                    <Icon
+                                                        key={this.state.itemDetails.id}
+                                                        name="message"
+                                                        size={20}
+                                                        color={'#FFC107'}
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
+
+
 
                                         <View style={styles.stackedView}>
                                             {

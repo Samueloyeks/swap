@@ -35,7 +35,7 @@ export default class MultipleOfferItem extends Component {
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
 
-                            <View style={{ flex: 0.9 }}>
+                            <View style={{ flex: 1 }}>
                                 <Text style={styles.titleText}>
                                     {(this.props.items.length == 2) ?
                                         (this.props.title + ` & 1 other`)
@@ -44,9 +44,7 @@ export default class MultipleOfferItem extends Component {
                                 </Text>
                             </View>
 
-                            <View style={{ flex: 0.1, alignItems: 'flex-end' }}>
-                                <TouchableOpacity><Icon name="message" color="#FF9D5C" size={20} /></TouchableOpacity>
-                            </View>
+
 
                         </View>
                         <View style={styles.stackedView}>

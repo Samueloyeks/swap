@@ -39,7 +39,11 @@ export default class SwapItem  extends Component {
 
                                 <Text style={styles.titleText}>{this.props.item.title}</Text></View>
                             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-                                <TouchableOpacity><Icon name="message" color="#FF9D5C" size={20} /></TouchableOpacity>
+                                <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.item, chatTo:{uid:this.props.item.postedby} })}
+                                >
+                                    <Icon name="message" color="#FF9D5C" size={20} />
+                                    </TouchableOpacity>
                             </View>
                         </View>
                         <View style={styles.stackedView}>

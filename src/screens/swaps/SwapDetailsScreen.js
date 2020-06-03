@@ -358,7 +358,18 @@ export default class SwapDetailsScreen extends Component {
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 10, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
 
-
+                                            <View style={{ flex: 0.33 }}>
+                                                <TouchableOpacity
+                                                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo: this.state.swapDetails.postedby })}
+                                                >
+                                                    <Icon
+                                                        key={this.state.itemDetails.id}
+                                                        name="message"
+                                                        size={20}
+                                                        color={'#FFC107'}
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
 
                                         {

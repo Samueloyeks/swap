@@ -93,11 +93,15 @@ export default class MyItem extends Component {
                                     <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute' }}>{this.props.likes}</Text>
                                 </View>
                                 <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
-                                    <TouchableOpacity>
+                                    <TouchableOpacity
+                                    onPress={()=>{
+                                        this.props.navigation.navigate('MyItemChatsScreen',{itemDetails: this.props})
+                                    }}
+                                    >
                                         <Icon
                                             key={this.props.id}
                                             name="wechat"
-                                            size={15}
+                                            size={20}
                                         />
                                     </TouchableOpacity>
                                 </View>

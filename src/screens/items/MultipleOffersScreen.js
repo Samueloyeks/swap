@@ -144,7 +144,7 @@ export default class MultipleOffersScreen extends React.Component {
                 this.props.navigation.goBack(null);
                 this.props.navigation.state.params.onGoBack();
             })
-    }
+    } 
 
     renderItem = ({ item, index }) => {
         return (
@@ -154,7 +154,7 @@ export default class MultipleOffersScreen extends React.Component {
                 accepted={this.state.offerDetails.accepted}
                 title={item.title}
                 images={item.images}
-                id={item.id}
+                offerItemId={item.id}
                 price={item.price}
                 liked={item.liked}
                 likes={item.likes}
@@ -162,6 +162,7 @@ export default class MultipleOffersScreen extends React.Component {
                 description={item.description}
                 preferences={item.preferences}
                 categories={item.categories}
+                itemDetails={item}
                 numberAvailable={item.quantity}
                 itemId={this.state.offerDetails.itemId}
                 postedby={this.state.offerDetails.postedby}

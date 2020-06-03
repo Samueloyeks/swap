@@ -46,7 +46,11 @@ export default class OfferItem extends Component {
                             </View>
 
                             <View style={{ flex: 0.2, alignItems: 'flex-end' }}>
-                                <TouchableOpacity><Icon name="message" color="#FF9D5C" size={20} /></TouchableOpacity>
+                                <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.items[0], chatTo:this.props.offeredBy })}
+                                >
+                                    <Icon name="message" color="#FF9D5C" size={20} />
+                                    </TouchableOpacity>
                             </View>
 
                         </View>

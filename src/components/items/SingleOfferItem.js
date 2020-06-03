@@ -26,7 +26,7 @@ export default class SingleOfferItem extends Component {
     render() {
         return (
             <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('SingleOfferDetailsScreen', { offerDetails: this.props, onGoBack: this.props.refreshDetails })}
+                onPress={() => this.props.navigation.navigate('SingleOfferDetailsScreen', { offerDetails: this.props,onGoBack: this.props.refreshDetails })}
             >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
@@ -42,6 +42,20 @@ export default class SingleOfferItem extends Component {
 
                             <View style={{ flex: 1 }}>
                                 <Text style={styles.titleText}>{this.props.title}</Text>
+                            </View>
+
+                            <View style={{ flex: 0.2, alignItems: 'flex-end' }}>
+                                <TouchableOpacity
+                                onPress={() => 
+                                    this.props.navigation.navigate(
+                                        'ChatsScreen', 
+                                        { itemDetails: this.props={...this.props,id:this.props.offerItemId},
+                                             chatTo:this.props.offeredBy 
+                                            })
+                                        }
+                                >
+                                    <Icon name="message" color="#FF9D5C" size={20} />
+                                    </TouchableOpacity>
                             </View>
 
                         </View>

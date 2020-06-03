@@ -30,7 +30,7 @@ export default class ChatsScreen extends React.Component {
     userData: null,
     uid: null,
     username: null,
-    posterData: null,
+    chatTo: null,
     itemDetails: null,
     profilePicture: null,
     messages: [],
@@ -40,11 +40,14 @@ export default class ChatsScreen extends React.Component {
   async componentDidMount() {
     const { state } = await this.props.navigation;
 
-    let posterData = await state.params.itemDetails.postedby
+    let chatTo = await state.params.chatTo
     let itemDetails = await state.params.itemDetails;
 
+
+
+
     this.setState({
-      posterData: posterData,
+      chatTo: chatTo,
       itemDetails: itemDetails
     })
 
@@ -52,11 +55,11 @@ export default class ChatsScreen extends React.Component {
 
     let data = {
       uid: this.state.userData.uid,
-      chatToId: this.state.posterData.uid,
+      chatToId: this.state.chatTo.uid,
       itemId: this.state.itemDetails.id
     }
 
-    await firebaseService.setRef(data);
+    await firebaseService.setChatRef(data);
 
     firebaseService.updateMessages(message => {
       if (message) {
@@ -97,7 +100,7 @@ export default class ChatsScreen extends React.Component {
 
 
   componentWillUnmount() {
-    firebaseService.removeRef()
+    firebaseService.removeChatRef()
   }
 
   async setUserData() {
@@ -109,12 +112,16 @@ export default class ChatsScreen extends React.Component {
         username: userData.username,
         profilePicture: userData.profilePicture
       })
-      return
+      return;
     })
   }
 
+
   onSend(message = []) {
     let messageBody = message[0]
+    messageBody['myId'] = this.state.userData.uid;
+    messageBody['chatToId'] = this.state.chatTo.uid;
+
     firebaseService.appendMessage(messageBody)
   }
 

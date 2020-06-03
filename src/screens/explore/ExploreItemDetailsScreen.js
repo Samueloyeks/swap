@@ -209,7 +209,14 @@ export default class ExploreItemDetailsScreen extends Component {
                     onPress={() => this.favorite()} />
                 </View>
                 <View style={{ flex: 0.33 }}>
-                  <TouchableOpacity>
+                  {
+                    !(this.state.itemDetails.posted&&this.state.userData)?
+                    null
+                    :
+                    !(this.state.itemDetails.postedby.uid==this.state.userData.uid)?
+                    <TouchableOpacity 
+                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo:this.state.itemDetails.postedby })}
+                    >
                     <Icon
                       key={this.state.itemDetails.id}
                       name="message"
@@ -217,6 +224,8 @@ export default class ExploreItemDetailsScreen extends Component {
                       color={'#FFC107'}
                     />
                   </TouchableOpacity>
+                  :null
+                  }
                 </View>
               </View>
 

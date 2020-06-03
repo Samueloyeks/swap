@@ -87,6 +87,9 @@ const ItemsStack = createStackNavigator({
   },
   MyItemChatsScreen: {
     screen: MyItemChatsScreen
+  },
+  ChatsScreen: {
+    screen: ChatsScreen,
   }
   // SwapsScreen: {
   //   screen: SwapsScreen,
@@ -104,6 +107,9 @@ const SwapsStack = createStackNavigator({
   },
   MyItemDetailsScreen: {
     screen: MyItemDetailsScreen,
+  },
+  ChatsScreen: {
+    screen: ChatsScreen,
   }
 });
 

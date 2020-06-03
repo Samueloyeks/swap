@@ -74,7 +74,7 @@ export default class SingleOfferDetailsScreen extends Component {
             itemDetails: state.params.offerDetails,
         })
         await this.setUserData();
-        // alert(JSON.stringify(this.state.itemDetails))
+        // console.log(this.state.itemDetails)
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
@@ -121,7 +121,17 @@ export default class SingleOfferDetailsScreen extends Component {
                                         <View style={styles.stackedView}>
                                             <View ><Text style={{ fontSize: 10 }}>Offered By</Text></View>
                                             <View >
-                                                <TouchableOpacity>
+                                                <TouchableOpacity
+                                                    onPress={
+                                                        () =>
+                                                            this.props.navigation.navigate('UserProfileScreen',
+                                                                {
+                                                                    userId: this.state.itemDetails.offeredBy.uid,
+                                                                    username: this.state.itemDetails.offeredBy.username,
+                                                                    onGoBack: ()=>{return}
+                                                                })
+                                                    }
+                                                >
                                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>
                                                         {this.state.itemDetails.offeredBy ? this.state.itemDetails.offeredBy.username : null}
                                                     </Text>
@@ -142,11 +152,23 @@ export default class SingleOfferDetailsScreen extends Component {
                                                     size={15}
                                                     color='#FF9D5C'
                                                 />
-                                            </View> 
+                                            </View>
                                             <View style={{ flex: 0.14 }}>
                                                 <Text style={{ fontSize: 8, color: '#858585', bottom: 16, position: 'absolute' }}>{this.state.itemDetails.likes}</Text>
                                             </View>
 
+                                            <View style={{ flex: 0.33 }}>
+                                                <TouchableOpacity
+                                                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo: this.state.itemDetails.offeredBy })}
+                                                >
+                                                    <Icon
+                                                        key={this.state.itemDetails.id}
+                                                        name="message"
+                                                        size={20}
+                                                        color={'#FFC107'}
+                                                    />
+                                                </TouchableOpacity>
+                                            </View>
                                         </View>
                                     </View>
                                 </View>
