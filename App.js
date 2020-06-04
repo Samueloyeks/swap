@@ -10,7 +10,8 @@ YellowBox.ignoreWarnings(
   ['Functions are not valid as a React child.'],
   ['Failed child context type:'], 
   ["No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"], 
-  ['The "UMNativeModulesProxy" native module is not exported through NativeModules;']
+  ['The "UMNativeModulesProxy" native module is not exported through NativeModules;'],
+  ['Setting a timer']
   );
 
 

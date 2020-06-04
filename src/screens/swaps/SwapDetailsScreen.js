@@ -15,10 +15,11 @@ import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
 import MyItem from '../../components/items/MyItem'
+import NumberFormat from 'react-number-format';
 
 
 
- 
+
 
 
 export default class SwapDetailsScreen extends Component {
@@ -148,7 +149,7 @@ export default class SwapDetailsScreen extends Component {
 
     withdrawOffer = () => {
         this.setState({ loading: true })
-    
+
         let data = {
             offerId: this.state.swapDetails.offerId,
             itemId: this.state.itemDetails.id,
@@ -156,22 +157,22 @@ export default class SwapDetailsScreen extends Component {
         }
 
         api.post('/items/withdrawOffer', data).then((response) => {
-    
-          if (response.data.status == 'success') {
 
-            this.props.navigation.goBack(null);
-            this.props.navigation.state.params.onGoBack()
+            if (response.data.status == 'success') {
 
-          } else {
-            toast.show('Unable to withdraw offer')
-          }
-    
+                this.props.navigation.goBack(null);
+                this.props.navigation.state.params.onGoBack()
+
+            } else {
+                toast.show('Unable to withdraw offer')
+            }
+
         }, error => {
-          toast.show('Unable to withdraw offer')
-    
+            toast.show('Unable to withdraw offer')
+
         })
-    
-      }
+
+    }
 
     deleteItem = (index, id) => {
 
@@ -345,6 +346,17 @@ export default class SwapDetailsScreen extends Component {
                                             </View>
                                         </View>
 
+
+                                        <View >
+                                            <NumberFormat
+                                                value={this.state.itemDetails.price}
+                                                displayType={'text'}
+                                                thousandSeparator={true}
+                                                prefix={'₦'}
+                                                renderText={value => <Text style={{ fontSize: 10, color: '#40A459' }}>{value}</Text>}
+                                            />
+                                        </View>
+
                                         <View style={styles.stackedViewPadded}>
                                             <View style={{ flex: 0.08 }}>
                                                 <Icon
@@ -373,14 +385,14 @@ export default class SwapDetailsScreen extends Component {
                                         </View>
 
                                         {
-                                            (this.state.swapDetails && !this.state.swapDetails.completed)?
-                                            <View style={styles.stackedView}>
-                                                <TouchableOpacity style={styles.button} onPress={() => this.requestWithdrawConfirmation()}>
-                                                    <Text style={styles.buttonText}>Withdraw Offer</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                            :
-                                            null
+                                            (this.state.swapDetails && !this.state.swapDetails.completed) ?
+                                                <View style={styles.stackedView}>
+                                                    <TouchableOpacity style={styles.button} onPress={() => this.requestWithdrawConfirmation()}>
+                                                        <Text style={styles.buttonText}>Withdraw Offer</Text>
+                                                    </TouchableOpacity>
+                                                </View>
+                                                :
+                                                null
                                         }
                                     </View>
                                 </View>

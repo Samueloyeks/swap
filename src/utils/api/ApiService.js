@@ -5,10 +5,12 @@ import axios from 'axios';
 
 
 
-
 var baseURL = 'http://127.0.0.1:3000';
 // var baseURL =  'http://192.168.56.1:3000';
-// var baseURL = 'http://localhost:3000';
+// var baseURL = 'https://localhost:3000';
+
+// var baseURL = 'http://127.0.0.1:3000';
+// var baseURL = 'https://localhost:3000';
 
 
 
@@ -20,7 +22,6 @@ const defaultHeader = {
     "Content-Type": "application/x-www-form-urlencoded",
     'Accept': 'application/json'
 }
-
 
 class Api extends Component {
 
@@ -40,7 +41,7 @@ class Api extends Component {
         const url = baseURL + targetFunction;
 
         return await axios.post(url, data, {
-            headers: defaultHeader
+            headers: defaultHeader,
         })
 
     }

@@ -8,6 +8,7 @@ import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
+import NumberFormat from 'react-number-format';
 
 
 
@@ -190,6 +191,15 @@ export default class ExploreItemDetailsScreen extends Component {
 
               <TimeAgo time={this.state.itemDetails.posted} interval={20000} style={{ fontSize: 10, color: '#808080' }} />
 
+              <View >
+                <NumberFormat
+                  value={this.state.itemDetails.price}
+                  displayType={'text'}
+                  thousandSeparator={true}
+                  prefix={'₦'}
+                  renderText={value => <Text style={{ fontSize: 10, color: '#40A459' }}>{value}</Text>}
+                />
+              </View>
 
               <View style={styles.stackedViewPadded}>
                 <View style={{ flex: 0.33 }}>
@@ -210,21 +220,21 @@ export default class ExploreItemDetailsScreen extends Component {
                 </View>
                 <View style={{ flex: 0.33 }}>
                   {
-                    !(this.state.itemDetails.posted&&this.state.userData)?
-                    null
-                    :
-                    !(this.state.itemDetails.postedby.uid==this.state.userData.uid)?
-                    <TouchableOpacity 
-                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo:this.state.itemDetails.postedby })}
-                    >
-                    <Icon
-                      key={this.state.itemDetails.id}
-                      name="message"
-                      size={20}
-                      color={'#FFC107'}
-                    />
-                  </TouchableOpacity>
-                  :null
+                    !(this.state.itemDetails.posted && this.state.userData) ?
+                      null
+                      :
+                      !(this.state.itemDetails.postedby.uid == this.state.userData.uid) ?
+                        <TouchableOpacity
+                          onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.state.itemDetails, chatTo: this.state.itemDetails.postedby })}
+                        >
+                          <Icon
+                            key={this.state.itemDetails.id}
+                            name="message"
+                            size={20}
+                            color={'#FFC107'}
+                          />
+                        </TouchableOpacity>
+                        : null
                   }
                 </View>
               </View>
@@ -247,15 +257,25 @@ export default class ExploreItemDetailsScreen extends Component {
           <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Item Description</Text>
           <Text style={{ color: '#9F9F9F', marginBottom: 10 }}>{this.state.itemDetails.description}</Text>
 
-          <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Would Trade For:</Text>
-          <FlatList
-            style={{ marginBottom: 10 }}
-            data={this.state.itemDetails.preferences}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => <Text style={{ color: '#9F9F9F' }}>{item}</Text>}
-          />
+          {
+            this.state.itemDetails.preferences ?
+              <View>
+                <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 5 }}>Would Trade For:</Text>
+                <FlatList
+                  style={{ marginBottom: 10 }}
+                  data={this.state.itemDetails.preferences}
+                  keyExtractor={(item, index) => index.toString()}
+                  renderItem={({ item }) => <Text style={{ color: '#9F9F9F' }}>{item}</Text>}
+                />
+              </View>
+              : null
+          }
 
-          <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 10 }}>Number Available: {this.state.itemDetails.numberAvailable}</Text>
+          {
+            this.state.itemDetails.numberAvailable ?
+              <Text style={{ fontSize: 14, color: '#545F71', marginVertical: 10 }}>Number Available: {this.state.itemDetails.numberAvailable}</Text>
+              : null
+          }
 
 
           {

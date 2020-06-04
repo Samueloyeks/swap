@@ -159,17 +159,10 @@ export default class SignUpScreen extends React.Component {
 
   render() {
     return (
-      <KeyboardAvoidingView
-        behavior="padding"
-        style={{ flex: 1 }}>
-        <View
-          style={{ alignItems: 'center', paddingVertical: 20, height: '100%' }}
-        >
+      <View style={{ backgroundColor: '#FFF', flex: 1, borderTopRightRadius: 35, height: '100%', alignItems: 'center' }}>
           <View style={{ height: 20 }}></View>
-          <ScrollView
-            style={{ flex: 1, width: '85%' }}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='handled'>
+          <SafeAreaView
+            style={{ flex: 1, width: '85%' }}>
             <Formik
               initialValues={{ fullName: '', username: '', email: '', phoneNumber: '', password: '' }}
               onSubmit={values => { this.handleSubmit(values) }}
@@ -184,8 +177,9 @@ export default class SignUpScreen extends React.Component {
                 touched,
                 handleBlur
               }) => (
-                  <Fragment>
-                    <View>
+                <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps='handled'>
+                  <View>
+                    <KeyboardAvoidingView enabled>
                       <View style={styles.container}>
                         <Text style={styles.welcomeText}>Let's get started!</Text>
                         <Text style={{ color: '#C4C4C4' }}>Create an account and start swapping today!</Text>
@@ -285,14 +279,13 @@ export default class SignUpScreen extends React.Component {
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('SignIn')} style={{ display: 'flex' }}><Text style={{ color: '#FF9D5C' }}>Log In</Text></TouchableOpacity>
                       </View>
 
+                    </KeyboardAvoidingView>
                     </View>
-                    {/* </ScrollView> */}
-                  </Fragment>
+                    </ScrollView>
                 )}
             </Formik>
-          </ScrollView>
+          </SafeAreaView>
         </View>
-      </KeyboardAvoidingView>
     )
   }
 }
