@@ -33,6 +33,7 @@ import tracking from '../../utils/geolocation/Tracking'
 
 
 
+
 const validationSchema = Yup.object().shape({
     title: Yup.string()
         .label('Title')
@@ -147,7 +148,7 @@ export default class UploadScreen extends React.Component {
                 api.post('/items/uploadItem', item).then((response) => {
                     console.log(response.data)
                     if (response.status == 200) {
-                        toast.show('Item Uploaded')
+                        toast.show('Item Uploaded');
                     }
                 })
 

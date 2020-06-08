@@ -346,9 +346,9 @@ export default class MyItemDetailsScreen extends Component {
         )
     }
 
-    reloadPage=()=>{
+    reloadPage = () => {
         this.getOffers()
-      }
+    }
 
 
     render() {
@@ -432,6 +432,21 @@ export default class MyItemDetailsScreen extends Component {
                                             <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.offers ? this.state.offers.length : 0}</Text></View>
                                             <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
                                         </View>
+
+                                        <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    this.props.navigation.navigate('MyItemChatsScreen', { itemDetails: this.state.itemDetails })
+                                                }}
+                                            >
+                                                <Icon
+                                                    key={this.props.id}
+                                                    name="wechat"
+                                                    size={22}
+                                                />
+                                            </TouchableOpacity>
+                                        </View>
+
                                     </View>
                                 </View>
 

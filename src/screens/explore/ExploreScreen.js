@@ -22,7 +22,11 @@ export default class ExploreScreen extends React.Component {
       activeCategories: {},
       activeCategoriesCount: 0,
       items: [],
+      pageSize: 11,
+      lastItemStamp: null,
       loading: false,
+      loadingMore: false,
+      loadedAll: false,
       isRefreshing: false,
       error: null,
       searchString: '',
@@ -52,12 +56,12 @@ export default class ExploreScreen extends React.Component {
       filterByPrice: this.state.filterByPrice,
       filterByLocation: this.state.filterByLocation
     });
+    this.setState({ loading: true })
     await this.setUserData()
     this.getCategories();
     // await this.getItems();
     this.getItems();
   }
-
 
 
   getCategories = () => {
@@ -78,34 +82,52 @@ export default class ExploreScreen extends React.Component {
     }
   }
 
-  // getItems = () => {
-  //   this.setState({ loading: true })
-  //   api.get('/items/getItems').then((response) => {
-  //     this.setState({
-  //       items: response.data.data,
-  //       loading: false
-  //     })
-  //     this.arrayholder = response.data.data
-  //   })
-  // }
+
 
   getItems = () => {
-    this.setState({ loading: true })
+    // this.setState({ loading: true })
+    const { pageSize } = this.state;
 
     var data = {
       "uid": this.state.userData.uid,
       "categories": this.state.activeCategories,
       "filterByLocation": this.state.filterByLocation ? true : false,
       "filterByPrice": this.state.filterByPrice ? true : false,
-      "location": this.state.location
+      "location": this.state.location,
+      "pageSize": pageSize,
+      "lastItemStamp": this.state.lastItemStamp
     }
 
+
     api.post('/items/getItemsByFilters', data).then((response) => {
+      let items = response.data.data;
+
+      if (items.length == 1) {
+        this.setState({
+          items: [...this.state.items, ...items],
+          loading: false,
+          loadingMore: false,
+          loadedAll: true,
+          lastItemStamp: null
+        })
+        return;
+      }
+
+      let lastItemStamp
+  
+      if (response.data.variable) {
+        lastItemStamp = response.data.variable
+      } 
+
+
       this.setState({
-        items: response.data.data,
-        loading: false
+        items: [...this.state.items, ...items],
+        loading: false,
+        loadingMore: false,
+        lastItemStamp: lastItemStamp
       })
-      this.arrayholder = response.data.data
+      this.arrayholder = this.state.items
+
     }, err => {
       toast.show('Error')
       console.log(err);
@@ -116,32 +138,20 @@ export default class ExploreScreen extends React.Component {
 
   async applyFilters() {
     this.setModalVisible(!this.state.modalVisible);
-    this.setState({ loading: true })
 
-    if(this.state.filterByLocation){
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
+
+    if (this.state.filterByLocation) {
       await this.setCoordinates()
     }
 
-    var data = {
-      "uid": this.state.userData.uid,
-      "categories": this.state.activeCategories,
-      "filterByLocation": this.state.filterByLocation ? true : false,
-      "filterByPrice": this.state.filterByPrice ? true : false,
-      "location": this.state.location
-    }
-
-
-    api.post('/items/getItemsByFilters', data).then((response) => {
-      this.setState({
-        items: response.data.data,
-        loading: false
-      })
-      this.arrayholder = response.data.data
-    }, err => {
-      toast.show('Error')
-      console.log(err);
-      this.setState({ loading: false })
-    })
+    this.getItems()
 
   }
 
@@ -201,7 +211,6 @@ export default class ExploreScreen extends React.Component {
     });
 
   };
-
 
   static navigationOptions = ({ navigation }) => {
     const screen = Dimensions.get("window");
@@ -336,20 +345,43 @@ export default class ExploreScreen extends React.Component {
     return true;
   }
 
-  onRefresh=()=> {
+  onRefresh = () => {
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getItems();
   }
 
+  // handleLoadMore = () => {
+  //   if (!this.state.loading) {
+  //     this.page = this.page + 1; // increase page by 1
+  //     this.getItems(this.page); // method for API call 
+  //   }
+  // };
+
   handleLoadMore = () => {
-    if (!this.state.loading) {
-      this.page = this.page + 1; // increase page by 1
-      this.getItems(this.page); // method for API call 
+    if (this.state.loadedAll) {
+      return;
+    } else {
+      this.setState(
+        (prevState, nextProps) => ({
+          pageSize: 10,
+          loadingMore: true
+        }),
+        () => {
+          this.getItems();
+        }
+      );
     }
   };
 
   renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!this.state.loading) return null;
+    if (!this.state.loadingMore) return null;
     return (
       <ActivityIndicator
         style={{ color: '#000' }}
@@ -387,7 +419,7 @@ export default class ExploreScreen extends React.Component {
         preferences={item.preferences}
         categories={item.categories}
         numberAvailable={item.quantity}
-        distance = {item.distance}
+        distance={item.distance}
       />
     )
   }
@@ -395,13 +427,21 @@ export default class ExploreScreen extends React.Component {
   updateCategoryFilters = (id) => {
     let newActiveCategories = { ...this.state.activeCategories }
 
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
 
     if (newActiveCategories[id]) {
       delete newActiveCategories[id];
 
       this.setState({
         activeCategories: newActiveCategories,
-        activeCategoriesCount: this.state.activeCategoriesCount - 1
+        activeCategoriesCount: this.state.activeCategoriesCount - 1,
+        loading: true
       }, () => {
         this.getItems()
       })
@@ -410,7 +450,8 @@ export default class ExploreScreen extends React.Component {
 
       this.setState({
         activeCategories: newActiveCategories,
-        activeCategoriesCount: this.state.activeCategoriesCount + 1
+        activeCategoriesCount: this.state.activeCategoriesCount + 1,
+        loading: true
       }, () => {
         this.getItems()
       })
@@ -418,7 +459,14 @@ export default class ExploreScreen extends React.Component {
 
   }
 
-  reloadPage=()=>{
+  reloadPage = () => {
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getItems()
   }
 
@@ -470,7 +518,7 @@ export default class ExploreScreen extends React.Component {
 
 
               <View style={{ flexDirection: 'row' }}>
-              <TouchableHighlight
+                <TouchableHighlight
                   style={{ ...styles.openButton, backgroundColor: "#000000" }}
                   onPress={() => {
                     this.setModalVisible(!this.state.modalVisible);
@@ -505,14 +553,14 @@ export default class ExploreScreen extends React.Component {
             </View>
             :
             this.isEmpty(this.state.items) ?
-            <View>
+              <View>
                 <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
-                No Items to Display
+                  No Items to Display
               </Text>
-              <TouchableOpacity onPress={()=>this.reloadPage()}>
-              <Icon style={{textAlign:'center'}} name="rotate-right" size={20}/>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity onPress={() => this.reloadPage()}>
+                  <Icon style={{ textAlign: 'center' }} name="rotate-right" size={20} />
+                </TouchableOpacity>
+              </View>
               :
               <FlatList
                 data={this.state.items}
@@ -527,8 +575,8 @@ export default class ExploreScreen extends React.Component {
                   />
                 }
                 ListFooterComponent={this.renderFooter.bind(this)}
-                onEndReachedThreshold={0.4}
-              // onEndReached={this.handleLoadMore.bind(this)}
+                onEndReachedThreshold={0.6}
+                onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
               />
         }
 
@@ -587,11 +635,11 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center"
   },
-  checkboxContainer:{
+  checkboxContainer: {
     backgroundColor: 'transparent',
-     borderWidth: 0,
-     padding:0,
-     alignSelf:'flex-start'
+    borderWidth: 0,
+    padding: 0,
+    alignSelf: 'flex-start'
   }
 
 });

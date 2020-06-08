@@ -115,10 +115,10 @@ export default class EditItemScreen extends React.Component {
             title: state.params.itemDetails.title,
             selectedItems: selectedCategoryIndices,
             description: state.params.itemDetails.description,
-            quantity: state.params.itemDetails.numberAvailable,
-            price: state.params.itemDetails.price,
+            quantity: (state.params.itemDetails.numberAvailable)?state.params.itemDetails.numberAvailable:1,
+            price: (state.params.itemDetails.price)?state.params.itemDetails.price:null,
             tags: {
-                tagsArray: state.params.itemDetails.preferences
+                tagsArray: (state.params.itemDetails.preferences)?state.params.itemDetails.preferences:[]
             },
             image1: state.params.itemDetails.images[0],
             image2: state.params.itemDetails.images[1],
@@ -378,7 +378,7 @@ export default class EditItemScreen extends React.Component {
                                                 <ErrorMessage errorValue={touched.description && errors.description} />
                                                 <UploadFormInput
                                                     name='quantity'
-                                                    value={values.quantity = this.state.quantity.toString()}
+                                                    value={values.quantity = (this.state.quantity)?this.state.quantity.toString():null}
                                                     onChangeText={(quantity) => this.setState({ quantity })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
@@ -388,7 +388,7 @@ export default class EditItemScreen extends React.Component {
 
                                                 <UploadFormInput
                                                     name='price'
-                                                    value={values.price = this.state.price.toString()}
+                                                    value={values.price = (this.state.price)?this.state.price.toString():null}
                                                     onChangeText={(price) => this.setState({ price })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
@@ -484,7 +484,7 @@ export default class EditItemScreen extends React.Component {
                                                 <View style={styles.container}>
                                                     <TagInput
                                                         updateState={this.updateTagState}
-                                                        tags={this.state.tags}
+                                                        tags={(this.state.tags)?this.state.tags:[]}
                                                         containerStyle={{ width: (Dimensions.get('window').width - 40) }}
                                                         inputContainerStyle={styles.defaultInput}
                                                         inputStyle={{ color: this.state.tagsText }}

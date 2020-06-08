@@ -129,6 +129,9 @@ const ProfileStack = createStackNavigator({
   ExploreItemDetailsScreen: {
     screen: ExploreItemDetailsScreen,
   },
+  ChatsScreen: {
+    screen: ChatsScreen,
+  }
 
 });
 

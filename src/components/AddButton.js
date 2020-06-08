@@ -1,15 +1,16 @@
-import React, {Component} from 'react';
-import {Animated, TouchableHighlight, View} from "react-native";
-import Icon from 'react-native-vector-icons/MaterialIcons';  
+import React, { Component } from 'react';
+import { Animated, TouchableHighlight, View, ActivityIndicator } from "react-native";
+import Icon from 'react-native-vector-icons/MaterialIcons';
 const SIZE = 80;
 class AddButton extends Component {
     mode = new Animated.Value(0);
-    toggleView = () => { 
-        Animated.timing(this.mode, {
-            toValue: this.mode._value === 0 ? 1 : 0,
-            duration: 300 
-        }).start();
-        this.props.navigation.navigate('UploadModal') 
+
+    toggleView = () => {
+        // Animated.timing(this.mode, {
+        //     toValue: this.mode._value === 0 ? 1 : 0,
+        //     duration: 300 
+        // }).start();
+        this.props.navigation.navigate('UploadModal')
     };
     render() {
         const firstX = this.mode.interpolate({
@@ -124,19 +125,22 @@ class AddButton extends Component {
                         height: SIZE,
                         borderRadius: SIZE / 2,
                         backgroundColor: '#090909',
-                        marginBottom:17
+                        marginBottom: 17
                     }}
                 >
                     <Animated.View style={{
                         transform: [
-                            {rotate: rotation}
+                            { rotate: rotation }
                         ]
                     }}>
-                        <Icon name="add" size={30} color="#F8F8F8"/>
+
+                        {/* <ActivityIndicator /> */}
+                        <Icon name="add" size={30} color="#F8F8F8" />
+
                     </Animated.View>
                 </TouchableHighlight>
             </View>
         );
     }
 }
-export {AddButton};
+export { AddButton };
