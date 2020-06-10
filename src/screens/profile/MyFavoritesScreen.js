@@ -22,7 +22,11 @@ export default class MyFavoritesScreen extends React.Component {
       activeCategories: {},
       activeCategoriesCount: 0,
       items: [],
+      pageSize: 11,
+      lastItemStamp: null,
       loading: false,
+      loadingMore: false,
+      loadedAll: false,
       isRefreshing: false,
       error: null,
       searchString: '',
@@ -51,6 +55,7 @@ export default class MyFavoritesScreen extends React.Component {
     //   filterByPrice: this.state.filterByPrice,
     //   filterByLocation: this.state.filterByLocation
     // });
+    this.setState({ loading: true })
     await this.setUserData()
     this.getItems();
   }
@@ -59,18 +64,43 @@ export default class MyFavoritesScreen extends React.Component {
 
 
   getItems = () => {
-    this.setState({ loading: true })
+    // this.setState({ loading: true })
+    const { pageSize } = this.state;
 
     var data = {
       "uid": this.state.userData.uid,
+      "pageSize": pageSize,
+      "lastItemStamp": this.state.lastItemStamp
     }
 
     api.post('/items/getFavoriteItems', data).then((response) => {
+      let items = response.data.data;
+
+      if (!response.data.variable) {
+        this.setState({
+          items: [...this.state.items, ...items],
+          loading: false,
+          loadingMore: false,
+          loadedAll: true,
+          lastItemStamp: null
+        })
+        return;
+      }
+
+      let lastItemStamp
+  
+      if (response.data.variable) {
+        lastItemStamp = response.data.variable
+      } 
+
+
       this.setState({
-        items: response.data.data,
-        loading: false
+        items: [...this.state.items, ...items],
+        loading: false,
+        loadingMore: false,
+        lastItemStamp: lastItemStamp
       })
-      this.arrayholder = response.data.data
+      this.arrayholder = this.state.items
     }, err => {
       toast.show('Error')
       console.log(err);
@@ -198,19 +228,35 @@ export default class MyFavoritesScreen extends React.Component {
   }
 
   onRefresh=()=> {
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getItems();
   }
 
   handleLoadMore = () => {
-    if (!this.state.loading) {
-      this.page = this.page + 1; // increase page by 1
-      this.getItems(this.page); // method for API call 
+    if (this.state.loadedAll) {
+      return;
+    } else {
+      this.setState(
+        (prevState, nextProps) => ({
+          pageSize: 10,
+          loadingMore: true
+        }),
+        () => {
+          this.getItems();
+        }
+      );
     }
   };
 
   renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!this.state.loading) return null;
+    if (!this.state.loadingMore) return null;
     return (
       <ActivityIndicator
         style={{ color: '#000' }}
@@ -249,6 +295,13 @@ export default class MyFavoritesScreen extends React.Component {
  
 
   reloadPage=()=>{
+    this.setState({
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getItems()
   }
 
@@ -305,8 +358,8 @@ export default class MyFavoritesScreen extends React.Component {
                   />
                 }
                 ListFooterComponent={this.renderFooter.bind(this)}
-                onEndReachedThreshold={0.4}
-              // onEndReached={this.handleLoadMore.bind(this)}
+                onEndReachedThreshold={0.6}
+                onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
               />
         }
 

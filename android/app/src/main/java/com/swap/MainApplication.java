@@ -21,7 +21,8 @@ import java.util.List;
 // import io.invertase.firebase.storage.RNFirebaseStoragePackage; 
 // import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 
-
+// import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                       import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+// import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -37,9 +38,9 @@ public class MainApplication extends Application implements ReactApplication {
         protected List<ReactPackage> getPackages() {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
-          // packages.add(new RNFirebaseAuthPackage());
-          // packages.add(new RNFirebaseDatabasePackage());
-          // packages.add(new RNFirebaseStoragePackage());
+          // packages.add(new RNFirebasePackage());
+          // packages.add(new RNFirebaseMessagingPackage());
+          // packages.add(new RNFirebaseNotificationsPackage());
           return packages;
         }
 

@@ -32,7 +32,6 @@ export default class UserProfileScreen extends React.Component {
     super(props);
     this.state = {
       userData: null,
-      isRefreshing: false,
       uid: '',
       fullName: '',
       username: '',
@@ -40,7 +39,6 @@ export default class UserProfileScreen extends React.Component {
       phoneNumber: '',
       password: '',
       profilePicture: null,
-      loading: false,
       isFocused: false,
       likes: 0,
       rating: 0,
@@ -48,7 +46,14 @@ export default class UserProfileScreen extends React.Component {
       swapsCompleted: 0,
       modalVisible: false,
       reports: {},
-      items: []
+      items: [],
+      pageSize: 11,
+      lastItemStamp: null,
+      loading: false,
+      loadingMore: false,
+      loadedAll: false,
+      isRefreshing: false,
+      error: null,
     }
 
     this.like = this.like.bind(this);
@@ -95,7 +100,7 @@ export default class UserProfileScreen extends React.Component {
           userData: response.data.data,
           uid: response.data.data.uid,
           fullName: response.data.data.fullName,
-          username: response.data.data.username,
+          username: response.data.data.username, 
           phoneNumber: response.data.data.phoneNumber,
           email: response.data.data.email,
           profilePicture: (response.data.data.profilePicture == undefined ? null : response.data.data.profilePicture),
@@ -113,19 +118,44 @@ export default class UserProfileScreen extends React.Component {
   }
 
   getItems = async() => {
-
     await db.get('userData').then(data => {
+      const { pageSize } = this.state;
       let userData = JSON.parse(data)
       let uid = userData.uid
 
       var data = {
         "uid": uid,
         "posterId": this.state.uid,
+        "pageSize": pageSize,
+        "lastItemStamp": this.state.lastItemStamp
       }
 
       api.post('/items/getUserItemsByUid', data).then((response) => {
+        let items = response.data.data;
+      
+        if (!response.data.variable) {
+          this.setState({
+            items: [...this.state.items, ...items],
+            loading: false,
+            loadingMore: false,
+            loadedAll: true,
+            lastItemStamp: null
+          })
+          return;
+        }
+  
+        let lastItemStamp
+    
+        if (response.data.variable) {
+          lastItemStamp = response.data.variable
+        } 
+  
+  
         this.setState({
-          items: response.data.data,
+          items: [...this.state.items, ...items],
+          loading: false,
+          loadingMore: false,
+          lastItemStamp: lastItemStamp
         })
       }, err => {
         toast.show('Error getting items')
@@ -367,9 +397,26 @@ export default class UserProfileScreen extends React.Component {
     return true;
   }
 
+
+  handleLoadMore = () => {
+    if (this.state.loadedAll) {
+      return;
+    } else {
+      this.setState(
+        (prevState, nextProps) => ({
+          pageSize: 10,
+          loadingMore: true
+        }),
+        () => {
+          this.getItems();
+        }
+      );
+    }
+  };
+
   renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!this.state.loading) return null;
+    if (!this.state.loadingMore) return null;
     return (
       <ActivityIndicator
         style={{ color: '#000' }}
@@ -512,12 +559,12 @@ export default class UserProfileScreen extends React.Component {
           <View style={{ paddingHorizontal: 20 }}><Text style={{ fontSize: 20 }}>Items</Text></View>
           <View >
 
-            {
+            {/* {
               this.isEmpty(this.state.items) ?
                 null
                 :
                 <TouchableOpacity><Text style={{ textAlign: 'right', color: '#9F9F9F', paddingHorizontal: 20 }}>View All</Text></TouchableOpacity>
-            }
+            } */}
 
             {/* <FlatList
           data={Object.values(this.state.items)}
@@ -538,8 +585,8 @@ export default class UserProfileScreen extends React.Component {
                   contentContainerStyle={{ paddingBottom: 50 }}
                   extraData={this.state}
                   ListFooterComponent={this.renderFooter.bind(this)}
-                  onEndReachedThreshold={0.4}
-                // onEndReached={this.handleLoadMore.bind(this)}
+                onEndReachedThreshold={0.6}
+                onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                 />
             }
           </View>

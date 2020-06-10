@@ -1,9 +1,27 @@
 import React, { Component } from 'react';
 import { Animated, TouchableHighlight, View, ActivityIndicator } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { EventRegister } from 'react-native-event-listeners'
+
 const SIZE = 80;
+
 class AddButton extends Component {
     mode = new Animated.Value(0);
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            uploading: false
+        }
+    }
+
+    componentDidMount() {
+        EventRegister.addEventListener('uploading', (uploading) => {
+            this.setState({
+                uploading: uploading,
+            })
+        })
+    }
 
     toggleView = () => {
         // Animated.timing(this.mode, {
@@ -134,8 +152,11 @@ class AddButton extends Component {
                         ]
                     }}>
 
-                        {/* <ActivityIndicator /> */}
-                        <Icon name="add" size={30} color="#F8F8F8" />
+                        {
+                            this.state.uploading ?
+                                <ActivityIndicator /> :
+                                <Icon name="add" size={30} color="#F8F8F8" />
+                        }
 
                     </Animated.View>
                 </TouchableHighlight>

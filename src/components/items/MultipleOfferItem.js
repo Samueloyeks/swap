@@ -29,7 +29,7 @@ export default class MultipleOfferItem extends Component {
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
                         <Image style={{ position: 'absolute', right: 0, bottom: 0, width: 130, zIndex: 1, height: 90, borderRadius: 10 }} source={this.props.items ? ({ uri: this.props.items[0].images[0] }) : itemImage} />
-                        <Image style={{ position: 'absolute', left: 0, top: 0, width: 130, height: 90 }} source={this.props.items ? ({ uri: this.props.items[1].images[0] }) : itemImage} />
+                        <Image style={{ position: 'absolute', left: 0, top: 0, width: 110, height: 90, borderTopRightRadius: 10 }} source={this.props.items ? ({ uri: this.props.items[1].images[0] }) : itemImage} />
 
                     </View>
                     <View style={styles.content}>

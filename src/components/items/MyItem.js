@@ -23,7 +23,7 @@ export default class MyItem extends Component {
 
 
     render() {
-        return (
+        return ( 
             <Swipeable
                 renderRightActions={() => {
                     return (

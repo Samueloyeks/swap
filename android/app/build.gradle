@@ -201,6 +201,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:19.0.0'
     compile 'com.android.support:multidex:1.0.0'
     implementation "com.google.firebase:firebase-storage:19.0.0"
+//     compile(project(':react-native-firebase')) {   
+//        transitive = false
+//    }
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

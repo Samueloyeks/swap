@@ -33,7 +33,6 @@ export default class CompletedSwapItem extends Component {
                                 <View style={styles.ImgContainer}>
                                     <Image
                                         style={{
-                                            borderWidth: 2,
                                             width: 77,
                                             height: 77
                                         }}
@@ -51,12 +50,12 @@ export default class CompletedSwapItem extends Component {
                                     {this.props.offerItems.length > 1 ?
                                         <View>
                                             <Image
-                                                style={{ borderWidth: 2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
+                                                style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
 
                                             <Image
-                                                style={{ borderWidth: 2, left: 0, top: 0, width: 70, height: 77 }}
+                                                style={{ left: 0, top: 0, width: 70, height: 77 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[1].images[0] }) : itemImage} />
 
@@ -66,7 +65,6 @@ export default class CompletedSwapItem extends Component {
                                         :
                                         <Image
                                             style={{
-                                                borderWidth: 2,
                                                 width: 77,
                                                 height: 77
                                             }}
@@ -117,12 +115,12 @@ export default class CompletedSwapItem extends Component {
                                     {this.props.offerItems.length > 1 ?
                                         <View>
                                             <Image
-                                                style={{ borderWidth: 2, position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
+                                                style={{ position: 'absolute', right: 0, bottom: 0, width: 70, zIndex: 1, height: 70 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[0].images[0] }) : itemImage} />
 
                                             <Image
-                                                style={{ borderWidth: 2, left: 0, top: 0, width: 70, height: 77 }}
+                                                style={{ left: 0, top: 0, width: 70, height: 77 }}
                                                 resizeMode="stretch"
                                                 source={this.props.offerItems ? ({ uri: this.props.offerItems[1].images[0] }) : itemImage} />
 
@@ -132,7 +130,6 @@ export default class CompletedSwapItem extends Component {
                                         :
                                         <Image
                                             style={{
-                                                borderWidth: 2,
                                                 width: 77,
                                                 height: 77
                                             }}
@@ -158,7 +155,6 @@ export default class CompletedSwapItem extends Component {
                                 <View style={styles.ImgContainer}>
                                     <Image
                                         style={{
-                                            borderWidth: 2,
                                             width: 77,
                                             height: 77
                                         }}

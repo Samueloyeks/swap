@@ -29,9 +29,14 @@ export default class MyItemDetailsScreen extends Component {
             itemDetails: {},
             isImageViewVisible: true,
             selectedIndex: 0,
-            isRefreshing: false,
             offers: [],
+            pageSize: 11,
+            lastOfferStamp: null,
             loading: false,
+            loadingMore: false,
+            loadedAll: false,
+            isRefreshing: false,
+            error: null,
             sendingOfferResponse: false,
             markingAsSwapped: false
         }
@@ -79,24 +84,49 @@ export default class MyItemDetailsScreen extends Component {
             itemDetails: state.params.itemDetails,
             selectedIndex: state.params.selectedIndex ? state.params.selectedIndex : 0,
         })
+
+        this.setState({ loading: true })
         await this.setUserData();
         this.getOffers();
-        // alert(JSON.stringify(this.state.itemDetails))
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 
     getOffers = () => {
-        this.setState({ loading: true })
+        // this.setState({ loading: true })
+        const { pageSize } = this.state;
 
         let data = {
-            itemId: this.state.itemDetails.id
+            "itemId": this.state.itemDetails.id,
+            "pageSize": pageSize,
+            "lastOfferStamp": this.state.lastOfferStamp
         }
 
         api.post('/items/getItemOffers', data).then((response) => {
+            let offers = response.data.data;
 
+            if (!response.data.variable) {
+                this.setState({
+                  offers: [...this.state.offers, ...offers],
+                  loading: false,
+                  loadingMore: false,
+                  loadedAll: true,
+                  lastOfferStamp: null
+                })
+                return;
+              }
+
+
+            let lastOfferStamp
+  
+            if (response.data.variable) {
+                lastOfferStamp = response.data.variable
+            } 
+      
             this.setState({
-                offers: response.data.data,
-                loading: false
+              offers: [...this.state.offers, ...offers],
+              loading: false,
+              loadingMore: false,
+              lastOfferStamp: lastOfferStamp
             })
 
         }, err => {
@@ -107,6 +137,13 @@ export default class MyItemDetailsScreen extends Component {
     }
 
     onRefresh() {
+        this.setState({
+            offers: [],
+            pageSize: 11,
+            lastOfferStamp: null,
+            loading: true,
+            loadedAll: false
+          })
         this.getOffers();
     }
 
@@ -210,9 +247,26 @@ export default class MyItemDetailsScreen extends Component {
 
     }
 
+
+    handleLoadMore = () => {
+        if (this.state.loadedAll) {
+          return;
+        } else {
+          this.setState(
+            (prevState, nextProps) => ({
+              pageSize: 10,
+              loadingMore: true
+            }),
+            () => {
+              this.getOffers();
+            }
+          );
+        }
+      };
+
     renderFooter = () => {
         //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-        if (!this.state.loading) return null;
+        if (!this.state.loadingMore) return null;
         return (
             <ActivityIndicator
                 style={{ color: '#000' }}
@@ -221,6 +275,13 @@ export default class MyItemDetailsScreen extends Component {
     };
 
     refreshDetails = (ok) => {
+        this.setState({
+            offers: [],
+            pageSize: 11,
+            lastOfferStamp: null,
+            loading: true,
+            loadedAll: false
+          })
         this.getOffers();
     }
 
@@ -347,6 +408,13 @@ export default class MyItemDetailsScreen extends Component {
     }
 
     reloadPage = () => {
+        this.setState({
+            offers: [],
+            pageSize: 11,
+            lastOfferStamp: null,
+            loading: true,
+            loadedAll: false
+          })
         this.getOffers()
     }
 
@@ -536,7 +604,8 @@ export default class MyItemDetailsScreen extends Component {
                                                 />
                                             }
                                             ListFooterComponent={this.renderFooter.bind(this)}
-                                            onEndReachedThreshold={0.4}
+                                            onEndReachedThreshold={0.6}
+                                            onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                                         />
                                 )
                             ))

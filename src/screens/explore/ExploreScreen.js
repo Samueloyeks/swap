@@ -101,8 +101,8 @@ export default class ExploreScreen extends React.Component {
 
     api.post('/items/getItemsByFilters', data).then((response) => {
       let items = response.data.data;
-
-      if (items.length == 1) {
+      
+      if (!response.data.variable) {
         this.setState({
           items: [...this.state.items, ...items],
           loading: false,
@@ -356,12 +356,7 @@ export default class ExploreScreen extends React.Component {
     this.getItems();
   }
 
-  // handleLoadMore = () => {
-  //   if (!this.state.loading) {
-  //     this.page = this.page + 1; // increase page by 1
-  //     this.getItems(this.page); // method for API call 
-  //   }
-  // };
+
 
   handleLoadMore = () => {
     if (this.state.loadedAll) {
@@ -380,7 +375,6 @@ export default class ExploreScreen extends React.Component {
   };
 
   renderFooter = () => {
-    //it will show indicator at the bottom of the list when data is loading otherwise it returns null
     if (!this.state.loadingMore) return null;
     return (
       <ActivityIndicator

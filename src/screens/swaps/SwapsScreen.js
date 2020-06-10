@@ -32,11 +32,15 @@ export default class SwapsScreen extends React.Component {
       rateableSwap: null,
       rateableSwapIndex: null,
       userData: null,
+      markingAsSwapped: false,
+      swaps: [],
+      pageSize: 11,
+      lastSwapStamp: null,
       loading: false,
+      loadingMore: false,
+      loadedAll: false,
       isRefreshing: false,
       error: null,
-      markingAsSwapped: false,
-      swaps: []
     }
 
     this.markAsCompleted = this.markAsCompleted.bind(this)
@@ -59,10 +63,9 @@ export default class SwapsScreen extends React.Component {
       changeIndex: this.changeIndex
     });
 
-
+    this.setState({ loading: true })
     await this.setUserData();
     this.getAllSwaps();
-
   }
 
 
@@ -78,20 +81,50 @@ export default class SwapsScreen extends React.Component {
 
   getAllSwaps = () => {
     if (this.state.userData) {
-      this.setState({ loading: true })
+      // this.setState({ loading: true })
+      const { pageSize } = this.state;
+
 
       var data = {
         "uid": this.state.userData.uid,
+        "pageSize": pageSize,
+        "lastSwapStamp": this.state.lastSwapStamp
       }
 
       api.post('/items/getAllSwaps', data).then((response) => {
-
+        let swaps = response.data.data;
+        
+        if (!response.data.variable) {
+          this.setState({
+            swaps: [...this.state.swaps, ...swaps],
+            loading: false,
+            loadingMore: false,
+            loadedAll: true,
+            lastSwapStamp: null
+          })
+          return;
+        }
+  
+        let lastSwapStamp
+    
+        if (response.data.variable) {
+          lastSwapStamp = response.data.variable
+        } 
+  
+  
         this.setState({
-          swaps: response.data.data,
-          loading: false
+          swaps: [...this.state.swaps, ...swaps],
+          loading: false,
+          loadingMore: false,
+          lastSwapStamp: lastSwapStamp
         })
-
+  
+      }, err => {
+        toast.show('Error')
+        console.log(err);
+        this.setState({ loading: false })
       })
+
     }
   }
 
@@ -109,11 +142,11 @@ export default class SwapsScreen extends React.Component {
     const { params = {} } = navigation.state;
 
 
-    (params.refresh) ? params.refreshDetails() : null;
+    (params.refresh && params.refreshDetails) ? params.refreshDetails() : null;
 
-    (params.tabOne) ? params.changeIndex('one') : null;
+    (params.tabOne && params.changeIndex) ? params.changeIndex('one') : null;
 
-    (params.tabTwo) ? params.changeIndex('two') : null;
+    (params.tabTwo && params.changeIndex) ? params.changeIndex('two') : null;
 
 
 
@@ -212,10 +245,24 @@ export default class SwapsScreen extends React.Component {
 
 
   onRefresh = () => {
+    this.setState({
+      swaps: [],
+      pageSize: 11,
+      lastSwapStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getAllSwaps();
   }
 
   refreshDetails = () => {
+    this.setState({
+      swaps: [],
+      pageSize: 11,
+      lastSwapStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getAllSwaps();
   }
 
@@ -274,9 +321,26 @@ export default class SwapsScreen extends React.Component {
     )
   }
 
+
+  handleLoadMore = () => {
+    if (this.state.loadedAll) {
+      return;
+    } else {
+      this.setState(
+        (prevState, nextProps) => ({
+          pageSize: 10,
+          loadingMore: true
+        }),
+        () => {
+          this.getAllSwaps();
+        }
+      );
+    }
+  };
+
   renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!this.state.loading) return null;
+    if (!this.state.loadingMore) return null;
     return (
       <ActivityIndicator
         style={{ color: '#000' }}
@@ -320,6 +384,13 @@ export default class SwapsScreen extends React.Component {
   }
 
   reloadPage = () => {
+    this.setState({
+      swaps: [],
+      pageSize: 11,
+      lastSwapStamp: null,
+      loading: true,
+      loadedAll: false
+    })
     this.getAllSwaps()
   }
 
@@ -369,7 +440,8 @@ export default class SwapsScreen extends React.Component {
                     />
                   }
                   ListFooterComponent={this.renderFooter.bind(this)}
-                  onEndReachedThreshold={0.4}
+                  onEndReachedThreshold={0.6}
+                  onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                 />
             ) : (
                 this.state.swaps.length == 0 ?

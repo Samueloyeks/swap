@@ -25,7 +25,7 @@ import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
 import ActionSheet from 'react-native-actionsheet'
 import tracking from '../../utils/geolocation/Tracking'
-
+import { EventRegister } from 'react-native-event-listeners'
 
 
 
@@ -72,7 +72,6 @@ export default class UploadScreen extends React.Component {
                 tag: '',
                 tagsArray: []
             },
-
         }
     }
 
@@ -126,6 +125,7 @@ export default class UploadScreen extends React.Component {
             ]
         }
 
+        EventRegister.emit('uploading', true)
 
         api.post('/services/multipleUpload', encodedImages).then(response => {
 
@@ -146,9 +146,12 @@ export default class UploadScreen extends React.Component {
                 } 
     
                 api.post('/items/uploadItem', item).then((response) => {
-                    console.log(response.data)
                     if (response.status == 200) {
+                        EventRegister.emit('uploading', false)
                         toast.show('Item Uploaded');
+                    }else{
+                        EventRegister.emit('uploading', false)
+                        toast.show('Error uploading Item');      
                     }
                 })
 
