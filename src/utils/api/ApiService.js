@@ -7,7 +7,7 @@ import axios from 'axios';
 
 var baseURL = 'http://127.0.0.1:3000';
 // var baseURL =  'http://192.168.56.1:3000';
-// var baseURL = 'https://localhost:3000';
+// var baseURL = 'http://localhost:8000';
 
 // var baseURL = 'http://127.0.0.1:3000';
 // var baseURL = 'https://localhost:3000';
@@ -37,14 +37,14 @@ class Api extends Component {
 
 
     async post(targetFunction, data) {
-
         const url = baseURL + targetFunction;
 
         return await axios.post(url, data, {
             headers: defaultHeader,
         })
-
     }
+
+
 
     async get(targetFunction) {
         const url = baseURL + targetFunction;

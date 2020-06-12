@@ -6,6 +6,7 @@ buildscript {
         minSdkVersion = 16
         compileSdkVersion = 28
         targetSdkVersion = 28
+        googlePlayServicesAuthVersion = "16.0.1" 
         supportLibVersion = "28.0.0"
 
     }
@@ -24,17 +25,17 @@ buildscript {
 
 allprojects {
     repositories {
-            configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-   def requested = details.requested
-       if (requested.group == 'com.google.android.gms') {
-          details.useVersion '12.0.1'
-       }
-       if (requested.group == 'com.google.firebase') {
-          details.useVersion '12.0.1'
-         }
-       }
-     }
+//             configurations.all {
+//     resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+//    def requested = details.requested
+//        if (requested.group == 'com.google.android.gms') {
+//           details.useVersion '12.0.1'
+//        }
+//        if (requested.group == 'com.google.firebase') {
+//           details.useVersion '12.0.1'
+//          }
+//        }
+//      }
         google()
         jcenter()
         mavenLocal()

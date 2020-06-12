@@ -16,13 +16,13 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-// import io.invertase.firebase.RNFirebasePackage;
-// import io.invertase.firebase.database.RNFirebaseDatabasePackage; 
+import io.invertase.firebase.RNFirebasePackage;
+import io.invertase.firebase.database.RNFirebaseDatabasePackage; 
 // import io.invertase.firebase.storage.RNFirebaseStoragePackage; 
 // import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 
-// import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                       import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-// import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
+import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                       
+import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -39,8 +39,9 @@ public class MainApplication extends Application implements ReactApplication {
           @SuppressWarnings("UnnecessaryLocalVariable")
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // packages.add(new RNFirebasePackage());
-          // packages.add(new RNFirebaseMessagingPackage());
-          // packages.add(new RNFirebaseNotificationsPackage());
+          packages.add(new RNFirebaseDatabasePackage());
+          packages.add(new RNFirebaseMessagingPackage());
+          packages.add(new RNFirebaseNotificationsPackage());
           return packages;
         }
 

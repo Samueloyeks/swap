@@ -1,6 +1,8 @@
 import { Component } from "react";
 import { EventRegister } from 'react-native-event-listeners'
-import firebase from '../../../Firebase'
+// import firebase from '../../../Firebase'
+import * as firebase from 'react-native-firebase';
+
 
 let userRef
 let likesRef
