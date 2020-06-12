@@ -10,7 +10,8 @@ import {
   TextInput,
   Alert,
   KeyboardAvoidingView,
-  KeyboardAvoidingViewBase
+  KeyboardAvoidingViewBase,
+  Platform
 } from 'react-native';
 import facebookImg from '../assets/imgs/facebookImg.png'
 import googleImg from '../assets/imgs/googleImg.png'
@@ -67,7 +68,7 @@ export default class SignUpScreen extends React.Component {
     }
   }
 
-  handleSubmit = values => {
+  handleSubmit =async values => {
 
     if(this.state.usernameTaken){
       Alert.alert(
@@ -88,8 +89,14 @@ export default class SignUpScreen extends React.Component {
     if (values.email.length > 0 && values.password.length > 0) {
 
       try {
+        let fcmToken = await db.get('fcmToken');
+        let deviceType = Platform.OS;
+
+        values.fcmToken = fcmToken;
+        values.deviceType = deviceType;
         values.profilePicture = null
         api.post('/users/register', values).then((response) => {
+          console.log(response.data)
           if (response.data) {
             var userData = {
               "email": response.data.data.email,
@@ -97,7 +104,7 @@ export default class SignUpScreen extends React.Component {
               "fullName": response.data.data.fullName,
               "phoneNumber": response.data.data.phoneNumber,
               "uid": response.data.data.uid,
-              "profilePicture": response.data.data.profilePicture
+              "profilePicture": response.data.data.profilePicture,
             }
             db.set('userData', userData).then(() => {
               Alert.alert(
@@ -124,7 +131,7 @@ export default class SignUpScreen extends React.Component {
       } catch (ex) {
         toast.show('Error Signing Up')
         this.setState({ loading: false })
-        alert(ex)
+        console.log(ex)
       }
 
     }

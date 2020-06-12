@@ -121,7 +121,9 @@ export default class ChatsScreen extends React.Component {
     let messageBody = message[0]
     messageBody['myId'] = this.state.userData.uid;
     messageBody['chatToId'] = this.state.chatTo.uid;
-
+    messageBody['fcmToken'] = this.state.chatTo.fcmToken;
+    messageBody['deviceType'] = this.state.chatTo.deviceType;
+    
     firebaseService.appendMessage(messageBody)
   }
 

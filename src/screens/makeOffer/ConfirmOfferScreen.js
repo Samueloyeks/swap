@@ -107,13 +107,24 @@ export default class ConfirmOfferScreen extends Component {
             postedby: postedby
         }
 
-        console.log(offerData)
+        var notificiationData = {
+            title: `New offer`,
+            body:
+              `You have a new offer for ${this.state.item[0].title}`,
+            to: this.state.item[0].postedby.fcmToken,
+            deviceType: this.state.item[0].postedby.deviceType,
+          };
+
         api.post('/items/sendOffer', offerData).then((response) => {
             if (response.data.status === 'success') {
                 toast.show('Offer Sent Successfully')
                 this.setState({ loading: false })
                 this.props.navigation.popToTop()
                 this.props.navigation.navigate('SwapsScreen', { refresh: true, tabOne: true, tabTwo:false })
+
+                api.postNotification(notificiationData).then((response) => {
+
+                  });
             }
         }, err => {
             toast.show('Unable to send offer')

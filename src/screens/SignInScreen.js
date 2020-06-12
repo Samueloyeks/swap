@@ -70,12 +70,17 @@ export default class SignInScreen extends React.Component {
 
 
 
-  handleSubmit = values => {
+  handleSubmit = async values => {
     this.setState({ loading: true })
 
     if (values.email.length > 0 && values.password.length > 0) {
 
       try {
+        let fcmToken = await db.get('fcmToken');
+        let deviceType = Platform.OS;
+
+        values.fcmToken = fcmToken;
+        values.deviceType = deviceType;
         api.post('/users/login', values).then((response) => {
           if (response.data) {
             var userData = {

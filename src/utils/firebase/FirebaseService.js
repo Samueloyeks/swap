@@ -2,6 +2,7 @@ import { Component } from "react";
 import { EventRegister } from 'react-native-event-listeners'
 // import firebase from '../../../Firebase'
 import * as firebase from 'react-native-firebase';
+import api from '../api/ApiService'
 
 
 let userRef
@@ -102,23 +103,23 @@ class FirebaseService extends Component {
             .child(itemId)
             .child(chatToId);
 
-        chatRef.once('value').then(snapshot=>{
-            if(snapshot.exists()){
+        chatRef.once('value').then(snapshot => {
+            if (snapshot.exists()) {
                 chatRef.update({
                     [uid]: true,
                 })
             }
         })
 
-        chatToRef.once('value').then(snapshot=>{
-            if(snapshot.exists()){
-                 chatToRef.update({
+        chatToRef.once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                chatToRef.update({
                     [uid]: true,
                 })
             }
         })
 
-    
+
         return;
     }
 
@@ -149,6 +150,11 @@ class FirebaseService extends Component {
 
         var myId = messageBody.myId;
         var chatToId = messageBody.chatToId
+        var fcmToken = messageBody.fcmToken
+        var deviceType = messageBody.deviceType
+
+        delete messageBody['fcmToken']
+        delete messageBody['deviceType']
 
         await chatToRef.push(messageBody)
         await chatRef.push(messageBody)
@@ -173,6 +179,16 @@ class FirebaseService extends Component {
             chatRef.update({ timestamp })
         })
 
+        var notificiationData = {
+            title: messageBody.user.name,
+            body: messageBody.text,
+            to: fcmToken,
+            deviceType: deviceType,
+        };
+
+        api.postNotification(notificiationData).then((response) => {
+
+        });
     }
 
     isObject(val) {
@@ -219,7 +235,7 @@ class FirebaseService extends Component {
         let senderRefs = [];
 
         orderedItemChatsRef.once("value", function (snapshot) {
-            
+
             snapshot.forEach(function (child) {
                 senderRefs.push(child.key);
             }.bind(this));

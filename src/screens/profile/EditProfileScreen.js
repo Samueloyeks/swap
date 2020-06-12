@@ -90,7 +90,7 @@ export default class EditProfileScreen extends React.Component {
             fullName: userData.fullName,
             username: userData.username,
             phoneNumber: userData.phoneNumber,
-            profilePicture: userData.profilePicture
+            profilePicture: userData.profilePicture == undefined ? null : userData.profilePicture
         })
         // await this.setUserData();
     }
@@ -109,7 +109,7 @@ export default class EditProfileScreen extends React.Component {
                 fullName: userData.fullName,
                 username: userData.username,
                 phoneNumber: userData.phoneNumber,
-                profilePicture: userData.profilePicture
+                profilePicture: userData.profilePicture == undefined ? null : userData.profilePicture
             })
 
 
@@ -194,20 +194,20 @@ export default class EditProfileScreen extends React.Component {
 
     handleSubmit = values => {
 
-        if(this.state.usernameTaken){
+        if (this.state.usernameTaken) {
             Alert.alert(
-              "Chnage Username",
-              "The username you provided is not available",
-              [
-                {
-                  text: "Ok",
-                  style: "cancel"
-                },  
-              ],
-              { cancelable: false }
+                "Chnage Username",
+                "The username you provided is not available",
+                [
+                    {
+                        text: "Ok",
+                        style: "cancel"
+                    },
+                ],
+                { cancelable: false }
             );
             return;
-          }
+        }
 
         this.setState({ loading: true })
 
@@ -218,7 +218,7 @@ export default class EditProfileScreen extends React.Component {
             }
             values.uid = this.state.uid;
 
-            // console.log(values)
+            console.log(values)
             api.post('/users/update', values).then((response) => {
                 if (response.data.status == 'success') {
 
@@ -249,7 +249,7 @@ export default class EditProfileScreen extends React.Component {
 
         let data = {
             username: username,
-            uid:this.state.userData.uid
+            uid: this.state.userData.uid
         }
 
         api.post('/users/isUsernameTaken', data).then((response) => {
