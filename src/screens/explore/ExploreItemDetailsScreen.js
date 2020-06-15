@@ -55,6 +55,7 @@ export default class ExploreItemDetailsScreen extends Component {
         shadowOpacity: 0,
         borderBottomWidth: 0,
       },
+      gestureEnabled: false,
       headerLeft: () => <HeaderBackButton onPress={() => {
         navigation.goBack(null);
         navigation.state.params.onGoBack(navigation.state.params.itemDetails);
@@ -360,3 +361,4 @@ const styles = StyleSheet.create({
     color: '#FF9D5C'
   },
 });
+

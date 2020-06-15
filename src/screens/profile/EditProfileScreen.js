@@ -218,7 +218,6 @@ export default class EditProfileScreen extends React.Component {
             }
             values.uid = this.state.uid;
 
-            console.log(values)
             api.post('/users/update', values).then((response) => {
                 if (response.data.status == 'success') {
 

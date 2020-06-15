@@ -234,14 +234,13 @@ class FirebaseService extends Component {
         let chatsList = [];
         let senderRefs = [];
 
-        orderedItemChatsRef.once("value", function (snapshot) {
+        await orderedItemChatsRef.once("value", function (snapshot) {
 
             snapshot.forEach(function (child) {
                 senderRefs.push(child.key);
             }.bind(this));
 
         })
-        console.log(senderRefs)
 
 
         await Promise.all(senderRefs.map(async senderRef => {

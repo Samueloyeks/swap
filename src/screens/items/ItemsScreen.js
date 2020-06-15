@@ -70,7 +70,7 @@ export default class ItemsScreen extends React.Component {
       if (!response.data.variable) {
         this.setState({
           items: [...this.state.items, ...items],
-          loading: false,
+          loading: false, 
           loadingMore: false,
           loadedAll: true,
           lastItemStamp: null
@@ -136,8 +136,9 @@ export default class ItemsScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getItemsByUid();
     })
-    this.getItemsByUid();
   }
 
 
@@ -175,8 +176,9 @@ export default class ItemsScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getItemsByUid()
     })
-    this.getItemsByUid()
   }
 
   deleteItem = (index, id) => {

@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Platform, StatusBar, StyleSheet, View, Text, YellowBox, Alert,AppRegistry } from 'react-native';
+import { Platform, StatusBar, StyleSheet, View, Text, NetInfo, YellowBox, Alert, AppRegistry } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
 import AnimatedSplash from "react-native-animated-splash-screen";
 import SplashScreen from 'react-native-splash-screen';
 import firebase from 'react-native-firebase';
 import AsyncStorage from '@react-native-community/async-storage';
 import api from './src/utils/api/ApiService';
+import toast from './src/utils/SimpleToast'
+import NetworkUtils from './src/utils/NetworkUtils'
+
+
 
 
 YellowBox.ignoreWarnings(
@@ -31,6 +35,7 @@ class App extends React.Component {
     this.createNotificationListeners();
     this.createFcmTokenRefreshListener();
     SplashScreen.hide();
+    this.CheckConnectivity();
   }
 
   componentWillUnmount() {
@@ -57,7 +62,7 @@ class App extends React.Component {
         await AsyncStorage.setItem('fcmToken', fcmToken);
       }
     }
-  } 
+  }
 
   async requestPermission() {
     try {
@@ -82,32 +87,30 @@ class App extends React.Component {
       let notificationMessage = notification._android._notification._data.action;
       let recordId = notification._android._notification._data.recordID;
 
-      let { title, body } = notification;
-      //  console.log('ttttt', notification)
-      // notification.android.setAutoCancel(false)
-      console.log(title, body, notificationMessage, recordId);
+      // let { title, body } = notification;
 
+      // console.log(title, body, notificationMessage, recordId);
 
       const channelId = new firebase.notifications.Android.Channel(
-          'Default',
-          'Default',
-          firebase.notifications.Android.Importance.High 
+        'Default',
+        'Default',
+        firebase.notifications.Android.Importance.High
       );
       firebase.notifications().android.createChannel(channelId);
 
       let notification_to_be_displayed = new firebase.notifications.Notification({
-          data: notification._android._notification._data,
-          sound: 'default',
-          show_in_foreground: true,
-          title: notification.title,
-          body: notification.body,
+        data: notification._android._notification._data,
+        sound: 'default',
+        show_in_foreground: true,
+        title: notification.title,
+        body: notification.body,
       });
 
       if (Platform.OS == 'android') {
-          notification_to_be_displayed.android
-              .setPriority(firebase.notifications.Android.Priority.High)
-              .android.setChannelId('Default')
-              .android.setVibrate(1000);
+        notification_to_be_displayed.android
+          .setPriority(firebase.notifications.Android.Priority.High)
+          .android.setChannelId('Default')
+          .android.setVibrate(1000);
       }
       console.log('FOREGROUND NOTIFICATION LISTENER: \n', notification_to_be_displayed);
 
@@ -141,20 +144,20 @@ class App extends React.Component {
       // console.log(JSON.stringify(message));
       // this.showAlert(JSON.stringify(message))
       const notification = new firebase.notifications.Notification()
-      .setNotificationId(message.messageId)
-      .setTitle(message.data.title)
-      .setBody(message.data.body)
-      .android.setChannelId('Default')
-      .android.setSmallIcon('ic_stat_ic_notification')
-      .android.setPriority(firebase.notifications.Android.Priority.Max)
-      .setSound('default');
-    
+        .setNotificationId(message.messageId)
+        .setTitle(message.data.title)
+        .setBody(message.data.body)
+        .android.setChannelId('Default')
+        .android.setSmallIcon('ic_stat_ic_notification')
+        .android.setPriority(firebase.notifications.Android.Priority.Max)
+        .setSound('default');
+
       await firebase.notifications().displayNotification(notification);
       return Promise.resolve();
     });
   }
 
-  async createFcmTokenRefreshListener(){
+  async createFcmTokenRefreshListener() {
     this.onTokenRefreshListener = firebase.messaging().onTokenRefresh(async fcmToken => {
 
       const udata = await AsyncStorage.getItem('userData');
@@ -174,8 +177,6 @@ class App extends React.Component {
     });
   }
 
-
-
   showAlert(title, body) {
     Alert.alert(
       title, body,
@@ -184,7 +185,17 @@ class App extends React.Component {
       ],
       { cancelable: false },
     );
-  } 
+  }
+
+  CheckConnectivity = async () => {
+    const isConnected = await NetworkUtils.isNetworkAvailable()
+    if (!isConnected) {
+      toast.show('No internet Connection')
+    }
+  };
+
+
+
 
   render() {
     return (

@@ -143,8 +143,9 @@ export default class MyItemDetailsScreen extends Component {
             lastOfferStamp: null,
             loading: true,
             loadedAll: false
+          },()=>{
+            this.getOffers();
           })
-        this.getOffers();
     }
 
     async setUserData() {
@@ -281,8 +282,9 @@ export default class MyItemDetailsScreen extends Component {
             lastOfferStamp: null,
             loading: true,
             loadedAll: false
+          },()=>{
+            this.getOffers();
           })
-        this.getOffers();
     }
 
     requestAcceptConfirmation = (data) => {
@@ -312,7 +314,7 @@ export default class MyItemDetailsScreen extends Component {
             [
                 {
                     text: "Cancel",
-                    style: "cancel"
+                    style: "cancel" 
                 },
                 {
                     text: "OK",
@@ -329,6 +331,15 @@ export default class MyItemDetailsScreen extends Component {
         this.setState({ sendingOfferResponse: true })
         let index = data.index
 
+        var notificiationData = {
+            title: `Offer Accepted`,
+            body:
+              `${this.state.userData.username} accepted your offer for ${this.state.itemDetails.title}`,
+            to: data.offeredby.fcmToken,
+            deviceType: data.offeredby.deviceType,
+          };
+
+
         api.post('/items/acceptOffer', data)
             .then((response) => {
                 if (response.data.status == 'success') {
@@ -337,7 +348,11 @@ export default class MyItemDetailsScreen extends Component {
                     newOffers[index] = { ...newOffers[index], accepted: !newOffers[index].accepted };
 
                     this.setState({ offers: newOffers, sendingOfferResponse: false }, () => {
-                        Alert.alert('', `Meet up with ${data.offeredby} to swap your items`)
+                        Alert.alert('', `Meet up with ${data.offeredby.username} to swap your items`)
+                    });
+
+                    api.postNotification(notificiationData).then((response) => {
+
                     });
                 } else {
                     this.setState({ sendingOfferResponse: false });
@@ -352,6 +367,15 @@ export default class MyItemDetailsScreen extends Component {
         // this.setState({ sendingOfferResponse: true })
         let index = data.index
 
+        var notificiationData = {
+            title: `Offer Declined`,
+            body:
+              `${this.state.userData.username} declined your offer for ${this.state.itemDetails.title}`,
+            to: data.offeredby.fcmToken,
+            deviceType: data.offeredby.deviceType,
+          };
+
+
         const newOffers = this.state.offers.filter((item, arrIndex) =>
             arrIndex !== index
         );
@@ -359,6 +383,10 @@ export default class MyItemDetailsScreen extends Component {
             api.post('/items/declineOffer', data)
         });
 
+        api.postNotification(notificiationData).then((response) => {
+
+        });
+    
     }
 
 
@@ -382,6 +410,7 @@ export default class MyItemDetailsScreen extends Component {
                     id={item.offerId}
                     swapId={item.swapId}
                     index={index}
+                    item={this.state.itemDetails}
                     sendingOfferResponse={this.state.sendingOfferResponse}
                 />
                 :
@@ -402,6 +431,7 @@ export default class MyItemDetailsScreen extends Component {
                     id={item.offerId}
                     swapId={item.swapId}
                     index={index}
+                    item={this.state.itemDetails}
                     sendingOfferResponse={this.state.sendingOfferResponse}
                 />
         )
@@ -414,8 +444,9 @@ export default class MyItemDetailsScreen extends Component {
             lastOfferStamp: null,
             loading: true,
             loadedAll: false
+          },()=>{
+            this.getOffers()
           })
-        this.getOffers()
     }
 
 

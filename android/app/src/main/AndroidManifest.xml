@@ -41,7 +41,7 @@ xmlns:tools="http://schemas.android.com/tools"
         android:name=".MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
-        android:windowSoftInputMode="adjustResize"
+        android:windowSoftInputMode="adjustResize|adjustPan"
         android:exported="true"
         android:launchMode="singleTop"
         >

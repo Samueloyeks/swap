@@ -92,7 +92,7 @@ export default class MultipleOffersScreen extends React.Component {
     }
 
     requestDeclineConfirmation = () => {
-        Alert.alert(
+        Alert.alert( 
             "Decline Offer?",
             "Decline this offer?",
             [
@@ -120,11 +120,23 @@ export default class MultipleOffersScreen extends React.Component {
             swapId: this.state.offerDetails.swapId,
         }
 
+        var notificiationData = {
+            title: `Offer Accepted`,
+            body:
+              `${this.state.userData.username} accepted your offer for ${this.state.offerDetails.title}`,
+            to: this.state.offerDetails.offeredBy.fcmToken,
+            deviceType: this.state.offerDetails.offeredBy.deviceType,
+          };
+
         api.post('/items/acceptOffer', data)
             .then((response) => {
                 this.props.navigation.goBack(null);
                 this.props.navigation.state.params.onGoBack();
                 Alert.alert('', `Meet up with ${this.state.offerDetails.offeredBy.username} to swap your items`)
+
+                api.postNotification(notificiationData).then((response) => {
+
+                });
             })
 
     }
@@ -139,10 +151,21 @@ export default class MultipleOffersScreen extends React.Component {
             swapId: this.state.offerDetails.swapId,
         }
 
+        var notificiationData = {
+            title: `Offer Declined`,
+            body:
+              `${this.state.userData.username} declined your offer for ${this.state.offerDetails.title}`,
+            to: this.state.offerDetails.offeredBy.fcmToken,
+            deviceType: this.state.offerDetails.offeredBy.deviceType,
+          };
+
         api.post('/items/declineOffer', data)
             .then((response) => {
                 this.props.navigation.goBack(null);
                 this.props.navigation.state.params.onGoBack();
+
+                api.postNotification(notificiationData).then((response) => {
+                });
             })
     } 
 

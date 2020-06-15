@@ -127,36 +127,47 @@ export default class UploadScreen extends React.Component {
 
         EventRegister.emit('uploading', true)
 
-        api.post('/services/multipleUpload', encodedImages).then(response => {
+        try{
+            api.post('/services/multipleUpload', encodedImages).then(response => {
 
-            tracking.getLocation().then(data => {
-
-                let location = {
-                    longitude:data.coords.longitude,
-                    latitude:data.coords.latitude
-                }
-              
-                const item = {
-                    categories: this.state.selectedItems,
-                    images: response.data.data.urls,
-                    preferences: this.state.tags.tagsArray,
-                    postedby: this.state.userData.uid,
-                    location:location,
-                    ...values
-                } 
+                if(response.status == 200){
+                    tracking.getLocation().then(data => {
     
-                api.post('/items/uploadItem', item).then((response) => {
-                    if (response.status == 200) {
-                        EventRegister.emit('uploading', false)
-                        toast.show('Item Uploaded');
-                    }else{
-                        EventRegister.emit('uploading', false)
-                        toast.show('Error uploading Item');      
-                    }
-                })
-
+                        let location = {
+                            longitude:data.coords.longitude,
+                            latitude:data.coords.latitude
+                        }
+                      
+                        const item = {
+                            categories: this.state.selectedItems,
+                            images: response.data.data.urls,
+                            preferences: this.state.tags.tagsArray,
+                            postedby: this.state.userData.uid,
+                            location:location,
+                            ...values
+                        } 
+            
+                        api.post('/items/uploadItem', item).then((response) => {
+                            if (response.status == 200) {
+                                EventRegister.emit('uploading', false)
+                                toast.show('Item Uploaded');
+                            }else{
+                                EventRegister.emit('uploading', false)
+                                toast.show('Error uploading Item');      
+                            }
+                        }) 
+        
+                    })
+                }else{
+                    EventRegister.emit('uploading', false)
+                    toast.show('Error uploading Item');   
+                }
             })
-        })
+        }catch(ex){
+            console.log(ex)
+            EventRegister.emit('uploading', false)
+            toast.show('Error uploading Item'); 
+        }
         this.props.navigation.navigate('Explore')
 
     }
@@ -204,7 +215,7 @@ export default class UploadScreen extends React.Component {
             showsSelectedCount: true
         }).then(image => {
             this.setState({
-                ["image" + [index]]: image
+                ["image" + [index]]: image 
             })
         });
     }
@@ -222,12 +233,14 @@ export default class UploadScreen extends React.Component {
     };
 
     showActionSheet = (imageIndex) => {
-        this.setState({ imageIndex })
-        this.ActionSheet.show()
+        this.setState({ imageIndex },()=>{
+            this.ActionSheet.show()
+        })
     }
 
     getImageFrom(index) {
-        let imageIndex = this.state.imageIndex
+        let imageIndex = this.state.imageIndex;
+
         if (index === 0) {
             this.selectCameraImage(imageIndex)
         }

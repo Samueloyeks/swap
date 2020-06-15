@@ -300,6 +300,8 @@ PODS:
   - React-jsinspector (0.61.5)
   - react-native-geolocation (2.0.2):
     - React
+  - react-native-netinfo (5.9.2):
+    - React
   - react-native-safe-area-context (0.6.4):
     - React
   - react-native-simple-toast (1.1.2):
@@ -404,6 +406,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - "react-native-geolocation (from `../node_modules/@react-native-community/geolocation`)"
+  - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-simple-toast (from `../node_modules/react-native-simple-toast`)
   - react-native-splash-screen (from `../node_modules/react-native-splash-screen`)
@@ -491,6 +494,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-geolocation:
     :path: "../node_modules/@react-native-community/geolocation"
+  react-native-netinfo:
+    :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-simple-toast:
@@ -581,6 +586,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: d5525f9ed5f782fdbacb64b9b01a43a9323d2386
   React-jsinspector: fa0ecc501688c3c4c34f28834a76302233e29dc0
   react-native-geolocation: cbd9d6bd06bac411eed2671810f454d4908484a8
+  react-native-netinfo: 9b9929fcfa4aabe92f49a9fb3f25394cc8721e87
   react-native-safe-area-context: 042dfc9d4db17196841df962ba9497f6e7a5bd02
   react-native-simple-toast: a3a8e9033a549c11741debe875e54698cc4c0dd7
   react-native-splash-screen: d712b25c25f6671a15227f9b8579f87b2dbb0340

@@ -91,7 +91,7 @@ export default class OfferItem extends Component {
                                                         offerId: this.props.id,
                                                         itemId: this.props.itemId,
                                                         swapId: this.props.swapId,
-                                                        offeredby: this.props.offeredBy.username,
+                                                        offeredby: this.props.offeredBy,
                                                         index: this.props.index
                                                     })}
                                                 >
@@ -103,7 +103,8 @@ export default class OfferItem extends Component {
                                                         offerId: this.props.id,
                                                         itemId: this.props.itemId,
                                                         swapId: this.props.swapId,
-                                                        index: this.props.index
+                                                        index: this.props.index,
+                                                        offeredby: this.props.offeredBy
                                                     })}
                                                 >
                                                     <Text style={{ textAlign: 'center', fontSize: 12, color: 'red' }}>Decline Offer</Text>

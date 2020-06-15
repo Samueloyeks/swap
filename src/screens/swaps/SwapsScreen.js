@@ -26,7 +26,7 @@ export default class SwapsScreen extends React.Component {
     super(props);
 
     this.state = {
-      isImageViewVisible: true,
+      isImageViewVisible: true, 
       selectedIndex: 0,
       isModalVisible: false,
       rateableSwap: null,
@@ -251,8 +251,9 @@ export default class SwapsScreen extends React.Component {
       lastSwapStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getAllSwaps();
     })
-    this.getAllSwaps();
   }
 
   refreshDetails = () => {
@@ -262,8 +263,9 @@ export default class SwapsScreen extends React.Component {
       lastSwapStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getAllSwaps();
     })
-    this.getAllSwaps();
   }
 
   changeIndex = (index) => {
@@ -390,8 +392,9 @@ export default class SwapsScreen extends React.Component {
       lastSwapStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getAllSwaps()
     })
-    this.getAllSwaps()
   }
 
   render() {

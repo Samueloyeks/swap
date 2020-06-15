@@ -37,6 +37,8 @@ export default class ExploreScreen extends React.Component {
         longitude: null
       },
       modalVisible: false,
+      silentlyGettingItems: false,
+      scrollEnabled:true
     }
 
     this.arrayholder = []
@@ -61,6 +63,21 @@ export default class ExploreScreen extends React.Component {
     this.getCategories();
     // await this.getItems();
     this.getItems();
+
+    this.updateList = setInterval(()=>{
+      if(!this.state.silentlyGettingItems){
+        this.setState({
+          silentlyGettingItems:true
+        },()=>{
+          this.silentlyGetItems()
+        })
+      }
+    }, 60000);
+
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.updateList);
   }
 
 
@@ -101,7 +118,7 @@ export default class ExploreScreen extends React.Component {
 
     api.post('/items/getItemsByFilters', data).then((response) => {
       let items = response.data.data;
-      
+
       if (!response.data.variable) {
         this.setState({
           items: [...this.state.items, ...items],
@@ -114,10 +131,10 @@ export default class ExploreScreen extends React.Component {
       }
 
       let lastItemStamp
-  
+
       if (response.data.variable) {
         lastItemStamp = response.data.variable
-      } 
+      }
 
 
       this.setState({
@@ -136,6 +153,41 @@ export default class ExploreScreen extends React.Component {
 
   }
 
+  silentlyGetItems = () => {
+    if (this.state.items.length !== 0) {
+      // this.setState({ loading: true })
+      const { pageSize } = this.state;
+
+      var data = {
+        "uid": this.state.userData.uid,
+        "categories": this.state.activeCategories,
+        "filterByLocation": this.state.filterByLocation ? true : false,
+        "filterByPrice": this.state.filterByPrice ? true : false,
+        "location": this.state.location,
+        "pageSize": pageSize,
+        "lastItemStamp": this.state.items[0]['timestamp']
+      }
+
+
+      api.post('/items/silentlyGetItemsByFilters', data).then((response) => {
+        let items = response.data.data;
+
+
+        this.setState({
+          scrollEnabled:false,
+          items: [...items,...this.state.items],
+          silentlyGettingItems: false,
+        },()=>{
+          this.setState({
+            scrollEnabled:true
+          })
+        })
+        this.arrayholder = this.state.items
+
+      })
+    }
+  }
+
   async applyFilters() {
     this.setModalVisible(!this.state.modalVisible);
 
@@ -145,14 +197,13 @@ export default class ExploreScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    }, async () => {
+      if (this.state.filterByLocation) {
+        await this.setCoordinates()
+      }
+
+      this.getItems()
     })
-
-    if (this.state.filterByLocation) {
-      await this.setCoordinates()
-    }
-
-    this.getItems()
-
   }
 
 
@@ -352,8 +403,9 @@ export default class ExploreScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    }, () => {
+      this.getItems();
     })
-    this.getItems();
   }
 
 
@@ -460,8 +512,9 @@ export default class ExploreScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    }, () => {
+      this.getItems()
     })
-    this.getItems()
   }
 
   render() {
@@ -571,6 +624,7 @@ export default class ExploreScreen extends React.Component {
                 ListFooterComponent={this.renderFooter.bind(this)}
                 onEndReachedThreshold={0.6}
                 onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
+                scrollEnabled={this.state.scrollEnabled}
               />
         }
 

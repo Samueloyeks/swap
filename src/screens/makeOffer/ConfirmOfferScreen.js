@@ -280,11 +280,12 @@ const styles = StyleSheet.create({
     floatingButton: {
         position: 'absolute',
         zIndex: 1,
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
         alignContent: 'center',
         bottom: 40,
-        width: '100%'
+        width: '70%',
+        left:'15%'
     },
     buttonText: {
         fontStyle: 'normal',

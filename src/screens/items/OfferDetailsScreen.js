@@ -73,7 +73,7 @@ export default class OfferDetailsScreen extends Component {
         this.setState({
             offerDetails: state.params.offerDetails,
             itemDetails: state.params.offerDetails.items[0],
-            selectedIndex: state.params.selectedIndex
+            selectedIndex: state.params.selectedIndex,
         })
         await this.setUserData();
         // alert(JSON.stringify(this.state.itemDetails))
@@ -155,11 +155,25 @@ export default class OfferDetailsScreen extends Component {
             swapId: this.state.offerDetails.swapId,
         }
 
+        var notificiationData = {
+            title: `Offer Accepted`,
+            body:
+              `${this.state.userData.username} accepted your offer for ${this.state.offerDetails.item.title}`,
+            to: this.state.offerDetails.offeredBy.fcmToken,
+            deviceType: this.state.offerDetails.offeredBy.deviceType,
+          };
+          console.log(notificiationData)
+
+
         api.post('/items/acceptOffer', data)
             .then((response) => {
                 this.props.navigation.goBack(null);
                 this.props.navigation.state.params.onGoBack();
-                Alert.alert('', `Meet up with ${this.state.offerDetails.offeredBy.username} to swap your items`)
+                Alert.alert('', `Meet up with ${this.state.offerDetails.offeredBy.username} to swap your items`);
+
+                api.postNotification(notificiationData).then((response) => {
+
+                });
             })
 
     }
@@ -174,10 +188,21 @@ export default class OfferDetailsScreen extends Component {
             swapId: this.state.offerDetails.swapId,
         }
 
+        var notificiationData = {
+            title: `Offer Declined`,
+            body:
+              `${this.state.userData.username} declined your offer for ${this.state.offerDetails.item.title}`,
+            to: this.state.offerDetails.offeredBy.fcmToken,
+            deviceType: this.state.offerDetails.offeredBy.deviceType,
+          };
+
         api.post('/items/declineOffer', data)
             .then((response) => {
                 this.props.navigation.goBack(null);
                 this.props.navigation.state.params.onGoBack();
+
+                api.postNotification(notificiationData).then((response) => {
+                });
             })
     }
 

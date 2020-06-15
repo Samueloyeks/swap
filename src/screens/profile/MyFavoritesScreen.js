@@ -234,8 +234,9 @@ export default class MyFavoritesScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getItems();
     })
-    this.getItems();
   }
 
   handleLoadMore = () => {
@@ -301,8 +302,9 @@ export default class MyFavoritesScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
+    },()=>{
+      this.getItems()
     })
-    this.getItems()
   }
 
   render() {

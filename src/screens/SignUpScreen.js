@@ -96,7 +96,6 @@ export default class SignUpScreen extends React.Component {
         values.deviceType = deviceType;
         values.profilePicture = null
         api.post('/users/register', values).then((response) => {
-          console.log(response.data)
           if (response.data) {
             var userData = {
               "email": response.data.data.email,

@@ -5,14 +5,13 @@ import axios from 'axios';
 
 
 var firebaseKey = 'AAAAmKcn0K0:APA91bGGzpZOQax9RJLkjXf8fSTzNCV1KZfeQSTQQcMI8m0z0kOgkpsSe6PkVT3UVBk-JBmS3yx3kafxip1_oJM8XPuzGpjP1rMWnMUbDt67F2EKRBY_wvDXvkEIb7fsA3f5XySB7YCp';
-var baseURL = 'http://127.0.0.1:3000';
-// var baseURL =  'http://192.168.56.1:3000';
-// var baseURL = 'http://localhost:8000';
 
 // var baseURL = 'http://127.0.0.1:3000';
-// var baseURL = 'https://localhost:3000';
+// var baseURL =  'http://192.168.56.1:3000';
+ 
 
 
+var baseURL = 'https://api-swap.herokuapp.com'
 
 var apiUsername = "am9objpzbWl0aA==";
 var apiPassword = "JiZAQEFBMTE6NjcmOCMh";
@@ -22,8 +21,8 @@ const defaultHeader = {
     "Content-Type": "application/x-www-form-urlencoded",
     'Accept': 'application/json'
 }
-
-const notificationDataAndroid = {
+ 
+const notificationDataAndroid = { 
     "to": "",
     // "notification": {
     //     "title": "",
@@ -41,16 +40,21 @@ const notificationDataAndroid = {
 }
 };
 const notificationDataIOS = {
-    "notification": {
-        "title": "",
-        "body": "",
-        "click_action": "FCM_PLUGIN_ACTIVITY",
-        "icon": "fcm_push_icon",
-        "android_channel_id": "reminders"
-    },
     "to": "",
-    "priority": "high",
-    "restricted_package_name": ""
+    // "notification": {
+    //     "title": "",
+    //     "body": "",
+    //     "icon": "ic_stat_ic_notification",
+    //     "show_in_foreground": true
+    // },
+    "data": {
+        "body": "",
+        "title": "",
+        "content_available": true,
+        "priority": "high",
+        "icon": "ic_stat_ic_notification",
+        "show_in_foreground": true
+}
 };
 const fcmHeader = {
     "Content-Type": "application/json",

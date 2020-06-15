@@ -13,6 +13,7 @@
     "@react-native-community/async-storage": "^1.8.1",
     "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/masked-view": "^0.1.6",
+    "@react-native-community/netinfo": "^5.9.2",
     "@react-native-community/viewpager": "^4.0.0",
     "@react-navigation/bottom-tabs": "^5.1.0",
     "@unimodules/core": "^5.0.0",
