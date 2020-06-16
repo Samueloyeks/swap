@@ -71,7 +71,7 @@ class App extends React.Component {
       this.getToken();
     } catch (error) {
       // User has rejected permissions
-      console.log('permission rejected');
+      alert('Please allow notifications in settings to get offer notifications');
     }
   }
 
@@ -80,16 +80,6 @@ class App extends React.Component {
     * Triggered when a particular notification has been received in foreground
     * */
     this.notificationListener = firebase.notifications().onNotification((notification) => {
-      // console.log('notification: ' + notification)
-      // const { title, body } = notification;
-      // this.showAlert(title, body);
-
-      let notificationMessage = notification._android._notification._data.action;
-      let recordId = notification._android._notification._data.recordID;
-
-      // let { title, body } = notification;
-
-      // console.log(title, body, notificationMessage, recordId);
 
       const channelId = new firebase.notifications.Android.Channel(
         'Default',
@@ -112,7 +102,7 @@ class App extends React.Component {
           .android.setChannelId('Default')
           .android.setVibrate(1000);
       }
-      console.log('FOREGROUND NOTIFICATION LISTENER: \n', notification_to_be_displayed);
+      // console.log('FOREGROUND NOTIFICATION LISTENER: \n', notification_to_be_displayed);
 
       firebase.notifications().displayNotification(notification_to_be_displayed);
     });
@@ -121,10 +111,10 @@ class App extends React.Component {
     * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
     * */
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-      console.log('notificationOpen: ' + notificationOpen)
+      // console.log('notificationOpen: ' + notificationOpen)
 
       const { title, body } = notificationOpen.notification;
-      this.showAlert(title, body);
+      // this.showAlert(title, body);
     });
 
     /*
@@ -133,7 +123,7 @@ class App extends React.Component {
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
       const { title, body } = notificationOpen.notification;
-      this.showAlert(title, body);
+      // this.showAlert(title, body);
     }
     /*
     * Triggered for data only payload in foreground
@@ -141,8 +131,6 @@ class App extends React.Component {
     this.messageListener = firebase.messaging().onMessage(async (message) => {
       //process data message
 
-      // console.log(JSON.stringify(message));
-      // this.showAlert(JSON.stringify(message))
       const notification = new firebase.notifications.Notification()
         .setNotificationId(message.messageId)
         .setTitle(message.data.title)
@@ -165,6 +153,9 @@ class App extends React.Component {
       if (udata) {
         let userData = JSON.parse(udata)
         let uid = userData.uid
+
+        userData.fcmToken = fcmToken;
+        await AsyncStorage.setItem('userData',JSON.stringify(userData));
 
         let data = {
           "uid": uid,

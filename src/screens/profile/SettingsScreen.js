@@ -127,7 +127,7 @@ export default class SettingsScreen extends Component {
 
     requestDeleteConfirmation = () => {
         Alert.alert(
-            "Do you want to delete this account?",
+            "Are you sure you want to delete this account?",
             "This action cannot be undone",
             [
                 {

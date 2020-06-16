@@ -6,7 +6,8 @@ import {
   View,
   StatusBar,
   PermissionsAndroid,
-  TouchableOpacity
+  TouchableOpacity,
+  KeyboardAvoidingView,
 } from 'react-native';
 // import { Header, NavigationActions } from 'react-navigation'
 // import {AudioRecorder, AudioUtils} from 'react-native-audio'
@@ -99,8 +100,18 @@ export default class ChatsScreen extends React.Component {
   }
 
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
+    await this.markAsSeen();
     firebaseService.removeChatRef()
+  }
+
+  async markAsSeen() {
+    let data = {
+      uid: this.state.userData.uid,
+    }
+
+     firebaseService.markAsSeen(data)
+    return;
   }
 
   async setUserData() {
@@ -123,7 +134,7 @@ export default class ChatsScreen extends React.Component {
     messageBody['chatToId'] = this.state.chatTo.uid;
     messageBody['fcmToken'] = this.state.chatTo.fcmToken;
     messageBody['deviceType'] = this.state.chatTo.deviceType;
-    
+
     firebaseService.appendMessage(messageBody)
   }
 
@@ -169,16 +180,18 @@ export default class ChatsScreen extends React.Component {
 
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={message => this.onSend(message)}
-        renderBubble={(props) => this.renderBubble(props)}
-        user={{
-          _id: this.state.uid,
-          name: this.state.username,
-          avatar: (this.state.profilePicture !== undefined) ? this.state.profilePicture : null
-        }}
-      />
+      <View style={{ flex: 1 }}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={message => this.onSend(message)}
+          renderBubble={(props) => this.renderBubble(props)}
+          user={{
+            _id: this.state.uid,
+            name: this.state.username,
+            avatar: (this.state.profilePicture !== undefined) ? this.state.profilePicture : null
+          }}
+        />
+      </View>
     )
   }
 }
@@ -187,6 +200,6 @@ export default class ChatsScreen extends React.Component {
 const styles = StyleSheet.create({
 
   itemTitle: {
-    color: '#FF9D5C'
+    color: '#FFF'
   }
 })

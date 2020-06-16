@@ -54,7 +54,7 @@ export default class ItemsScreen extends React.Component {
     })
   }
 
-  getItemsByUid = () => { 
+  getItemsByUid = () => {
     // this.setState({ loading: true })
     const { pageSize } = this.state;
 
@@ -70,7 +70,7 @@ export default class ItemsScreen extends React.Component {
       if (!response.data.variable) {
         this.setState({
           items: [...this.state.items, ...items],
-          loading: false, 
+          loading: false,
           loadingMore: false,
           loadedAll: true,
           lastItemStamp: null
@@ -79,10 +79,11 @@ export default class ItemsScreen extends React.Component {
       }
 
       let lastItemStamp
-  
+
       if (response.data.variable) {
         lastItemStamp = response.data.variable
-      } 
+      }
+      console.log('stamp: '+lastItemStamp)
 
 
       this.setState({
@@ -136,7 +137,7 @@ export default class ItemsScreen extends React.Component {
       lastItemStamp: null,
       loading: true,
       loadedAll: false
-    },()=>{
+    }, () => {
       this.getItemsByUid();
     })
   }
@@ -170,15 +171,19 @@ export default class ItemsScreen extends React.Component {
 
 
   refreshDetails = (data) => {
-    this.setState({
-      items: [],
-      pageSize: 11,
-      lastItemStamp: null,
-      loading: true,
-      loadedAll: false
-    },()=>{
-      this.getItemsByUid()
-    })
+    if(!this.state.loading){
+      this.setState({
+        items: [],
+        pageSize: 11,
+        lastItemStamp: null,
+        loading: true,
+        loadedAll: false
+      }, () => {
+        this.getItemsByUid()
+      })
+    }else{
+      return;
+    }
   }
 
   deleteItem = (index, id) => {

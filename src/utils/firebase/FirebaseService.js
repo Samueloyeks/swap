@@ -123,6 +123,26 @@ class FirebaseService extends Component {
         return;
     }
 
+    markAsSeen=(data)=>{
+        let uid = data.uid;
+
+        chatRef.once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                chatRef.update({
+                    [uid]: true,
+                })
+            }
+        })
+
+        chatToRef.once('value').then(snapshot => {
+            if (snapshot.exists()) {
+                chatToRef.update({
+                    [uid]: true,
+                })
+            }
+        })
+    }
+
     updateMessages = callback => {
         chatToRef
             .limitToLast(20)
@@ -160,9 +180,11 @@ class FirebaseService extends Component {
         await chatRef.push(messageBody)
 
         await chatToRef.update({
-            timestamp: firebase.database.ServerValue.TIMESTAMP,
+            timestamp: firebase.database.ServerValue.TIMESTAMP, 
             [myId]: true,
-            [chatToId]: false
+            [chatToId]: false,
+            lastMessage:messageBody.text,
+            lastMessageTimestamp:messageBody.timestamp
         })
         await chatToRef.once('value').then(function (snap) {
             timestamp = snap.val().timestamp * -1
@@ -172,7 +194,9 @@ class FirebaseService extends Component {
         await chatRef.update({
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             [myId]: true,
-            [chatToId]: false
+            [chatToId]: false,
+            lastMessage:messageBody.text,
+            lastMessageTimestamp:messageBody.timestamp
         })
         await chatRef.once('value').then(function (snap) {
             timestamp = snap.val().timestamp * -1
@@ -255,9 +279,20 @@ class FirebaseService extends Component {
             let userMessagesSnap = await itemChatsRef.child(senderRef).once('value')
             let userMessages = await userMessagesSnap.val();
 
-            let keys = Object.keys(userMessages)
-            let lastMessage = userMessages[keys[keys.length - 4]].text
-            let lastMessageTimestamp = userMessages[keys[keys.length - 4]].timestamp
+            // let keys = Object.keys(userMessages)
+            // keys = keys.filter(key => 
+            //     key !== myId
+            //      && key !== 'timestamp'
+            //       && key !==senderRef
+            //       && key !== 'lastMessage'
+            //       && key !=='lastMessageTimestamp' 
+            // )
+
+            let lastMessage = userMessages['lastMessage']
+            let lastMessageTimestamp = userMessages['lastMessageTimestamp']
+
+            // let lastMessage = userMessages[keys[keys.length - 1]].text 
+            // let lastMessageTimestamp = userMessages[keys[keys.length - 1]].timestamp
             let lastMessageTime = new Date(lastMessageTimestamp).toISOString();
             let opened = userMessages[myId]
 

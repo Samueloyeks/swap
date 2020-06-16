@@ -32,7 +32,7 @@ const notificationDataAndroid = {
     // },
     "data": {
         "body": "",
-        "title": "",
+        "title": "", 
         "content_available": true,
         "priority": "high",
         "icon": "ic_stat_ic_notification",
@@ -113,9 +113,9 @@ class Api extends Component {
                 ).catch(error => console.log(error))
 
             } else {
-                this.notificationDataIOS.notification.title = data.title;
-                this.notificationDataIOS.notification.body = data.body;
-                this.notificationDataIOS.to = data.to;
+                notificationDataIOS.data.title = data.title;
+                notificationDataIOS.data.body = data.body;
+                notificationDataIOS.to = data.to;
 
                 return await axios.post(
                     url,

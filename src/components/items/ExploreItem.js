@@ -60,7 +60,8 @@ export default class ExploreItem extends Component {
                                                         username: this.props.postedby.username,
                                                         onGoBack: this.props.onRefresh
                                                     }) 
-                                                     : null
+                                                     : 
+                                                     ()=>this.props.navigation.navigate('ProfileScreen')
                                                      }>
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>

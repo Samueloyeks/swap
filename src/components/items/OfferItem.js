@@ -80,7 +80,7 @@ export default class OfferItem extends Component {
                                 this.props.sendingOfferResponse ?
                                     <View style={{ flex: 1, alignItems: 'flex-end', right: 0 }}>
                                         <ActivityIndicator style={styles.acceptedText} />
-                                    </View>
+                                    </View> 
                                     : this.props.accepted ?
                                         <Text style={styles.acceptedText}>Accepted</Text>
                                         :

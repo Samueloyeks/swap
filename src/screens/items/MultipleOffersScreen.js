@@ -149,6 +149,7 @@ export default class MultipleOffersScreen extends React.Component {
             offerId: this.state.offerDetails.id,
             itemId: this.state.offerDetails.itemId,
             swapId: this.state.offerDetails.swapId,
+            offeredby: this.state.offerDetails.offeredBy
         }
 
         var notificiationData = {

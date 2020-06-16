@@ -101,7 +101,7 @@ export default class UserProfileScreen extends React.Component {
           uid: response.data.data.uid,
           fullName: response.data.data.fullName,
           username: response.data.data.username, 
-          phoneNumber: response.data.data.phoneNumber,
+          phoneNumber: response.data.data.phoneNumber, 
           email: response.data.data.email,
           profilePicture: (response.data.data.profilePicture == undefined ? null : response.data.data.profilePicture),
           likes: response.data.data.likes,
@@ -210,7 +210,6 @@ export default class UserProfileScreen extends React.Component {
   }
 
   callNumber = phone => {
-    console.log('callNumber ----> ', phone);
     let phoneNumber = phone;
     if (Platform.OS !== 'android') {
       phoneNumber = `telprompt:${phone}`;
@@ -614,7 +613,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     height: 130,
     width: 130,
-    // bottom: -40
+    backgroundColor: 'grey',
   },
   avatar: {
     height: 130,

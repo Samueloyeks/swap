@@ -38,7 +38,7 @@ export default class ExploreScreen extends React.Component {
       },
       modalVisible: false,
       silentlyGettingItems: false,
-      scrollEnabled:true
+      scrollEnabled: true
     }
 
     this.arrayholder = []
@@ -64,11 +64,11 @@ export default class ExploreScreen extends React.Component {
     // await this.getItems();
     this.getItems();
 
-    this.updateList = setInterval(()=>{
-      if(!this.state.silentlyGettingItems){
+    this.updateList = setInterval(() => {
+      if (!this.state.silentlyGettingItems) {
         this.setState({
-          silentlyGettingItems:true
-        },()=>{
+          silentlyGettingItems: true
+        }, () => {
           this.silentlyGetItems()
         })
       }
@@ -172,14 +172,13 @@ export default class ExploreScreen extends React.Component {
       api.post('/items/silentlyGetItemsByFilters', data).then((response) => {
         let items = response.data.data;
 
-
         this.setState({
-          scrollEnabled:false,
-          items: [...items,...this.state.items],
+          scrollEnabled: false,
+          items: [...items, ...this.state.items],
           silentlyGettingItems: false,
-        },()=>{
+        }, () => {
           this.setState({
-            scrollEnabled:true
+            scrollEnabled: true
           })
         })
         this.arrayholder = this.state.items
@@ -514,6 +513,9 @@ export default class ExploreScreen extends React.Component {
       loadedAll: false
     }, () => {
       this.getItems()
+      if (this.state.categories.length == 0) {
+        this.getCategories()
+      }
     })
   }
 

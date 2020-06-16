@@ -423,8 +423,8 @@ const styles = {
     },
     editButton: {
         backgroundColor: 'black',
-        bottom: -20,
-        zIndex: 1,
+        // bottom: -10,
+        zIndex: 3,
         right: '33%',
         borderRadius: 50,
         position: 'absolute'

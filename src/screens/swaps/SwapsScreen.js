@@ -104,6 +104,7 @@ export default class SwapsScreen extends React.Component {
           })
           return;
         }
+        console.log('stamp: '+response.data.variable)
   
         let lastSwapStamp
     
@@ -257,15 +258,17 @@ export default class SwapsScreen extends React.Component {
   }
 
   refreshDetails = () => {
-    this.setState({
-      swaps: [],
-      pageSize: 11,
-      lastSwapStamp: null,
-      loading: true,
-      loadedAll: false
-    },()=>{
-      this.getAllSwaps();
-    })
+    if(!this.state.loading){
+      this.setState({
+        swaps: [],
+        pageSize: 11,
+        lastSwapStamp: null,
+        loading: true,
+        loadedAll: false
+      },()=>{
+        this.getAllSwaps();
+      })
+    }
   }
 
   changeIndex = (index) => {

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View } from 'react-native';
+import { View,StyleSheet } from 'react-native';
 import Dialog from "react-native-dialog";
 
 
@@ -19,10 +19,10 @@ export default class PasswordDialog extends Component {
                     {/* <Dialog.Description>
                   Do you want to delete this account? You cannot undo this action.
                 </Dialog.Description> */}
-                    <Dialog.Input secureTextEntry placeholder="Old Password" onChangeText={(oldPassword) => this.setState({ oldPassword })} />
-                    <Dialog.Input secureTextEntry placeholder="New Password" onChangeText={(newPassword) => this.setState({ newPassword })} />
+                    <Dialog.Input placeholderTextColor={'gray'} style={styles.inputStyle}  secureTextEntry placeholder="Old Password" onChangeText={(oldPassword) => this.setState({ oldPassword })} />
+                    <Dialog.Input placeholderTextColor={'gray'} style={styles.inputStyle}  secureTextEntry placeholder="New Password" onChangeText={(newPassword) => this.setState({ newPassword })} />
                     <Dialog.Button label="Cancel" onPress={this.props.handleCancel} />
-                    <Dialog.Button label="ok"
+                    <Dialog.Button label="Submit"
                         onPress={() =>
                             this.props.submitCredentials(this.state.oldPassword, this.state.newPassword)
                         } />
@@ -31,3 +31,10 @@ export default class PasswordDialog extends Component {
         )
     }
 }
+
+const styles = StyleSheet.create({
+    inputStyle:{
+        color:'black'
+    }
+  
+  });
