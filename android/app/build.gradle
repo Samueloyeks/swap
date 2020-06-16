@@ -187,8 +187,11 @@ dependencies {
     implementation project(':react-native-screens')
     implementation project(':react-native-safe-area-context')
     implementation project(':react-native-reanimated')
+    implementation project(':react-native-fbsdk')
+    implementation(project(":react-native-google-signin"))
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
     implementation 'androidx.appcompat:appcompat:1.1.0-rc01'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0-alpha02'
     implementation "com.google.android.gms:play-services-base:16.1.0"

@@ -53,16 +53,10 @@ target 'swap' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-
-
-
-
-
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
-
-
   
-
+  pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
+  
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
 
   target 'swapTests' do

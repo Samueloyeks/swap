@@ -24,6 +24,8 @@ import api from '../utils/api/ApiService'
 import db from '../utils/db/Storage'
 import toast from '../utils/SimpleToast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import SocialBlock from '../components/SocialBlock'
+
 
 
 
@@ -135,6 +137,35 @@ export default class SignUpScreen extends React.Component {
 
     }
   }
+
+  _handleFacebookSubmit = async () => {
+    alert('facebook')
+    // const { navigation } = this.props;
+    // this.setState({ loading: true });
+    // try {
+    //   const user = await this.facebookLogin();
+    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
+    //   navigation.navigate('Main');
+    // } catch (err) {
+    //   this.setState({ loading: false });
+    //   showToast(err.message);
+    // }
+  };
+
+  _handleGoogleSubmit = async () => {
+    alert('google')
+    // const { navigation } = this.props;
+    // this.setState({ loading: true });
+    // try {
+    //   const user = await this.googleLogin();
+    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
+    //   navigation.navigate('Main');
+    // } catch (err) {
+    //   this.setState({ loading: false });
+    //   console.dir(err, 'errr')
+    //   showToast(err.message);
+    // }
+  };
 
   _scrollToInput(reactNode) {
     // Add a 'scroll' ref to your ScrollView
@@ -266,7 +297,7 @@ export default class SignUpScreen extends React.Component {
 
 
                       {/* social signup */}
-                      <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20 }}>
+                      {/* <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 20 }}>
                         <TouchableOpacity onPress={this.handleTestSubmit}>
                           <View style={{ width: 40, height: 40 }}>
                             <Image source={facebookImg}></Image>
@@ -277,7 +308,12 @@ export default class SignUpScreen extends React.Component {
                             <Image source={googleImg}></Image>
                           </View>
                         </TouchableOpacity>
-                      </View>
+                      </View> */}
+                                            <SocialBlock
+                        handleFacebookSubmit={this._handleFacebookSubmit}
+                        handleGoogleSubmit={this._handleGoogleSubmit}
+                      >
+                      </SocialBlock>
 
                       {/* signup page */}
                       <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 30 }}>

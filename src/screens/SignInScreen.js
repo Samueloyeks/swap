@@ -14,6 +14,7 @@ import {
   TouchableWithoutFeedback,
   Button
 } from 'react-native';
+import * as firebase from 'react-native-firebase';
 import loginImg from '../assets/imgs/loginImg.png'
 import facebookImg from '../assets/imgs/facebookImg.png'
 import googleImg from '../assets/imgs/googleImg.png'
@@ -27,6 +28,16 @@ import db from '../utils/db/Storage'
 import toast from '../utils/SimpleToast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import SocialBlock from '../components/SocialBlock'
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import firebaseService from '../utils/firebase/FirebaseService';
+
+
+const firebaseAuth = firebase.auth();
+const { FacebookAuthProvider, GoogleAuthProvider } = firebase.auth;
+
+
+
 
 
 
@@ -69,7 +80,6 @@ export default class SignInScreen extends React.Component {
   }
 
 
-
   handleSubmit = async values => {
     this.setState({ loading: true })
 
@@ -94,7 +104,7 @@ export default class SignInScreen extends React.Component {
             db.set('userData', userData).then(() => {
               this.props.navigation.navigate('Main')
               this.setState({ loading: false })
-            }) 
+            })
           }
         }, err => {
           toast.show('Error Signing In')
@@ -109,6 +119,85 @@ export default class SignInScreen extends React.Component {
       }
 
     }
+  }
+
+  _handleFacebookSubmit = async () => {
+    const { navigation } = this.props;
+
+    this.setState({ loading: true });
+    try {
+      const uData = await firebaseService.facebookAuth()
+      console.log(uData)
+
+      if (uData == false) {
+        this.setState({ loading: false });
+        toast.show('Error Signing Up')
+        return;
+      }
+
+      var userData = {
+        "email": uData.email,
+        "username": uData.username,
+        "fullName": uData.fullName,
+        "phoneNumber": uData.phoneNumber,
+        "uid": uData.uid,
+        "profilePicture": uData.profilePicture
+      }
+
+      db.set('userData', userData).then(() => {
+        navigation.navigate('Main')
+        this.setState({ loading: false })
+      })
+
+    } catch (err) {
+      this.setState({ loading: false });
+      toast.show(err.message);
+    }
+  };
+
+  _handleGoogleSubmit = async () => {
+    alert('google')
+    // const { navigation } = this.props;
+    // this.setState({ loading: true });
+    // try {
+    //   const user = await this.googleLogin();
+    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
+    //   navigation.navigate('Main');
+    // } catch (err) {
+    //   this.setState({ loading: false });
+    //   console.dir(err, 'errr')
+    //   showToast(err.message);
+    // }
+  };
+
+  generateUsername = async (firstName, lastName) => {
+    let alias = (firstName.substring(0, 1) + lastName).toLowerCase()
+    var num = Math.floor(1000 + Math.random() * 9000);
+
+    let username = alias + num;
+    if (this.isUsernameTaken(username)) {
+      return this.generateUsername(username)
+    } else {
+      return username;
+    }
+
+  }
+
+  isUsernameTaken(username) {
+
+    let data = {
+      username: username,
+      uid: null
+    }
+
+    api.post('/users/isUsernameTaken', data).then((response) => {
+      if (response.data.status) {
+        return true;
+      } else {
+        return false;
+      }
+
+    })
   }
 
 
@@ -186,7 +275,7 @@ export default class SignInScreen extends React.Component {
                       </View>
 
                       {/* social login */}
-                      <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
+                      {/* <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 10 }}>
                         <TouchableOpacity >
                           <View style={{ width: 40, height: 40 }}>
                             <Image source={facebookImg}></Image>
@@ -197,7 +286,12 @@ export default class SignInScreen extends React.Component {
                             <Image source={googleImg}></Image>
                           </View>
                         </TouchableOpacity>
-                      </View>
+                      </View> */}
+                      <SocialBlock
+                        handleFacebookSubmit={this._handleFacebookSubmit}
+                        handleGoogleSubmit={this._handleGoogleSubmit}
+                      >
+                      </SocialBlock>
 
                       {/* signup page */}
                       <View style={{ flexWrap: 'wrap', alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 30 }}>

@@ -1,8 +1,17 @@
 import { Component } from "react";
+import { Platform, Alert } from 'react-native'
 import { EventRegister } from 'react-native-event-listeners'
 // import firebase from '../../../Firebase'
 import * as firebase from 'react-native-firebase';
 import api from '../api/ApiService'
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import db from '../db/Storage'
+import toast from '../../utils/SimpleToast'
+
+
+
+const firebaseAuth = firebase.auth();
+const { FacebookAuthProvider, GoogleAuthProvider } = firebase.auth;
 
 
 let userRef
@@ -123,7 +132,7 @@ class FirebaseService extends Component {
         return;
     }
 
-    markAsSeen=(data)=>{
+    markAsSeen = (data) => {
         let uid = data.uid;
 
         chatRef.once('value').then(snapshot => {
@@ -180,11 +189,11 @@ class FirebaseService extends Component {
         await chatRef.push(messageBody)
 
         await chatToRef.update({
-            timestamp: firebase.database.ServerValue.TIMESTAMP, 
+            timestamp: firebase.database.ServerValue.TIMESTAMP,
             [myId]: true,
             [chatToId]: false,
-            lastMessage:messageBody.text,
-            lastMessageTimestamp:messageBody.timestamp
+            lastMessage: messageBody.text,
+            lastMessageTimestamp: messageBody.timestamp
         })
         await chatToRef.once('value').then(function (snap) {
             timestamp = snap.val().timestamp * -1
@@ -195,8 +204,8 @@ class FirebaseService extends Component {
             timestamp: firebase.database.ServerValue.TIMESTAMP,
             [myId]: true,
             [chatToId]: false,
-            lastMessage:messageBody.text,
-            lastMessageTimestamp:messageBody.timestamp
+            lastMessage: messageBody.text,
+            lastMessageTimestamp: messageBody.timestamp
         })
         await chatRef.once('value').then(function (snap) {
             timestamp = snap.val().timestamp * -1
@@ -314,6 +323,202 @@ class FirebaseService extends Component {
         return chatsList;
     }
 
+    //=============================================================================================
+    //social auth
+
+    facebookAuth = async () => {
+        return new Promise(async (resolve, reject) => {
+
+            try {
+                const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+                if (result.isCancelled) {
+                    return;
+                }
+
+                const { accessToken } = await AccessToken.getCurrentAccessToken();
+                const credential = FacebookAuthProvider.credential(accessToken);
+                const data = await firebaseAuth.signInWithCredential(credential);
+                let uData
+
+                if (data.additionalUserInfo.isNewUser) {
+                    uData = await this.facebookSignup(data)
+                    Alert.alert(
+                        "Important",
+                        "Please update your phone number and check your email to verify your account",
+                        [
+                            {
+                                text: "Ok",
+                                style: "cancel"
+                            },
+                        ],
+                        { cancelable: false }
+                    );
+                } else {
+                    console.log('LOGIN')
+                    uData = await this.facebookLogin(data)
+                }
+
+                resolve(uData)
+
+            } catch (err) {
+                resolve(false);
+            }
+
+        })
+    };
+
+    facebookSignup = async (data) => {
+        return new Promise(async (resolve, reject) => {
+
+            let rateTable = [
+                { rating: 5, count: 0 },
+                { rating: 4, count: 0 },
+                { rating: 3, count: 0 },
+                { rating: 2, count: 0 },
+                { rating: 1, count: 0 },
+            ]
+
+            let firstName = data.additionalUserInfo.profile.first_name;
+            let lastName = data.additionalUserInfo.profile.last_name
+            let fullName = firstName + ' ' + lastName
+            let email = data.additionalUserInfo.profile.email;
+            let phoneNumber = data.user.phoneNumber;
+            let profilePicture =
+                (data.additionalUserInfo.profile.picture.data.url) ? data.additionalUserInfo.profile.picture.data.url : null
+            let username = await this.generateUsername(firstName, lastName)
+            let uid = data.user.uid
+            let lastSeen = Date(firebaseAuth.currentUser.metadata.lastSignInTime)
+            let dateCreated = Date(firebaseAuth.currentUser.metadata.creationTime)
+            let verified = firebaseAuth.currentUser.emailVerified
+
+            let uData = {
+                fullName,
+                username,
+                email,
+                phoneNumber,
+                profilePicture,
+                uid,
+                lastSeen,
+                dateCreated,
+                verified
+            }
+
+            let fcmToken = await db.get('fcmToken');
+            let deviceType = Platform.OS;
+            let itemsRefKey = firebase.database().ref(`/usersItemsRefs`).push().key;
+            let likesRefKey = firebase.database().ref(`/usersLikesRefs`).push().key;
+            let favoritesRefKey = firebase.database().ref(`/usersFavoritesRefs`).push().key;
+            let swapsRefKey = firebase.database().ref(`/usersSwapsRefs`).push().key;
+
+            uData.fcmToken = fcmToken;
+            uData.deviceType = deviceType;
+            uData.usernameLower = await username.toLowerCase()
+            uData.likes = 0
+            uData.rating = 0
+            uData.rateTable = rateTable
+            uData.swapsCompleted = 0
+            uData.reports = 0
+            uData.status = 'active';
+            uData.itemsRefKey = itemsRefKey
+            uData.likesRefKey = likesRefKey
+            uData.favoritesRefKey = favoritesRefKey
+            uData.swapsRefKey = swapsRefKey
+
+            // console.log(uData)
+            try {
+                await firebase.database().ref(`/userProfiles/${uid}`).set(uData).then(async () => {
+                    await firebaseAuth.currentUser.sendEmailVerification();
+
+                    resolve(uData)
+
+                }, err => {
+                    toast.show('Error Signing Up')
+                    console.log(err);
+                    resolve(false)
+                })
+            } catch (ex) {
+                toast.show('Error Signing Up')
+                console.log(ex)
+                resolve(false)
+            }
+
+        })
+    }
+
+    facebookLogin = async (data) => {
+        return new Promise(async (resolve, reject) => {
+
+            let uid = data.user.uid
+            let lastSeen = Date(firebaseAuth.currentUser.metadata.lastSignInTime)
+            let verified = firebaseAuth.currentUser.emailVerified
+
+            let fcmToken = await db.get('fcmToken');
+            let deviceType = Platform.OS;
+
+            try {
+                await firebase.database().ref(`/userProfiles/` + uid).once('value').then(async (snapshot) => {
+                    let uData = snapshot.val();
+
+                    await firebase.database().ref(`/userProfiles/` + uid).update({
+                        fcmToken,
+                        deviceType,
+                        lastSeen,
+                        verified
+                    })
+
+                    if (uData.verified) {
+                        resolve(uData);
+                    } else {
+                        resolve(false);
+                    }
+
+                    //Email sent
+                }, err => {
+                    toast.show('Error Signing In')
+                    console.log(err);
+                    resolve(false)
+                });
+
+            } catch (ex) {
+                toast.show('Error Signing In')
+                console.log(ex)
+                resolve(false)
+            }
+
+        })
+    }
+
+
+
+    generateUsername = async (firstName, lastName) => {
+        let alias = (firstName.substring(0, 1) + lastName).toLowerCase()
+        var num = Math.floor(1000 + Math.random() * 9000);
+
+        let username = alias + num;
+        if (this.isUsernameTaken(username)) {
+            return this.generateUsername(username)
+        } else {
+            return username;
+        }
+
+    }
+
+    isUsernameTaken(username) {
+
+        let data = {
+            username: username,
+            uid: null
+        }
+
+        api.post('/users/isUsernameTaken', data).then((response) => {
+            if (response.data.status) {
+                return true;
+            } else {
+                return false;
+            }
+
+        })
+    }
 
     render() {
         return null
