@@ -1,4 +1,4 @@
-package com.swap;
+package com.rookie.swap;
 
 import com.facebook.react.ReactActivity;
 import org.devio.rn.splashscreen.SplashScreen;

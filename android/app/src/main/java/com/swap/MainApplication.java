@@ -1,4 +1,4 @@
-package com.swap;
+package com.rookie.swap;
 
 import android.app.Application;
 import android.content.Context;

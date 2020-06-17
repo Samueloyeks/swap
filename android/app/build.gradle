@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.swap"
+        applicationId "com.rookie.swap"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

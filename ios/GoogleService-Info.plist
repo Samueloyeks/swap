@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>655639433389-odnhcgul282poi9dt9gtek7gvdqn7k2i.apps.googleusercontent.com</string>
+	<string>655639433389-of42v4igemm836e6qulk7mns8p9fl889.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.655639433389-odnhcgul282poi9dt9gtek7gvdqn7k2i</string>
+	<string>com.googleusercontent.apps.655639433389-of42v4igemm836e6qulk7mns8p9fl889</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>655639433389-6b8jabb0l7qn18q0l1spoh6vf292g6au.apps.googleusercontent.com</string>
+	<string>655639433389-app89lsb80pmngl7t7nko6r4v0c1o5io.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCRrmhXpjsjPbPGsxo8Q_oLMmFtXSEDWN0</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.swap</string>
+	<string>com.rookie.swap</string>
 	<key>PROJECT_ID</key>
 	<string>swap-eb68d</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:655639433389:ios:d9d619612418ac5f233624</string>
+	<string>1:655639433389:ios:b5a2cc1f1c1e8893233624</string>
 	<key>DATABASE_URL</key>
 	<string>https://swap-eb68d.firebaseio.com</string>
 </dict>

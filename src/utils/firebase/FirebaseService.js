@@ -337,7 +337,7 @@ class FirebaseService extends Component {
     }
 
     //=============================================================================================
-    //social auth
+    //SOCIAL AUTH
 
     facebookAuth = async () => {
         return new Promise(async (resolve, reject) => {

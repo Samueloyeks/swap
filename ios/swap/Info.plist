@@ -22,7 +22,7 @@
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
-		<dict> 
+		<dict>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>fb699619667493075</string>
