@@ -14,7 +14,7 @@ export default class EmailDialog extends Component {
     render() {
         return (
             <View>
-                <Dialog.Container visible={this.props.visible}>
+                <Dialog.Container visible={this.props.visible}> 
                     {/* <Dialog.Title>Verify Account</Dialog.Title> */}
                     {/* <Dialog.Description>
                   Do you want to delete this account? You cannot undo this action.

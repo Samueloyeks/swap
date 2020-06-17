@@ -23,7 +23,6 @@ import io.invertase.firebase.auth.RNFirebaseAuthPackage;
 
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;                       
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {
@@ -44,7 +43,6 @@ public class MainApplication extends Application implements ReactApplication {
           packages.add(new RNFirebaseDatabasePackage());
           packages.add(new RNFirebaseMessagingPackage());
           packages.add(new RNFirebaseNotificationsPackage());
-          packages.add(new RNGoogleSigninPackage());
           return packages;
         }
 

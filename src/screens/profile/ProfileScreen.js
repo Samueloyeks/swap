@@ -254,7 +254,7 @@ export default class ProfileScreen extends React.Component {
 
           <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 40 }}>
             <Text style={{fontSize:20}}>{this.state.username}</Text>
-            <Text><Icon name="phone" />{this.state.phoneNumber}</Text>
+            {this.state.phoneNumber?<Text><Icon name="phone" />{this.state.phoneNumber}</Text>:null}
             <Text><Icon name="email" />{this.state.email}</Text>
 
           </View>

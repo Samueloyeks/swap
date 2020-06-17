@@ -25,6 +25,8 @@ import db from '../utils/db/Storage'
 import toast from '../utils/SimpleToast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import SocialBlock from '../components/SocialBlock'
+import firebaseService from '../utils/firebase/FirebaseService';
+
 
 
 
@@ -139,32 +141,70 @@ export default class SignUpScreen extends React.Component {
   }
 
   _handleFacebookSubmit = async () => {
-    alert('facebook')
-    // const { navigation } = this.props;
-    // this.setState({ loading: true });
-    // try {
-    //   const user = await this.facebookLogin();
-    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
-    //   navigation.navigate('Main');
-    // } catch (err) {
-    //   this.setState({ loading: false });
-    //   showToast(err.message);
-    // }
+    const { navigation } = this.props;
+
+    this.setState({ loading: true });
+    try {
+      const uData = await firebaseService.facebookAuth()
+
+      if (uData == false) {
+        this.setState({ loading: false });
+        toast.show('Error Signing Up')
+        return;
+      }
+
+      var userData = {
+        "email": uData.email,
+        "username": uData.username,
+        "fullName": uData.fullName,
+        "phoneNumber": uData.phoneNumber,
+        "uid": uData.uid,
+        "profilePicture": uData.profilePicture
+      }
+
+      db.set('userData', userData).then(() => {
+        navigation.navigate('Main')
+        this.setState({ loading: false })
+      })
+
+    } catch (err) {
+      this.setState({ loading: false });
+      toast.show(err.message);
+    }
   };
 
   _handleGoogleSubmit = async () => {
-    alert('google')
-    // const { navigation } = this.props;
-    // this.setState({ loading: true });
-    // try {
-    //   const user = await this.googleLogin();
-    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
-    //   navigation.navigate('Main');
-    // } catch (err) {
-    //   this.setState({ loading: false });
-    //   console.dir(err, 'errr')
-    //   showToast(err.message);
-    // }
+    const { navigation } = this.props;
+
+    this.setState({ loading: true });
+    try {
+      const uData = await firebaseService.googleAuth()
+      // console.log(uData)
+
+      if (uData == false) {
+        this.setState({ loading: false });
+        toast.show('Error Signing Up')
+        return;
+      }
+
+      var userData = {
+        "email": uData.email,
+        "username": uData.username,
+        "fullName": uData.fullName,
+        "phoneNumber": uData.phoneNumber,
+        "uid": uData.uid,
+        "profilePicture": uData.profilePicture
+      }
+
+      db.set('userData', userData).then(() => {
+        navigation.navigate('Main')
+        this.setState({ loading: false })
+      })
+
+    } catch (err) {
+      this.setState({ loading: false });
+      toast.show(err.message);
+    }
   };
 
   _scrollToInput(reactNode) {

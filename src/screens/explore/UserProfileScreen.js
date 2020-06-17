@@ -42,7 +42,7 @@ export default class UserProfileScreen extends React.Component {
       isFocused: false,
       likes: 0,
       rating: 0,
-      explorePageIndex:null,
+      explorePageIndex: null,
       swapsCompleted: 0,
       modalVisible: false,
       reports: {},
@@ -75,7 +75,7 @@ export default class UserProfileScreen extends React.Component {
     // console.log(state.params.userData)
     let userId = await state.params.userId
     let explorePageIndex = await state.params.explorePageIndex
-    this.setState({explorePageIndex})
+    this.setState({ explorePageIndex })
 
     await this.setUserData(userId);
 
@@ -100,8 +100,8 @@ export default class UserProfileScreen extends React.Component {
           userData: response.data.data,
           uid: response.data.data.uid,
           fullName: response.data.data.fullName,
-          username: response.data.data.username, 
-          phoneNumber: response.data.data.phoneNumber, 
+          username: response.data.data.username,
+          phoneNumber: response.data.data.phoneNumber,
           email: response.data.data.email,
           profilePicture: (response.data.data.profilePicture == undefined ? null : response.data.data.profilePicture),
           likes: response.data.data.likes,
@@ -117,7 +117,7 @@ export default class UserProfileScreen extends React.Component {
     })
   }
 
-  getItems = async() => {
+  getItems = async () => {
     await db.get('userData').then(data => {
       const { pageSize } = this.state;
       let userData = JSON.parse(data)
@@ -132,7 +132,7 @@ export default class UserProfileScreen extends React.Component {
 
       api.post('/items/getUserItemsByUid', data).then((response) => {
         let items = response.data.data;
-      
+
         if (!response.data.variable) {
           this.setState({
             items: [...this.state.items, ...items],
@@ -143,14 +143,14 @@ export default class UserProfileScreen extends React.Component {
           })
           return;
         }
-  
+
         let lastItemStamp
-    
+
         if (response.data.variable) {
           lastItemStamp = response.data.variable
-        } 
-  
-  
+        }
+
+
         this.setState({
           items: [...this.state.items, ...items],
           loading: false,
@@ -183,13 +183,17 @@ export default class UserProfileScreen extends React.Component {
       headerLeft: () => <HeaderBackButton onPress={() => {
         navigation.goBack(null);
         navigation.state.params.onGoBack();
-    }
-    } />,
+      }
+      } />,
     };
   };
 
 
   requestCallConfirmation = () => {
+    if (!this.state.phoneNumber) {
+      alert(`${this.state.username} does not have a contact number`);
+      return;
+    }
     Alert.alert(
       `Call ${this.state.username}?`,
       "Are you sure you want make this call?",
@@ -584,8 +588,8 @@ export default class UserProfileScreen extends React.Component {
                   contentContainerStyle={{ paddingBottom: 50 }}
                   extraData={this.state}
                   ListFooterComponent={this.renderFooter.bind(this)}
-                onEndReachedThreshold={0.6}
-                onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
+                  onEndReachedThreshold={0.6}
+                  onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                 />
             }
           </View>

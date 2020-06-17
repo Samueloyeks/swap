@@ -7,11 +7,24 @@ import api from '../api/ApiService'
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import db from '../db/Storage'
 import toast from '../../utils/SimpleToast'
+import keys from '../Keys'
 
 
 
 const firebaseAuth = firebase.auth();
 const { FacebookAuthProvider, GoogleAuthProvider } = firebase.auth;
+import { GoogleSignin } from '@react-native-community/google-signin';
+
+export const GOOGLE_CONFIGURATION = {
+    scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+    offlineAccess: true,
+    hostedDomain: '',
+    loginHint: '',
+    forceConsentPrompt: true,
+    accountName: '',
+    iosClientId: keys.IOS_CLIENT_ID,
+    webClientId: keys.GOOGLE_WEB_CLIENT_ID,
+};
 
 
 let userRef
@@ -354,8 +367,7 @@ class FirebaseService extends Component {
                         { cancelable: false }
                     );
                 } else {
-                    console.log('LOGIN')
-                    uData = await this.facebookLogin(data)
+                    uData = await this.socialLogin(data)
                 }
 
                 resolve(uData)
@@ -445,7 +457,124 @@ class FirebaseService extends Component {
         })
     }
 
-    facebookLogin = async (data) => {
+    googleAuth = async () => {
+        return new Promise(async (resolve, reject) => {
+
+            try {
+                GoogleSignin.configure(GOOGLE_CONFIGURATION);
+                const { idToken, accessToken } = await GoogleSignin.signIn();
+                const credential = GoogleAuthProvider.credential(idToken, accessToken);
+                const data = await firebaseAuth.signInWithCredential(credential);
+
+                let uData
+
+                if (data.additionalUserInfo.isNewUser) {
+                    uData = await this.googleSignup(data)
+                    Alert.alert(
+                        "Important",
+                        "Please update your phone number and check your email to verify your account",
+                        [
+                            {
+                                text: "Ok",
+                                style: "cancel"
+                            },
+                        ],
+                        { cancelable: false }
+                    );
+                } else {
+                    uData = await this.socialLogin(data)
+                }
+
+                resolve(uData)
+
+            } catch (err) {
+                console.log(err)
+                resolve(false);
+            }
+
+        })
+    }
+
+    googleSignup = async (data) => {
+        return new Promise(async (resolve, reject) => {
+
+            let rateTable = [
+                { rating: 5, count: 0 },
+                { rating: 4, count: 0 },
+                { rating: 3, count: 0 },
+                { rating: 2, count: 0 },
+                { rating: 1, count: 0 },
+            ]
+
+
+            let firstName = data.additionalUserInfo.profile.given_name;
+            let lastName = data.additionalUserInfo.profile.family_name;
+            let fullName = firstName + ' ' + lastName
+            let email = data.additionalUserInfo.profile.email;
+            let phoneNumber = data.user.phoneNumber;
+            let profilePicture =
+                (data.additionalUserInfo.profile.picture) ? data.additionalUserInfo.profile.picture : null
+            let username = await this.generateUsername(firstName, lastName)
+            let uid = data.user.uid
+            let lastSeen = Date(firebaseAuth.currentUser.metadata.lastSignInTime)
+            let dateCreated = Date(firebaseAuth.currentUser.metadata.creationTime)
+            let verified = firebaseAuth.currentUser.emailVerified
+
+            let uData = {
+                fullName,
+                username,
+                email,
+                phoneNumber,
+                profilePicture,
+                uid,
+                lastSeen,
+                dateCreated,
+                verified
+            }
+
+            let fcmToken = await db.get('fcmToken');
+            let deviceType = Platform.OS;
+            let itemsRefKey = firebase.database().ref(`/usersItemsRefs`).push().key;
+            let likesRefKey = firebase.database().ref(`/usersLikesRefs`).push().key;
+            let favoritesRefKey = firebase.database().ref(`/usersFavoritesRefs`).push().key;
+            let swapsRefKey = firebase.database().ref(`/usersSwapsRefs`).push().key;
+
+            uData.fcmToken = fcmToken;
+            uData.deviceType = deviceType;
+            uData.usernameLower = await username.toLowerCase()
+            uData.likes = 0
+            uData.rating = 0
+            uData.rateTable = rateTable
+            uData.swapsCompleted = 0
+            uData.reports = 0
+            uData.status = 'active';
+            uData.itemsRefKey = itemsRefKey
+            uData.likesRefKey = likesRefKey
+            uData.favoritesRefKey = favoritesRefKey
+            uData.swapsRefKey = swapsRefKey
+
+            // console.log(uData)
+            try {
+                await firebase.database().ref(`/userProfiles/${uid}`).set(uData).then(async () => {
+                    await firebaseAuth.currentUser.sendEmailVerification();
+
+                    resolve(uData)
+
+                }, err => {
+                    toast.show('Error Signing Up')
+                    console.log(err);
+                    resolve(false)
+                })
+            } catch (ex) {
+                toast.show('Error Signing Up')
+                console.log(ex)
+                resolve(false)
+            }
+
+        })
+    }
+
+    socialLogin = async (data) => {
         return new Promise(async (resolve, reject) => {
 
             let uid = data.user.uid
@@ -487,7 +616,6 @@ class FirebaseService extends Component {
 
         })
     }
-
 
 
     generateUsername = async (firstName, lastName) => {

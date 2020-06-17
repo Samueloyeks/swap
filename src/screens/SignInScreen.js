@@ -29,19 +29,9 @@ import toast from '../utils/SimpleToast'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SocialBlock from '../components/SocialBlock'
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import firebaseService from '../utils/firebase/FirebaseService';
 
 
-const firebaseAuth = firebase.auth();
-const { FacebookAuthProvider, GoogleAuthProvider } = firebase.auth;
-
-
-
-
-
-
-const keyboardVerticalOffset = Platform.OS === 'ios' ? 40 : 0
 
 
 
@@ -127,7 +117,6 @@ export default class SignInScreen extends React.Component {
     this.setState({ loading: true });
     try {
       const uData = await firebaseService.facebookAuth()
-      console.log(uData)
 
       if (uData == false) {
         this.setState({ loading: false });
@@ -156,49 +145,38 @@ export default class SignInScreen extends React.Component {
   };
 
   _handleGoogleSubmit = async () => {
-    alert('google')
-    // const { navigation } = this.props;
-    // this.setState({ loading: true });
-    // try {
-    //   const user = await this.googleLogin();
-    //   await AsyncStorage.setItem('userData', JSON.stringify(user));
-    //   navigation.navigate('Main');
-    // } catch (err) {
-    //   this.setState({ loading: false });
-    //   console.dir(err, 'errr')
-    //   showToast(err.message);
-    // }
-  };
+    const { navigation } = this.props;
 
-  generateUsername = async (firstName, lastName) => {
-    let alias = (firstName.substring(0, 1) + lastName).toLowerCase()
-    var num = Math.floor(1000 + Math.random() * 9000);
+    this.setState({ loading: true });
+    try {
+      const uData = await firebaseService.googleAuth()
+      // console.log(uData)
 
-    let username = alias + num;
-    if (this.isUsernameTaken(username)) {
-      return this.generateUsername(username)
-    } else {
-      return username;
-    }
-
-  }
-
-  isUsernameTaken(username) {
-
-    let data = {
-      username: username,
-      uid: null
-    }
-
-    api.post('/users/isUsernameTaken', data).then((response) => {
-      if (response.data.status) {
-        return true;
-      } else {
-        return false;
+      if (uData == false) {
+        this.setState({ loading: false });
+        toast.show('Error Signing Up')
+        return;
       }
 
-    })
-  }
+      var userData = {
+        "email": uData.email,
+        "username": uData.username,
+        "fullName": uData.fullName,
+        "phoneNumber": uData.phoneNumber,
+        "uid": uData.uid,
+        "profilePicture": uData.profilePicture
+      }
+
+      db.set('userData', userData).then(() => {
+        navigation.navigate('Main')
+        this.setState({ loading: false })
+      })
+
+    } catch (err) {
+      this.setState({ loading: false });
+      toast.show(err.message);
+    }
+  };
 
 
 

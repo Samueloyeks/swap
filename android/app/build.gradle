@@ -188,7 +188,6 @@ dependencies {
     implementation project(':react-native-safe-area-context')
     implementation project(':react-native-reanimated')
     implementation project(':react-native-fbsdk')
-    implementation(project(":react-native-google-signin"))
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
