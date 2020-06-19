@@ -124,6 +124,7 @@ export default class SignInScreen extends React.Component {
         return;
       }
 
+
       var userData = {
         "email": uData.email,
         "username": uData.username,

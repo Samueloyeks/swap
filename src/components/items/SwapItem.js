@@ -6,7 +6,7 @@ import TimeAgo from 'react-native-timeago';
 
 
 
-export default class SwapItem  extends Component {
+export default class SwapItem extends Component {
     constructor(props) {
         super(props);
     }
@@ -22,11 +22,11 @@ export default class SwapItem  extends Component {
     render() {
         return (
             <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('SwapDetailsScreen', { swapDetails: this.props, onGoBack: this.props.refreshDetails })}
+                onPress={() => this.props.navigation.navigate('SwapDetailsScreen', { swapDetails: this.props, onGoBack: this.props.refreshDetails })}
             >
                 <View style={styles.container}>
                     <View style={styles.ImgContainer}>
-                    <Image
+                        <Image
                             style={{
                                 width: '100%',
                                 height: '100%',
@@ -35,23 +35,23 @@ export default class SwapItem  extends Component {
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 1 }}> 
+                            <View style={{ flex: 1 }}>
 
                                 <Text style={styles.titleText}>{this.props.item.title}</Text></View>
                             <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
                                 <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.item, chatTo:{uid:this.props.item.postedby} })}
+                                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.item, chatTo: this.props.postedby })}
                                 >
                                     <Icon name="message" color="#FF9D5C" size={20} />
-                                    </TouchableOpacity>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 7 }}>Offer Made:</Text></View>
                             <View >
-                            <TimeAgo time={this.props.offered} interval={20000} style={{ fontSize: 7, color: '#808080',marginLeft:3}} />
+                                <TimeAgo time={this.props.offered} interval={20000} style={{ fontSize: 7, color: '#808080', marginLeft: 3 }} />
                             </View>
-                        </View> 
+                        </View>
                         {/* <View style={styles.stackedView}>
                             <View style={{ flex: 0.06 }}>
                                 <Icon name="check-circle"
@@ -73,26 +73,26 @@ export default class SwapItem  extends Component {
                                 />
                             </View>
                             <View style={{ flex: 0.05 }}>
-                    <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute'}}>{this.props.item.likes}</Text>
+                                <Text style={{ fontSize: 10, color: '#858585', bottom: 7, position: 'absolute' }}>{this.props.item.likes}</Text>
                             </View>
 
-                        {
-                            !this.props.completed?
-                            <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                            <TouchableOpacity style={styles.offerButton}
-                                                onPress={() => this.props.withdrawOffer({
-                                                    offerId: this.props.offerId,
-                                                    itemId: this.props.item.id,
-                                                    swapId: this.props.swapId,
-                                                    index: this.props.index
-                                                })}
-                            >
-                                <Text style={{ textAlign: 'center', fontSize: 12,color:'#FF9D5C' }}>Withdraw Offer</Text>
-                            </TouchableOpacity>
-                        </View>
-                        :
-                        null
-                        }
+                            {
+                                !this.props.completed ?
+                                    <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                                        <TouchableOpacity style={styles.offerButton}
+                                            onPress={() => this.props.withdrawOffer({
+                                                offerId: this.props.offerId,
+                                                itemId: this.props.item.id,
+                                                swapId: this.props.swapId,
+                                                index: this.props.index
+                                            })}
+                                        >
+                                            <Text style={{ textAlign: 'center', fontSize: 12, color: '#FF9D5C' }}>Withdraw Offer</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    :
+                                    null
+                            }
                         </View>
                     </View>
                 </View>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFF',
         marginBottom: 3,
         marginTop: 3,
-        height:100
+        height: 100
 
     },
     ImgContainer: {

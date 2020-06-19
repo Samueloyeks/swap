@@ -15,7 +15,7 @@ import {
 // import Sound from 'react-native-sound'
 import { ChatScreen } from 'react-native-easy-chat-ui'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { GiftedChat, Bubble, } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, Avatar, } from 'react-native-gifted-chat'
 import db from '../../utils/db/Storage'
 import demoAvatar from '../../assets/imgs/demoAvatar.png'
 import firebaseService from '../../utils/firebase/FirebaseService';
@@ -43,7 +43,6 @@ export default class ChatsScreen extends React.Component {
 
     let chatTo = await state.params.chatTo
     let itemDetails = await state.params.itemDetails;
-
 
 
 
@@ -89,9 +88,12 @@ export default class ChatsScreen extends React.Component {
           createdAt: new Date(),
           image: state.params.itemDetails.images[0],
           user: {
-            _id: state.params.itemDetails.postedby.uid,
-            name: state.params.itemDetails.postedby.username,
-            avatar: state.params.itemDetails.postedby.profilePicture,
+            _id: (state.params.itemDetails.postedby.uid) ?
+              state.params.itemDetails.postedby.uid : state.params.chatTo.uid,
+            name: (state.params.itemDetails.postedby.username) ?
+              state.params.itemDetails.postedby.username : state.params.chatTo.username,
+            avatar: (state.params.itemDetails.postedby.profilePicture) ?
+              state.params.itemDetails.postedby.profilePicture : state.params.chatTo.profilePicture,
           },
         },
       ],
@@ -110,7 +112,7 @@ export default class ChatsScreen extends React.Component {
       uid: this.state.userData.uid,
     }
 
-     firebaseService.markAsSeen(data)
+    firebaseService.markAsSeen(data)
     return;
   }
 
@@ -177,6 +179,22 @@ export default class ChatsScreen extends React.Component {
     );
   }
 
+  renderAvatar = (props) => {
+    return (
+      <Avatar
+        {...props}
+        onPressAvatar={() =>
+          this.props.navigation.navigate('UserProfileScreen',
+            {
+              userId: this.state.chatTo.uid,
+              username: this.state.chatTo.username,
+              onGoBack: () => null
+            })
+        }
+      />
+    )
+  }
+
 
   render() {
     return (
@@ -184,6 +202,7 @@ export default class ChatsScreen extends React.Component {
         <GiftedChat
           messages={this.state.messages}
           onSend={message => this.onSend(message)}
+          renderAvatar={(props) => this.renderAvatar(props)}
           renderBubble={(props) => this.renderBubble(props)}
           user={{
             _id: this.state.uid,

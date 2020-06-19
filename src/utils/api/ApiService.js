@@ -2,27 +2,29 @@ import { Component } from "react";
 import { Linking } from 'react-native';
 import base64 from 'react-native-base64'
 import axios from 'axios';
+import { API_USERNAME, API_PASSWORD, FIREBASE_KEY } from 'react-native-dotenv'
 
 
-var firebaseKey = 'AAAAmKcn0K0:APA91bGGzpZOQax9RJLkjXf8fSTzNCV1KZfeQSTQQcMI8m0z0kOgkpsSe6PkVT3UVBk-JBmS3yx3kafxip1_oJM8XPuzGpjP1rMWnMUbDt67F2EKRBY_wvDXvkEIb7fsA3f5XySB7YCp';
+
+var firebaseKey = FIREBASE_KEY;
 
 var baseURL = 'http://127.0.0.1:3000';
 // var baseURL =  'http://192.168.56.1:3000';
- 
+
 
 
 // var baseURL = 'https://api-swap.herokuapp.com'
 
-var apiUsername = "am9objpzbWl0aA==";
-var apiPassword = "JiZAQEFBMTE6NjcmOCMh";
+var apiUsername = API_USERNAME;
+var apiPassword = API_PASSWORD;
 const authHeader = 'Basic ' + base64.encode(`${apiUsername}:${apiPassword}`);
 const defaultHeader = {
     'Authorization': authHeader,
     "Content-Type": "application/x-www-form-urlencoded",
     'Accept': 'application/json'
 }
- 
-const notificationDataAndroid = { 
+
+const notificationDataAndroid = {
     "to": "",
     // "notification": {
     //     "title": "",
@@ -32,12 +34,12 @@ const notificationDataAndroid = {
     // },
     "data": {
         "body": "",
-        "title": "", 
+        "title": "",
         "content_available": true,
         "priority": "high",
         "icon": "ic_stat_ic_notification",
         "show_in_foreground": true
-}
+    }
 };
 const notificationDataIOS = {
     "to": "",
@@ -54,7 +56,7 @@ const notificationDataIOS = {
         "priority": "high",
         "icon": "ic_stat_ic_notification",
         "show_in_foreground": true
-}
+    }
 };
 const fcmHeader = {
     "Content-Type": "application/json",

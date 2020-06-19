@@ -180,7 +180,8 @@ export default class ExploreItemDetailsScreen extends Component {
                                 username: this.state.itemDetails.postedby.username,
                                 onGoBack: this.onRefresh
                               })
-                          : null
+                          :
+                          () => this.props.navigation.navigate('ProfileScreen')
                       }>
                         <Text style={{ fontSize: 12, color: '#FF9D5C', paddingLeft: 5 }}>
                           {this.state.itemDetails.postedby.username}

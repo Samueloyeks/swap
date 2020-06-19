@@ -12,6 +12,7 @@ import NetworkUtils from './src/utils/NetworkUtils'
 
 
 
+
 YellowBox.ignoreWarnings(
   ['VirtualizedLists should never be nested'],
   ['Functions are not valid as a React child.'],
@@ -203,7 +204,7 @@ class App extends React.Component {
           {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}
           <AppNavigator />
         </View>
-        </AnimatedSplash> 
+        </AnimatedSplash>  
         :
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}

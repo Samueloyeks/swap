@@ -11,7 +11,8 @@ import {
   Alert,
   KeyboardAvoidingView,
   KeyboardAvoidingViewBase,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import facebookImg from '../assets/imgs/facebookImg.png'
 import googleImg from '../assets/imgs/googleImg.png'
@@ -68,7 +69,8 @@ export default class SignUpScreen extends React.Component {
       password: '',
       loading: false,
       isFocused: false,
-      usernameTaken: false
+      usernameTaken: false,
+      checkingAvailability:false
     }
   }
 
@@ -78,6 +80,21 @@ export default class SignUpScreen extends React.Component {
       Alert.alert(
         "Chnage Username",
         "The username you provided is not available",
+        [
+          {
+            text: "Ok",
+            style: "cancel"
+          },  
+        ],
+        { cancelable: false }
+      );
+      return;
+    }
+
+    if(this.state.checkingAvailability){
+      Alert.alert(
+        " ",
+        `Please wait while we check if ${this.state.username} is available`,
         [
           {
             text: "Ok",
@@ -212,10 +229,11 @@ export default class SignUpScreen extends React.Component {
     this.scroll.props.scrollToFocusedInput(reactNode)
   }
 
-  checkAvailability(username) {
+  checkingAvailability(username) {
     this.setState({
       username,
-      usernameTaken: false
+      usernameTaken: false,
+      checkingAvailability:true
     });
 
     let data = {
@@ -226,9 +244,15 @@ export default class SignUpScreen extends React.Component {
     api.post('/users/isUsernameTaken', data).then((response) => {
 
       if (response.data.status) {
-        this.setState({ usernameTaken: true })
+        this.setState({ 
+          usernameTaken: true,
+          checkingAvailability:false
+         })
       } else {
-        this.setState({ usernameTaken: false })
+        this.setState({ 
+          usernameTaken: false,
+          checkingAvailability:false 
+        })
       }
 
     })
@@ -276,14 +300,16 @@ export default class SignUpScreen extends React.Component {
                       <FormInput
                         name='username'
                         value={values.username = this.state.username}
-                        onChangeText={(username) => this.checkAvailability(username)}
+                        onChangeText={(username) => this.checkingAvailability(username)}
                         autoCapitalize='none'
                         iconName='face'
                         iconColor='#2C384A'
                         placeholder='Username'
                         onBlur={handleBlur('username')}
                       />
-                      {this.state.usernameTaken ?
+                      {this.state.checkingAvailability ?
+                        <ActivityIndicator/>:null}
+                      {this.state.usernameTaken && !this.state.checkingAvailability ?
                         <ErrorMessage errorValue='Username is taken' />
                         :
                         null

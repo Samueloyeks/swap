@@ -6,6 +6,7 @@ import {
     Image,
     SafeAreaView,
     ScrollView,
+    ActivityIndicator,
 } from 'react-native';
 import FormInput from '../../components/FormInput'
 import FormButton from '../../components/FormButton'
@@ -66,7 +67,8 @@ export default class EditProfileScreen extends React.Component {
             profilePicture: null,
             profilePictureData: null,
             loading: false,
-            isFocused: false
+            isFocused: false,
+            checkingAvailability: false
         }
 
         this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
@@ -209,6 +211,21 @@ export default class EditProfileScreen extends React.Component {
             return;
         }
 
+        if (this.state.checkingAvailability) {
+            Alert.alert(
+                " ",
+                `Please wait while we check if ${this.state.username} is available`,
+                [
+                    {
+                        text: "Ok",
+                        style: "cancel"
+                    },
+                ],
+                { cancelable: false }
+            );
+            return;
+        }
+
         this.setState({ loading: true })
 
         try {
@@ -243,7 +260,8 @@ export default class EditProfileScreen extends React.Component {
     checkAvailability(username) {
         this.setState({
             username,
-            usernameTaken: false
+            usernameTaken: false,
+            checkingAvailability: true
         });
 
         let data = {
@@ -254,9 +272,15 @@ export default class EditProfileScreen extends React.Component {
         api.post('/users/isUsernameTaken', data).then((response) => {
 
             if (response.data.status) {
-                this.setState({ usernameTaken: true })
+                this.setState({
+                    usernameTaken: true,
+                    checkingAvailability: false
+                })
             } else {
-                this.setState({ usernameTaken: false })
+                this.setState({
+                    usernameTaken: false,
+                    checkingAvailability: false
+                })
             }
 
         })
@@ -327,7 +351,9 @@ export default class EditProfileScreen extends React.Component {
                                                         placeholder='Username'
                                                         onBlur={handleBlur('username')}
                                                     />
-                                                    {this.state.usernameTaken ?
+                                                    {this.state.checkingAvailability ?
+                                                        <ActivityIndicator /> : null}
+                                                    {this.state.usernameTaken && !this.state.checkingAvailability ?
                                                         <ErrorMessage errorValue='Username is taken' />
                                                         :
                                                         null

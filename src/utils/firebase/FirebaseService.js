@@ -7,7 +7,7 @@ import api from '../api/ApiService'
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import db from '../db/Storage'
 import toast from '../../utils/SimpleToast'
-import keys from '../Keys'
+import {IOS_CLIENT_ID,GOOGLE_WEB_CLIENT_ID} from 'react-native-dotenv'
 
 
 
@@ -22,8 +22,8 @@ export const GOOGLE_CONFIGURATION = {
     loginHint: '',
     forceConsentPrompt: true,
     accountName: '',
-    iosClientId: keys.IOS_CLIENT_ID,
-    webClientId: keys.GOOGLE_WEB_CLIENT_ID,
+    iosClientId: IOS_CLIENT_ID,
+    webClientId: GOOGLE_WEB_CLIENT_ID,
 };
 
 

@@ -23,6 +23,7 @@
     "fetch": "^1.1.0",
     "firebase": "^7.14.6",
     "formik": "^2.1.4",
+    "fs": "0.0.1-security",
     "https": "^1.0.0",
     "jetifier": "^1.6.5",
     "node-libs-react-native": "^1.2.0",
@@ -72,9 +73,12 @@
     "@babel/runtime": "7.0.0-beta.55",
     "@react-native-community/eslint-config": "^0.0.7",
     "babel-jest": "^25.1.0",
+    "babel-preset-react-native": "^4.0.1",
     "eslint": "^6.8.0",
     "jest": "^25.1.0",
     "metro-react-native-babel-preset": "^0.58.0",
+    "path": "^0.12.7",
+    "react-native-dotenv": "^0.2.0",
     "react-test-renderer": "16.9.0"
   },
   "jest": {
