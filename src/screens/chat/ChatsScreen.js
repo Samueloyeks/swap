@@ -45,7 +45,6 @@ export default class ChatsScreen extends React.Component {
     let itemDetails = await state.params.itemDetails;
 
 
-
     this.setState({
       chatTo: chatTo,
       itemDetails: itemDetails

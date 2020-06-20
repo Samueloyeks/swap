@@ -25,7 +25,6 @@ export default class MyItemChatsScreen extends React.Component {
             loading: false,
             chatsList: []
         }
-
     }
 
     async componentDidMount() {

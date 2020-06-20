@@ -30,7 +30,7 @@ export default class ChatItem extends Component {
                 }}
             >
                 <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.itemDetails, chatTo: { uid: this.props.id } })}
+                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.itemDetails, chatTo: { uid: this.props.id,username:this.props.username } })}
                 >
                     <View style={styles.container}>
                         <View style={styles.ImgContainer}>

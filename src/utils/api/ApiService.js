@@ -8,16 +8,15 @@ import { API_USERNAME, API_PASSWORD, FIREBASE_KEY } from 'react-native-dotenv'
 
 var firebaseKey = FIREBASE_KEY;
 
-var baseURL = 'http://127.0.0.1:3000';
+// var baseURL = 'http://127.0.0.1:3000';
 // var baseURL =  'http://192.168.56.1:3000';
 
 
 
-// var baseURL = 'https://api-swap.herokuapp.com'
+var baseURL = 'https://api-swap.herokuapp.com'
 
-var apiUsername = API_USERNAME;
-var apiPassword = API_PASSWORD;
-const authHeader = 'Basic ' + base64.encode(`${apiUsername}:${apiPassword}`);
+
+const authHeader = 'Basic ' + base64.encode(`${API_USERNAME}:${API_PASSWORD}`);
 const defaultHeader = {
     'Authorization': authHeader,
     "Content-Type": "application/x-www-form-urlencoded",
