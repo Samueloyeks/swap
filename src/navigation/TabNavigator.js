@@ -25,6 +25,8 @@ import SettingsScreen from '../screens/profile/SettingsScreen'
 import SwapDetailsScreen from '../screens/swaps/SwapDetailsScreen'
 import MyFavoritesScreen from '../screens/profile/MyFavoritesScreen'
 import MyItemChatsScreen from '../screens/items/MyItemChatsScreen'
+import AllChatsScreen from '../screens/Chats/AllChatsScreen'
+
 
 
 
@@ -95,6 +97,7 @@ const ItemsStack = createStackNavigator({
   //   screen: SwapsScreen,
   // },
 });
+
 const SwapsStack = createStackNavigator({
   SwapsScreen: {
     screen: SwapsScreen,
@@ -113,26 +116,38 @@ const SwapsStack = createStackNavigator({
   }
 });
 
-const ProfileStack = createStackNavigator({
-  ProfileScreen: {
-    screen: ProfileScreen
-  },
-  EditProfileScreen: {
-    screen: EditProfileScreen,
-  },
-  SettingsScreen: {
-    screen: SettingsScreen
-  },
-  MyFavoritesScreen: {
-    screen: MyFavoritesScreen
-  },
-  ExploreItemDetailsScreen: {
-    screen: ExploreItemDetailsScreen,
+// const ProfileStack = createStackNavigator({
+//   ProfileScreen: {
+//     screen: ProfileScreen
+//   },
+//   EditProfileScreen: {
+//     screen: EditProfileScreen,
+//   },
+//   SettingsScreen: {
+//     screen: SettingsScreen
+//   },
+//   MyFavoritesScreen: {
+//     screen: MyFavoritesScreen
+//   },
+//   ExploreItemDetailsScreen: {
+//     screen: ExploreItemDetailsScreen,
+//   },
+//   ChatsScreen: {
+//     screen: ChatsScreen,
+//   }
+
+// });
+
+const ChatsStack = createStackNavigator({
+  AllChatsScreen: {
+    screen: AllChatsScreen
   },
   ChatsScreen: {
     screen: ChatsScreen,
+  },
+  UserProfileScreen: {
+    screen: UserProfileScreen,
   }
-
 });
 
 ExploreStack.navigationOptions = ({ navigation }) => {
@@ -186,11 +201,28 @@ SwapsStack.navigationOptions = ({ navigation }) => {
   };
 };
 
-ProfileStack.navigationOptions = ({ navigation }) => {
+// ProfileStack.navigationOptions = ({ navigation }) => {
+//   let tabBarVisible;
+//   if (navigation.state.routes.length > 1) {
+//     navigation.state.routes.map(route => {
+//       if (route.routeName !== "ProfileScreen") {
+//         tabBarVisible = false;
+//       } else {
+//         tabBarVisible = true;
+//       }
+//     });
+//   }
+
+//   return {
+//     tabBarVisible
+//   };
+// };
+
+ChatsStack.navigationOptions = ({ navigation }) => {
   let tabBarVisible;
   if (navigation.state.routes.length > 1) {
     navigation.state.routes.map(route => {
-      if (route.routeName !== "ProfileScreen") {
+      if (route.routeName !== "AllChatsScreen") {
         tabBarVisible = false;
       } else {
         tabBarVisible = true;
@@ -251,13 +283,13 @@ const tabNav = createBottomTabNavigator({
       )
     })
   },
-  'Profile': {
-    screen: ProfileStack,
+  'Chats': {
+    screen: ChatsStack,
     navigationOptions: () => ({
-      tabBarLabel: 'Profile',
+      tabBarLabel: 'Chats',
       tabBarIcon: ({ tintColor }) => (
         <Icon
-          name="person"
+          name="chat"
           color={tintColor}
           size={24}
         />

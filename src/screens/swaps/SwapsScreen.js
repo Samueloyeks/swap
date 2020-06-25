@@ -151,8 +151,6 @@ export default class SwapsScreen extends React.Component {
 
 
 
-
-
     return {
       headerStyle: {
         backgroundColor: '#FFF',

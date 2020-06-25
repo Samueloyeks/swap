@@ -8,7 +8,8 @@ import demoAvatar from '../../assets/imgs/demoAvatar.png'
 
 
 
-export default class ChatItem extends Component {
+
+export default class ChatScreenItem extends Component {
     constructor(props) {
         super(props);
     }
@@ -35,13 +36,16 @@ export default class ChatItem extends Component {
                     <View style={styles.container}>
                         <View style={styles.ImgContainer}>
                             <Image
-                                style={styles.avatarImage}
-                                source={this.props.profilePicture ? ({ uri: this.props.profilePicture }) : demoAvatar} />
+                                style={styles.itemImage}
+                                source={this.props.itemDetails.images ? ({ uri: this.props.itemDetails.images[0] }) : itemImage} />
                         </View>
 
                         <View style={styles.content}>
                             <View style={styles.stackedView}>
-                                <View style={{ flex: 0.7 }}>
+                                <View style={{ flex: 0.7,flexDirection:'row' }}>
+                                <Image
+                                style={styles.avatarImage}
+                                source={this.props.profilePicture ? ({ uri: this.props.profilePicture }) : demoAvatar} />
                                     <Text style={styles.titleText}>{this.props.username}</Text>
                                 </View>
 
@@ -95,9 +99,16 @@ const styles = StyleSheet.create({
 
     },
     avatarImage: {
+        width: 20,
+        height: 20,
+        borderRadius: 35,
+        marginRight:10,
+        marginBottom:10
+    },
+    itemImage: {
         width: 70,
         height: 70,
-        borderRadius: 35
+        borderRadius: 10
     },
     lastMessageText: {
         fontSize: 12,

@@ -9,6 +9,8 @@ import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
 import tracking from '../../utils/geolocation/Tracking'
+import demoAvatar from '../../assets/imgs/demoAvatar.png'
+
 
 
 export default class ExploreScreen extends React.Component {
@@ -49,6 +51,8 @@ export default class ExploreScreen extends React.Component {
   }
 
   async componentDidMount() {
+    this.setState({ loading: true })
+    await this.setUserData()
     this.props.navigation.setParams({
       updateSearch: this.updateSearch,
       searchFilterFunction: this.searchFilterFunction,
@@ -56,10 +60,9 @@ export default class ExploreScreen extends React.Component {
       setModalVisible: this.setModalVisible,
       modalVisible: this.state.modalVisible,
       filterByPrice: this.state.filterByPrice,
-      filterByLocation: this.state.filterByLocation
+      filterByLocation: this.state.filterByLocation,
+      userData:this.state.userData
     });
-    this.setState({ loading: true })
-    await this.setUserData()
     this.getCategories();
     // await this.getItems();
     this.getItems();
@@ -266,6 +269,7 @@ export default class ExploreScreen extends React.Component {
     const screen = Dimensions.get("window");
 
     const { params = {} } = navigation.state;
+    // console.log(params)
     return {
 
       headerStyle: {
@@ -304,7 +308,17 @@ export default class ExploreScreen extends React.Component {
             />
             <TouchableOpacity onPress={() => params.updateSearch()}><Text>Cancel</Text></TouchableOpacity>
           </View> :
-          <View style={styles.header}><Text style={{ fontSize: 20 }}>Explore</Text></View>
+          params.userData?
+              <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
+                          <View style={styles.avatarDiv}>
+            <Image
+            style={styles.avatar}
+                source={params.userData.profilePicture ? ({ uri: params.userData.profilePicture }) : demoAvatar}
+                />
+          </View>
+              </TouchableOpacity>
+          :null
+          // <View style={styles.header}><Text style={{ fontSize: 20 }}>Explore</Text></View>
       ),
       headerRight: () => (
         params.search ? null :
@@ -644,6 +658,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  avatarDiv:{
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius:500,
+    backgroundColor:'grey',
+    overflow:'hidden'
+  },
+  avatar:{
+    width:30,
+    height:30
   },
   bottomSpace: {
     paddingBottom: 50

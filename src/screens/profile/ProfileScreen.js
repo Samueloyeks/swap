@@ -11,6 +11,9 @@ import db from '../../utils/db/Storage'
 import toast from '../../utils/SimpleToast'
 import firebaseService from '../../utils/firebase/FirebaseService'
 import { EventRegister } from 'react-native-event-listeners'
+import { HeaderBackButton } from 'react-navigation-stack';
+
+
 
 
 
@@ -164,33 +167,7 @@ export default class ProfileScreen extends React.Component {
   }
 
 
-  static navigationOptions = ({ navigation }) => {
-    const screen = Dimensions.get("window");
 
-    return {
-      headerStyle: {
-        backgroundColor: '#FF9D5C',
-        elevation: 0,
-        shadowOpacity: 0,
-        borderBottomWidth: 0,
-      },
-      headerBackTitleVisible: false,
-      headerTitle: () => (
-        <View
-          style={{
-            flex: 1,
-            // backgroundColor: Platform.OS === 'ios' ? '#FFF' : '',
-            alignItems: 'center',
-            flexDirection: 'column',
-            paddingHorizontal: 15,
-            height: StatusBar.currentHeight,
-            width: screen.width - 10
-          }}>
-          <View style={styles.header}><Text style={{ fontSize: 20 }}>Profile</Text></View>
-        </View>
-      ),
-    };
-  };
 
   requestLogoutConfirmation = () => {
     Alert.alert(

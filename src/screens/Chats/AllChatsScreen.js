@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Image, TouchableOpacity, TouchableHighlight, Mo
 import { SearchBar, CheckBox } from 'react-native-elements'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Filters from '../../components/Filters';
-import ChatItem from '../../components/items/ChatItem'
+import ChatScreenItem from '../../components/items/ChatScreenItem'
 import demoImage from '../../assets/imgs/demo.png';
 import api from '../../utils/api/ApiService'
 import db from '../../utils/db/Storage'
@@ -14,7 +14,7 @@ import { EventRegister } from 'react-native-event-listeners'
 
 
 
-export default class MyItemChatsScreen extends React.Component {
+export default class AllChatsScreen extends React.Component {
 
     constructor(props) {
         super(props);
@@ -30,39 +30,30 @@ export default class MyItemChatsScreen extends React.Component {
     async componentDidMount() {
         this.setState({ loading: true })
 
-        const { state } = await this.props.navigation;
-
-        let itemDetails = await state.params.itemDetails;
-
-        this.setState({
-            itemDetails: itemDetails
-        })
-
         await this.setUserData()
 
         let data = {
             uid: this.state.userData.uid,
-            itemId: this.state.itemDetails.id
         }
 
-        await firebaseService.setItemChatsRef(data);
+        await firebaseService.setAllChatsRef(data);
 
 
-        firebaseService.activateItemChatsListener();
+        firebaseService.activateAllChatsListener();
 
-        this.chatsListener = EventRegister.addEventListener('ItemChatsList', (chatsList) => {
+        this.chatsListener = EventRegister.addEventListener('allChatsList', (chatsList) => {
             this.setState({
                 chatsList
             })
-          })
+        })
 
-        this.setState({loading:false})
+        this.setState({ loading: false })
 
     }
 
     componentWillUnmount() {
         EventRegister.removeEventListener(this.chatsListener);
-        firebaseService.deactivateItemChatsListener()   
+        firebaseService.deactivateAllChatsListener()
     }
 
     async setUserData() {
@@ -85,33 +76,47 @@ export default class MyItemChatsScreen extends React.Component {
         return true;
     }
 
-
     static navigationOptions = ({ navigation }) => {
+        const screen = Dimensions.get("window");
+
         return {
-            title: `${navigation.state.params.itemDetails.title}`,
-            headerTitleStyle: { textAlign: 'center', alignSelf: 'center' },
-            headerBackTitleVisible: false,
             headerStyle: {
-                backgroundColor: '#FF9D5C',
+                backgroundColor: '#FFF',
                 elevation: 0,
                 shadowOpacity: 0,
                 borderBottomWidth: 0,
             },
-        }
-    }
+            headerBackTitleVisible: false,
+            headerTitle: () => (
+                <View
+                    style={{
+                        flex: 1,
+                        backgroundColor: Platform.OS === 'ios' ? '#FFF' : '',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        paddingHorizontal: 15,
+                        height: StatusBar.currentHeight,
+                        width: screen.width - 10
+                    }}>
+                    <View style={styles.header}><Text style={{ fontSize: 20 }}>Chats</Text></View>
+                </View>
+            ),
+        };
+    };
 
 
-    deleteChat = (senderId,itemId) => {
+    deleteChat = (senderId, itemId) => {
         firebaseService.deleteChat(
             this.state.userData.uid,
             senderId,
             itemId
-        )    }
+        )
+    }
 
 
     renderItem = ({ item, index }) => {
         return (
-            <ChatItem
+            <ChatScreenItem
                 {...this.props}
                 deleteChat={this.deleteChat}
                 username={item.senderUsername}
@@ -120,7 +125,7 @@ export default class MyItemChatsScreen extends React.Component {
                 lastMessage={item.lastMessage}
                 lastMessageTime={item.lastMessageTime}
                 opened={item.opened}
-                itemDetails={this.state.itemDetails}
+                itemDetails={item.itemDetails}
             />
         )
     }
@@ -146,12 +151,11 @@ export default class MyItemChatsScreen extends React.Component {
                             <FlatList
                                 data={this.state.chatsList}
                                 renderItem={this.renderItem}
-                                keyExtractor={item => item.senderId}
+                                keyExtractor={item => item.senderId + item.itemDetails.id}
                                 contentContainerStyle={{ paddingBottom: 50 }}
                                 extraData={this.state}
                             />
                 }
-
             </View>
         )
     }

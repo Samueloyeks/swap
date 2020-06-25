@@ -1,13 +1,12 @@
 import { Component } from "react";
 import { Platform, Alert } from 'react-native'
 import { EventRegister } from 'react-native-event-listeners'
-// import firebase from '../../../Firebase'
 import * as firebase from 'react-native-firebase';
 import api from '../api/ApiService'
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import db from '../db/Storage'
 import toast from '../../utils/SimpleToast'
-import {IOS_CLIENT_ID,GOOGLE_WEB_CLIENT_ID} from 'react-native-dotenv'
+import { IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from 'react-native-dotenv'
 
 
 
@@ -39,11 +38,16 @@ let usersRef = firebase
     .database()
     .ref('/userProfiles')
 
+let itemsRef = firebase
+    .database()
+    .ref('/items')
+
 let orderedItemChatsRef
 let itemChatsRef
 let chatToRef
 let chatRef
 let myId
+let allChatsRef
 let currentItemId
 
 
@@ -54,8 +58,8 @@ class FirebaseService extends Component {
 
         this.activateListeners = this.activateListeners.bind(this)
         this.deactivateListeners = this.deactivateListeners.bind(this)
-        this.activateChatsListener = this.activateChatsListener.bind(this)
-        this.deactivateChatsListener = this.deactivateChatsListener.bind(this)
+        this.activateItemChatsListener = this.activateItemChatsListener.bind(this)
+        this.deactivateItemChatsListener = this.deactivateItemChatsListener.bind(this)
     }
 
     activateListeners = (data) => {
@@ -243,6 +247,10 @@ class FirebaseService extends Component {
 
     // ===================================================================================== 
 
+    deleteChat=(myId,senderId,itemId)=>{
+        chatsRef.child(myId).child(itemId).child(senderId).remove()
+    }
+
     setItemChatsRef = async (data) => {
         let uid = data.uid;
         let itemId = data.itemId
@@ -262,21 +270,21 @@ class FirebaseService extends Component {
         return;
     }
 
-    activateChatsListener = () => {
+    activateItemChatsListener = () => {
         return new Promise(resolve => {
             orderedItemChatsRef.on('value', async () => {
-                let messages = await this.returnChatsList()
-                EventRegister.emit('chatsList', messages)
+                let messages = await this.returnItemChatsList()
+                EventRegister.emit('ItemChatsList', messages)
                 resolve()
             })
         })
     }
 
-    deactivateChatsListener() {
+    deactivateItemChatsListener() {
         orderedItemChatsRef.off()
     }
 
-    returnChatsList = async () => {
+    returnItemChatsList = async () => {
         let chatsList = [];
         let senderRefs = [];
 
@@ -323,6 +331,102 @@ class FirebaseService extends Component {
                 senderUsername,
                 senderId,
                 senderProfilePicture,
+                lastMessage,
+                lastMessageTime,
+                opened
+            }
+
+            chatsList.push(chatsListObj)
+
+        }))
+
+
+        return chatsList;
+    }
+
+
+
+    setAllChatsRef = async (data) => {
+        let uid = data.uid;
+
+        myId = uid;
+
+        allChatsRef = chatsRef
+            .child(uid)
+
+        return;
+    }
+
+    activateAllChatsListener = () => {
+        return new Promise(resolve => {
+            allChatsRef.on('value', async () => {
+                let messages = await this.returnAllChatsList()
+                EventRegister.emit('allChatsList', messages)
+                resolve()
+            })
+        })
+    }
+
+    deactivateAllChatsListener() {
+        allChatsRef.off()
+    }
+
+    returnAllChatsList = async () => {
+        let chatsList = [];
+        let itemRefs = [];
+        let senderAndItemRefs = [];
+
+        await allChatsRef.once("value", function (snapshot) {
+            snapshot.forEach(async function (child) {
+                let itemRef = child.key;
+                itemRefs.push(itemRef)
+            }.bind(this));
+        })
+
+        await Promise.all(itemRefs.map(async itemRef => {
+            await allChatsRef.child(itemRef).once("value", function (snap) {
+                snap.forEach(function (child) {
+                    senderAndItemRefs.push({
+                        senderRef: child.key,
+                        itemRef
+                    });
+                }.bind(this))
+            })
+        }))
+
+
+        await Promise.all(senderAndItemRefs.map(async senderAndItemRef => {
+            let senderRef = senderAndItemRef.senderRef
+            let itemRef = senderAndItemRef.itemRef
+
+            let userDetails = await (await usersRef.child(senderRef).once('value')).val();
+            let itemDetails = await (await itemsRef.child(itemRef).once("value")).val();
+
+            let poster = await (await usersRef.child(itemDetails.postedby).once("value")).val();
+    
+            itemDetails.postedby = poster;
+
+            let senderUsername = userDetails.username;
+            let senderId = userDetails.uid;
+            let senderProfilePicture = userDetails.profilePicture;
+
+
+            let userMessagesSnap = await chatsRef.child(myId).child(itemRef).child(senderRef).once('value')
+            let userMessages = await userMessagesSnap.val();
+
+
+            let lastMessage = userMessages['lastMessage']
+            let lastMessageTimestamp = userMessages['lastMessageTimestamp']
+
+            let lastMessageTime = new Date(lastMessageTimestamp).toISOString();
+            let opened = userMessages[myId]
+
+
+            let chatsListObj = {
+                senderUsername,
+                senderId,
+                senderProfilePicture,
+                itemDetails,
                 lastMessage,
                 lastMessageTime,
                 opened
