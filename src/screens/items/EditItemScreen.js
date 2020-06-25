@@ -115,15 +115,20 @@ export default class EditItemScreen extends React.Component {
             title: state.params.itemDetails.title,
             selectedItems: selectedCategoryIndices,
             description: state.params.itemDetails.description,
-            quantity: (state.params.itemDetails.numberAvailable)?state.params.itemDetails.numberAvailable:1,
-            price: (state.params.itemDetails.price)?state.params.itemDetails.price:null,
+            quantity: (state.params.itemDetails.numberAvailable) ? state.params.itemDetails.numberAvailable : 1,
+            price: (state.params.itemDetails.price) ? state.params.itemDetails.price : null,
             tags: {
-                tagsArray: (state.params.itemDetails.preferences)?state.params.itemDetails.preferences:[]
+                tagsArray: (state.params.itemDetails.preferences) ? state.params.itemDetails.preferences : []
             },
             image1: state.params.itemDetails.images[0],
             image2: state.params.itemDetails.images[1],
             image3: state.params.itemDetails.images[2],
-            image4: state.params.itemDetails.images[3]
+            image4: state.params.itemDetails.images[3],
+
+            imgUrl1: state.params.itemDetails.images[0],
+            imgUrl2: state.params.itemDetails.images[1],
+            imgUrl3: state.params.itemDetails.images[2],
+            imgUrl4: state.params.itemDetails.images[3],
 
         })
         this.getCategories();
@@ -190,9 +195,19 @@ export default class EditItemScreen extends React.Component {
             api.post('/items/editItem', item).then((response) => {
                 // console.log(response.data)
                 if (response.status == 200) {
+
+                    for (let i = 1; i <= 4; i++) {
+                        if (this.state["imageData" + i]) {
+                            let data = {
+                                imageUrl: this.state["imgUrl"+i]
+                            }
+                            api.post('/services/deleteImage', data);
+                        }
+                    }
+
                     this.props.navigation.navigate("ItemsScreen", { refresh: true })
                     toast.show('Item Edited')
-                }else{
+                } else {
                     toast.show('Error editing Item')
                 }
             })
@@ -378,7 +393,7 @@ export default class EditItemScreen extends React.Component {
                                                 <ErrorMessage errorValue={touched.description && errors.description} />
                                                 <UploadFormInput
                                                     name='quantity'
-                                                    value={values.quantity = (this.state.quantity)?this.state.quantity.toString():null}
+                                                    value={values.quantity = (this.state.quantity) ? this.state.quantity.toString() : null}
                                                     onChangeText={(quantity) => this.setState({ quantity })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
@@ -388,7 +403,7 @@ export default class EditItemScreen extends React.Component {
 
                                                 <UploadFormInput
                                                     name='price'
-                                                    value={values.price = (this.state.price)?this.state.price.toString():null}
+                                                    value={values.price = (this.state.price) ? this.state.price.toString() : null}
                                                     onChangeText={(price) => this.setState({ price })}
                                                     autoCapitalize='none'
                                                     iconColor='#CD2900'
@@ -484,7 +499,7 @@ export default class EditItemScreen extends React.Component {
                                                 <View style={styles.container}>
                                                     <TagInput
                                                         updateState={this.updateTagState}
-                                                        tags={(this.state.tags)?this.state.tags:[]}
+                                                        tags={(this.state.tags) ? this.state.tags : []}
                                                         containerStyle={{ width: (Dimensions.get('window').width - 40) }}
                                                         inputContainerStyle={styles.defaultInput}
                                                         inputStyle={{ color: this.state.tagsText }}

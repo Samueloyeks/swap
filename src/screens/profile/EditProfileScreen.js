@@ -66,6 +66,7 @@ export default class EditProfileScreen extends React.Component {
             usernameTaken: false,
             profilePicture: null,
             profilePictureData: null,
+            imgUrl: null,
             loading: false,
             isFocused: false,
             checkingAvailability: false
@@ -92,7 +93,8 @@ export default class EditProfileScreen extends React.Component {
             fullName: userData.fullName,
             username: userData.username,
             phoneNumber: userData.phoneNumber,
-            profilePicture: userData.profilePicture == undefined ? null : userData.profilePicture
+            profilePicture: userData.profilePicture == undefined ? null : userData.profilePicture,
+            imgUrl: userData.profilePicture == undefined ? null : userData.profilePicture
         })
         // await this.setUserData();
     }
@@ -237,6 +239,13 @@ export default class EditProfileScreen extends React.Component {
 
             api.post('/users/update', values).then((response) => {
                 if (response.data.status == 'success') {
+
+                    if (this.state.profilePictureData) {
+                        let data = {
+                            imageUrl: this.state.imgUrl
+                        }
+                        api.post('/services/deleteImage', data);
+                    }
 
                     this.setState({ loading: false })
                     this.props.navigation.goBack(null);

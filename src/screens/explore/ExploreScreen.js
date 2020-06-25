@@ -61,7 +61,8 @@ export default class ExploreScreen extends React.Component {
       modalVisible: this.state.modalVisible,
       filterByPrice: this.state.filterByPrice,
       filterByLocation: this.state.filterByLocation,
-      userData:this.state.userData
+      userData: this.state.userData,
+      refreshUserData: this.refreshUserData
     });
     this.getCategories();
     // await this.getItems();
@@ -101,7 +102,6 @@ export default class ExploreScreen extends React.Component {
       this.setState({ loading: false })
     }
   }
-
 
 
   getItems = () => {
@@ -229,6 +229,18 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
+  refreshUserData=  async()=>{
+    return await db.get('userData').then(data => {
+      this.setState({
+        userData: JSON.parse(data)
+      })
+      this.props.navigation.setParams({
+        userData: this.state.userData,
+      });
+    })
+  }
+
+
   updateSearch = () => {
     this.setState(prevState => ({
       search: !prevState.search
@@ -308,17 +320,17 @@ export default class ExploreScreen extends React.Component {
             />
             <TouchableOpacity onPress={() => params.updateSearch()}><Text>Cancel</Text></TouchableOpacity>
           </View> :
-          params.userData?
-              <TouchableOpacity onPress={()=>navigation.navigate("ProfileScreen")}>
-                          <View style={styles.avatarDiv}>
-            <Image
-            style={styles.avatar}
-                source={params.userData.profilePicture ? ({ uri: params.userData.profilePicture }) : demoAvatar}
+          params.userData ?
+            <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen", { onGoBack: () => params.refreshUserData() })}>
+              <View style={styles.avatarDiv}>
+                <Image
+                  style={styles.avatar}
+                  source={params.userData.profilePicture ? ({ uri: params.userData.profilePicture }) : demoAvatar}
                 />
-          </View>
-              </TouchableOpacity>
-          :null
-          // <View style={styles.header}><Text style={{ fontSize: 20 }}>Explore</Text></View>
+              </View>
+            </TouchableOpacity>
+            : null
+        // <View style={styles.header}><Text style={{ fontSize: 20 }}>Explore</Text></View>
       ),
       headerRight: () => (
         params.search ? null :
@@ -659,17 +671,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  avatarDiv:{
+  avatarDiv: {
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius:500,
-    backgroundColor:'grey',
-    overflow:'hidden'
+    borderRadius: 500,
+    backgroundColor: 'grey',
+    overflow: 'hidden'
   },
-  avatar:{
-    width:30,
-    height:30
+  avatar: {
+    width: 30,
+    height: 30
   },
   bottomSpace: {
     paddingBottom: 50

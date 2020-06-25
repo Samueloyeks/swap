@@ -58,8 +58,10 @@ const ProfileStack = DismissableStackNavigator({
       },
       headerTitle: () => null,
       headerLeft: () =>
-        <HeaderBackButton onPress={() =>
+        <HeaderBackButton onPress={() =>{
           navigation.goBack(null)
+          navigation.state.params.onGoBack();
+        }
         } />,
     })
   },
