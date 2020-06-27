@@ -8,6 +8,10 @@ import AsyncStorage from '@react-native-community/async-storage';
 import api from './src/utils/api/ApiService';
 import toast from './src/utils/SimpleToast'
 import NetworkUtils from './src/utils/NetworkUtils'
+import { Provider } from 'react-redux';
+import configureStore from './src/store/configStore';
+
+const store = configureStore()
 
 
 
@@ -156,7 +160,7 @@ class App extends React.Component {
         let uid = userData.uid
 
         userData.fcmToken = fcmToken;
-        await AsyncStorage.setItem('userData',JSON.stringify(userData));
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
         let data = {
           "uid": uid,
@@ -193,23 +197,27 @@ class App extends React.Component {
     return (
       (Platform.OS === 'ios')
         ?
-          <AnimatedSplash
+        <AnimatedSplash
           isLoaded={this.state.isLoaded}
           logoImage={require("./src/assets/imgs/logo.png")}
           backgroundColor={"#090909"}
           logoHeight={150}
           logoWidht={150}
         >
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}
-          <AppNavigator />
-        </View>
-        </AnimatedSplash>  
+          <Provider store={store}>
+            <View style={styles.container}>
+              {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}
+              <AppNavigator />
+            </View>
+          </Provider>
+        </AnimatedSplash>
         :
-        <View style={styles.container}>
-          {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}
-          <AppNavigator />
-        </View>
+        <Provider store={store}>
+          <View style={styles.container}>
+            {Platform.OS === 'ios' && <StatusBar barStyle="default" backgroundColor="#ffff" />}
+            <AppNavigator />
+          </View>
+        </Provider>
 
     );
   }

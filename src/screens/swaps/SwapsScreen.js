@@ -104,7 +104,6 @@ export default class SwapsScreen extends React.Component {
           })
           return;
         }
-        console.log('stamp: '+response.data.variable)
   
         let lastSwapStamp
     

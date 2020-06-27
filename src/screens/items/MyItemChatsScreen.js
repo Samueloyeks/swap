@@ -120,7 +120,8 @@ export default class MyItemChatsScreen extends React.Component {
                 lastMessage={item.lastMessage}
                 lastMessageTime={item.lastMessageTime}
                 opened={item.opened}
-                itemDetails={this.state.itemDetails}
+                itemDetails={this.state.itemDetails} 
+                userDetails={item.userDetails}
             />
         )
     }

@@ -31,7 +31,13 @@ export default class ChatScreenItem extends Component {
                 }}
             >
                 <TouchableOpacity
-                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.itemDetails, chatTo: { uid: this.props.id,username:this.props.username } })}
+                    onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props.itemDetails, chatTo: { 
+                        uid: this.props.id,
+                        username:this.props.username,
+                        fcmToken :this.props.userDetails.fcmToken,
+                        deviceType :this.props.userDetails.deviceType,
+                        profilePicture:this.props.userDetails.profilePicture  
+                    } })}
                 >
                     <View style={styles.container}>
                         <View style={styles.ImgContainer}>
@@ -106,8 +112,8 @@ const styles = StyleSheet.create({
         marginBottom:10
     },
     itemImage: {
-        width: 70,
-        height: 70,
+        width: 60,
+        height: 60,
         borderRadius: 10
     },
     lastMessageText: {

@@ -10,6 +10,7 @@ import { IOS_CLIENT_ID, GOOGLE_WEB_CLIENT_ID } from 'react-native-dotenv'
 
 
 
+
 const firebaseAuth = firebase.auth();
 const { FacebookAuthProvider, GoogleAuthProvider } = firebase.auth;
 import { GoogleSignin } from '@react-native-community/google-signin';
@@ -176,7 +177,9 @@ class FirebaseService extends Component {
     }
 
     removeChatRef = () => {
-        chatToRef.off()
+        if (chatToRef && chatToRef != undefined) {
+            chatToRef.off()
+        }
     }
 
     parse = snapshot => {
@@ -247,7 +250,7 @@ class FirebaseService extends Component {
 
     // ===================================================================================== 
 
-    deleteChat=(myId,senderId,itemId)=>{
+    deleteChat = (myId, senderId, itemId) => {
         chatsRef.child(myId).child(itemId).child(senderId).remove()
     }
 
@@ -332,6 +335,7 @@ class FirebaseService extends Component {
                 senderId,
                 senderProfilePicture,
                 lastMessage,
+                userDetails,
                 lastMessageTime,
                 opened
             }
@@ -375,6 +379,7 @@ class FirebaseService extends Component {
         let chatsList = [];
         let itemRefs = [];
         let senderAndItemRefs = [];
+        let badgeCount = 0
 
         await allChatsRef.once("value", function (snapshot) {
             snapshot.forEach(async function (child) {
@@ -403,7 +408,7 @@ class FirebaseService extends Component {
             let itemDetails = await (await itemsRef.child(itemRef).once("value")).val();
 
             let poster = await (await usersRef.child(itemDetails.postedby).once("value")).val();
-    
+
             itemDetails.postedby = poster;
 
             let senderUsername = userDetails.username;
@@ -420,13 +425,14 @@ class FirebaseService extends Component {
 
             let lastMessageTime = new Date(lastMessageTimestamp).toISOString();
             let opened = userMessages[myId]
-
+            !opened ? badgeCount++ : null;
 
             let chatsListObj = {
                 senderUsername,
                 senderId,
                 senderProfilePicture,
                 itemDetails,
+                userDetails,
                 lastMessage,
                 lastMessageTime,
                 opened
@@ -437,7 +443,7 @@ class FirebaseService extends Component {
         }))
 
 
-        return chatsList;
+        return {chatsList,badgeCount};
     }
 
     //=============================================================================================
@@ -757,6 +763,8 @@ class FirebaseService extends Component {
     }
 }
 
+
 const firebaseService = new FirebaseService()
+
 export default firebaseService
 

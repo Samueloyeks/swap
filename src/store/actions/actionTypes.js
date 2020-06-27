@@ -1,0 +1,2 @@
+
+export const UPDATE_CHAT_BADGE = 'UPDATE_CHAT_BADGE';

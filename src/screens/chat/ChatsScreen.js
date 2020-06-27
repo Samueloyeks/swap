@@ -44,11 +44,13 @@ export default class ChatsScreen extends React.Component {
     let chatTo = await state.params.chatTo
     let itemDetails = await state.params.itemDetails;
 
+    // console.log(chatTo)
 
     this.setState({
       chatTo: chatTo,
       itemDetails: itemDetails
     })
+
 
     await this.setUserData()
 
@@ -103,7 +105,7 @@ export default class ChatsScreen extends React.Component {
 
   async componentWillUnmount() {
     await this.markAsSeen();
-    firebaseService.removeChatRef()
+    firebaseService.removeChatRef() 
   }
 
   async markAsSeen() {

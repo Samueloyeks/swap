@@ -4,6 +4,7 @@ import { AppRegistry, Dimensions, Text, TouchableWithoutFeedback, View } from 'r
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { createStackNavigator, HeaderBackground } from 'react-navigation-stack';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import IconWithBadge from '../components/IconWithBadge';
 import { AddButton } from '../components/AddButton'
 import ExploreScreen from '../screens/explore/ExploreScreen'
 import ExploreItemDetailsScreen from '../screens/explore/ExploreItemDetailsScreen'
@@ -26,6 +27,7 @@ import SwapDetailsScreen from '../screens/swaps/SwapDetailsScreen'
 import MyFavoritesScreen from '../screens/profile/MyFavoritesScreen'
 import MyItemChatsScreen from '../screens/items/MyItemChatsScreen'
 import AllChatsScreen from '../screens/Chats/AllChatsScreen'
+
 
 
 
@@ -288,11 +290,17 @@ const tabNav = createBottomTabNavigator({
     navigationOptions: () => ({
       tabBarLabel: 'Chats',
       tabBarIcon: ({ tintColor }) => (
-        <Icon
-          name="chat"
+        <IconWithBadge
+          name="ios-chatboxes"
           color={tintColor}
           size={24}
+          // badgeCount={2}
         />
+        // <Icon
+        //   name="chat"
+        //   color={tintColor}
+        //   size={24}
+        // />
       )
     })
   }

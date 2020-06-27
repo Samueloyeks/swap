@@ -13,6 +13,8 @@ import demoAvatar from '../../assets/imgs/demoAvatar.png'
 
 
 
+
+
 export default class ExploreScreen extends React.Component {
 
   constructor(props) {
@@ -40,7 +42,7 @@ export default class ExploreScreen extends React.Component {
       },
       modalVisible: false,
       silentlyGettingItems: false,
-      scrollEnabled: true
+      scrollEnabled: true,
     }
 
     this.arrayholder = []
@@ -102,7 +104,6 @@ export default class ExploreScreen extends React.Component {
       this.setState({ loading: false })
     }
   }
-
 
   getItems = () => {
     // this.setState({ loading: true })
@@ -208,8 +209,6 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
-
-
   async setCoordinates() {
     await tracking.getLocation().then(data => {
       this.setState({
@@ -229,7 +228,7 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
-  refreshUserData=  async()=>{
+  refreshUserData = async () => {
     return await db.get('userData').then(data => {
       this.setState({
         userData: JSON.parse(data)
@@ -496,38 +495,39 @@ export default class ExploreScreen extends React.Component {
   }
 
   updateCategoryFilters = (id) => {
-    let newActiveCategories = { ...this.state.activeCategories }
-
-    this.setState({
-      items: [],
-      pageSize: 11,
-      lastItemStamp: null,
-      loading: true,
-      loadedAll: false
-    })
-
-    if (newActiveCategories[id]) {
-      delete newActiveCategories[id];
+    if (!this.state.loading) {
+      let newActiveCategories = { ...this.state.activeCategories }
 
       this.setState({
-        activeCategories: newActiveCategories,
-        activeCategoriesCount: this.state.activeCategoriesCount - 1,
-        loading: true
-      }, () => {
-        this.getItems()
+        items: [],
+        pageSize: 11,
+        lastItemStamp: null,
+        loading: true,
+        loadedAll: false
       })
-    } else {
-      newActiveCategories[id] = true;
 
-      this.setState({
-        activeCategories: newActiveCategories,
-        activeCategoriesCount: this.state.activeCategoriesCount + 1,
-        loading: true
-      }, () => {
-        this.getItems()
-      })
+      if (newActiveCategories[id]) {
+        delete newActiveCategories[id];
+
+        this.setState({
+          activeCategories: newActiveCategories,
+          activeCategoriesCount: this.state.activeCategoriesCount - 1,
+          loading: true
+        }, () => {
+          this.getItems()
+        })
+      } else {
+        newActiveCategories[id] = true;
+
+        this.setState({
+          activeCategories: newActiveCategories,
+          activeCategoriesCount: this.state.activeCategoriesCount + 1,
+          loading: true
+        }, () => {
+          this.getItems()
+        })
+      }
     }
-
   }
 
   reloadPage = () => {
@@ -545,9 +545,12 @@ export default class ExploreScreen extends React.Component {
     })
   }
 
+
+
   render() {
+    
     return (
-      <View style={styles.container}>
+      <View style={styles.container}> 
 
         <Modal
           animationType="slide"
@@ -655,7 +658,6 @@ export default class ExploreScreen extends React.Component {
                 scrollEnabled={this.state.scrollEnabled}
               />
         }
-
       </View>
     )
   }
@@ -731,3 +733,5 @@ const styles = StyleSheet.create({
   }
 
 });
+
+

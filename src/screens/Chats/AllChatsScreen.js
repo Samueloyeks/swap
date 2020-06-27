@@ -11,10 +11,12 @@ import toast from '../../utils/SimpleToast'
 import tracking from '../../utils/geolocation/Tracking'
 import firebaseService from '../../utils/firebase/FirebaseService';
 import { EventRegister } from 'react-native-event-listeners'
+import { connect } from 'react-redux';
+import { updateChatBadge } from '../../store/actions/index';
 
 
 
-export default class AllChatsScreen extends React.Component {
+ class AllChatsScreen extends React.Component {
 
     constructor(props) {
         super(props);
@@ -41,9 +43,11 @@ export default class AllChatsScreen extends React.Component {
 
         firebaseService.activateAllChatsListener();
 
-        this.chatsListener = EventRegister.addEventListener('allChatsList', (chatsList) => {
+        this.chatsListener = EventRegister.addEventListener('allChatsList', (data) => {
+            this.props.updateChatBadgeFunction(data.badgeCount)
+            
             this.setState({
-                chatsList
+                chatsList:data.chatsList
             })
         })
 
@@ -126,6 +130,7 @@ export default class AllChatsScreen extends React.Component {
                 lastMessageTime={item.lastMessageTime}
                 opened={item.opened}
                 itemDetails={item.itemDetails}
+                userDetails={item.userDetails}
             />
         )
     }
@@ -219,3 +224,19 @@ const styles = StyleSheet.create({
     }
 
 });
+
+const mapStateToProps = state => {
+    return {
+
+    };
+};
+
+
+const mapDispatchToProps = dispatch => {
+    return {
+        updateChatBadgeFunction: (badgeCount) => dispatch(updateChatBadge(badgeCount)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AllChatsScreen)
+
