@@ -42,7 +42,7 @@ export default class AuthLoadingScreen extends React.Component {
         firstTime ?
           this.props.navigation.navigate('SignIn')
           :
-          this.props.navigation.navigate('Auth')
+          this.props.navigation.navigate('Intro')
 
     }
 

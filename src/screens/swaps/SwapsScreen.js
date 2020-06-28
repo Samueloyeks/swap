@@ -479,7 +479,8 @@ export default class SwapsScreen extends React.Component {
                         />
                       }
                       ListFooterComponent={this.renderFooter.bind(this)}
-                      onEndReachedThreshold={0.4}
+                      onEndReachedThreshold={0.6}
+                      onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                     />
                   </View>
               )

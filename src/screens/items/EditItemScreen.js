@@ -237,7 +237,11 @@ export default class EditItemScreen extends React.Component {
             writeTempFile: true,
             avoidEmptySpaceAroundImage: true,
             loadingLabelText: 'Loading Images...',
-            showsSelectedCount: true
+            showsSelectedCount: true,
+            avoidEmptySpaceAroundImage:true,
+            showCropGuidelines:true,
+            showCropFrame:true,
+            enableRotationGesture:true,
         }).then(images => {
             var i = 0;
             while (i < images.length && index <= 4) {
@@ -262,7 +266,11 @@ export default class EditItemScreen extends React.Component {
             writeTempFile: true,
             avoidEmptySpaceAroundImage: true,
             loadingLabelText: 'Loading Images...',
-            showsSelectedCount: true
+            showsSelectedCount: true,
+            avoidEmptySpaceAroundImage:true,
+            showCropGuidelines:true,
+            showCropFrame:true,
+            enableRotationGesture:true,
         }).then(image => {
             this.setState({
                 ["image" + [index]]: image.path,

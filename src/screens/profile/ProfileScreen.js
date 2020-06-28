@@ -53,6 +53,7 @@ export default class ProfileScreen extends React.Component {
 
   handleBackButtonClick() {
     this.props.navigation.goBack(null);
+    this.props.navigation.state.params.onGoBack();
     return true;
   }
 

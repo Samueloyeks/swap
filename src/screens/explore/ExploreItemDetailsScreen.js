@@ -36,6 +36,7 @@ export default class ExploreItemDetailsScreen extends Component {
 
   handleBackButtonClick() {
     this.props.navigation.goBack(null);
+    this.props.navigation.state.params.onGoBack(this.props.navigation.state.params.itemDetails);
     return true;
   }
 

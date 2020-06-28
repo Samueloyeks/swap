@@ -169,7 +169,11 @@ export default class EditProfileScreen extends React.Component {
             writeTempFile: true,
             avoidEmptySpaceAroundImage: true,
             loadingLabelText: 'Loading Images...',
-            showsSelectedCount: true
+            showsSelectedCount: true,
+            avoidEmptySpaceAroundImage:true,
+            showCropGuidelines:true,
+            showCropFrame:true,
+            enableRotationGesture:true,
         }).then(image => {
             this.setState({
                 profilePicture: image.path,
@@ -187,7 +191,11 @@ export default class EditProfileScreen extends React.Component {
             writeTempFile: true,
             avoidEmptySpaceAroundImage: true,
             loadingLabelText: 'Loading Images...',
-            showsSelectedCount: true
+            showsSelectedCount: true,
+            avoidEmptySpaceAroundImage:true,
+            showCropGuidelines:true,
+            showCropFrame:true,
+            enableRotationGesture:true,
         }).then(image => {
             this.setState({
                 profilePicture: image.path,

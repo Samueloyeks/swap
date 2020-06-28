@@ -58,7 +58,7 @@ const ProfileStack = DismissableStackNavigator({
       },
       headerTitle: () => null,
       headerLeft: () =>
-        <HeaderBackButton onPress={() =>{
+        <HeaderBackButton onPress={() => {
           navigation.goBack(null)
           navigation.state.params.onGoBack();
         }
@@ -87,8 +87,14 @@ const ProfileStack = DismissableStackNavigator({
 
 
 const AuthStack = createStackNavigator({
-  Landing: {
-    screen: LandingScreen,
+  // Landing: {
+  //   screen: LandingScreen,
+  //   navigationOptions: {
+  //     headerShown: false,
+  //   }
+  // },
+  SignIn: {
+    screen: SignInScreen,
     navigationOptions: {
       headerShown: false,
     }
@@ -104,12 +110,6 @@ const AuthStack = createStackNavigator({
       }
     },
   },
-  SignIn: {
-    screen: SignInScreen,
-    navigationOptions: {
-      headerShown: false,
-    }
-  },
   ForgotPassword: {
     screen: ForgotPasswordScreen,
     navigationOptions: {
@@ -121,10 +121,30 @@ const AuthStack = createStackNavigator({
   },
 });
 
+const MainStack = createStackNavigator({
+  Main: {
+    screen: TabNav,
+    navigationOptions: {
+      headerShown: false,
+    }
+  },
+  UploadModal: {
+    screen: UploadStack,
+    navigationOptions: {
+      headerShown: false,
+    }
+  },
+  profile: {
+    screen: ProfileStack,
+    navigationOptions: {
+      headerShown: false,
+    }
+  }
+})
+
 
 export default createAppContainer(
-  createStackNavigator({
-
+  createSwitchNavigator({
     AuthLoading: {
       screen: AuthLoadingScreen,
       navigationOptions: () => {
@@ -133,25 +153,19 @@ export default createAppContainer(
         }
       },
     },
+    Intro: {
+      screen: LandingScreen
+    },
     Auth: {
       screen: AuthStack
     },
     Main: {
-      screen: TabNav
-    },
-    UploadModal: {
-      screen: UploadStack
-    },
-    profile: {
-      screen: ProfileStack
+      screen: MainStack
     }
   }, {
     headerMode: 'none',
     mode: 'modal',
-  },
-    {
-      // initialRouteName: 'AuthLoading',
-    }),
+  })
 );
 
 

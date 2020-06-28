@@ -78,7 +78,7 @@ export default class LandingScreen extends React.Component {
     if (this.state.showRealApp) {
       return (
         <View style={styles.slide}>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('SignIn')} style={styles.button} ><Text style={styles.buttonText}>Get Started</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('SignUp')} style={styles.button} ><Text style={styles.buttonText}>Get Started</Text></TouchableOpacity>
         </View>
       );
     } else {
