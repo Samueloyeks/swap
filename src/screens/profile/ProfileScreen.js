@@ -218,12 +218,13 @@ export default class ProfileScreen extends React.Component {
           <ActivityIndicator size="large" />
         </View>
         :
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1,backgroundColor:'#FFF' }}>
+          <ScrollView>
           <View style={styles.coloredHeader}>
             <View style={styles.avatarContainer}>
               <ImageModal
                 swipeToDismiss={true}
-                resizeMode="contain"
+                resizeMode='cover'
                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                 style={styles.avatar}
               />
@@ -259,7 +260,6 @@ export default class ProfileScreen extends React.Component {
             </View>
           </View>
 
-          <ScrollView >
 
           <TouchableOpacity onPress={() => this.props.navigation.navigate('MyFavoritesScreen')}>
               <View style={styles.item}>
@@ -269,7 +269,7 @@ export default class ProfileScreen extends React.Component {
             </TouchableOpacity>
 
 
-          <TouchableOpacity onPress={() => api.openURL()}>
+          <TouchableOpacity onPress={() => api.openSupportURL()}>
               <View style={styles.item}>
                 <Icon name="headphones" size={30} color="#000" style={{ marginHorizontal: 10 }} />
                 <Text style={{ fontSize: 17, marginTop: 8, color: "#858585" }}>Support</Text>
@@ -292,16 +292,11 @@ export default class ProfileScreen extends React.Component {
               </View>
             </TouchableOpacity>
 
-            {/* <TouchableOpacity onPress={this.requestDeleteConfirmation}>
-              <View style={styles.item}>
-                <Icon name="delete" size={30} color="#FE3939" style={{ marginHorizontal: 10 }} />
-                <Text style={{ fontSize: 17, marginTop: 8, color: "#FE3939" }}>Delete Account</Text>
-              </View>
-            </TouchableOpacity> */}
-
             <View style={{ height: 50 }}>
 
             </View>
+
+
           </ScrollView>
         </View>
     )
@@ -326,7 +321,6 @@ const styles = StyleSheet.create({
     width: 130,
     bottom: -40,
     backgroundColor: 'grey',
-
   },
   avatar: {
     height: 130,
@@ -354,7 +348,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0.2, height: 0.2 },
     shadowOpacity: 0.4,
     shadowRadius: 3,
-    elevation: 5,
+    // elevation: 5,
     marginBottom: 2
   }
 })

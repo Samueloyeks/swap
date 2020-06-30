@@ -36,8 +36,15 @@ class App extends React.Component {
   async componentDidMount() {
     this.setState({ isLoaded: true });
 
+    const channelId = new firebase.notifications.Android.Channel(
+      'Default',
+      'Default Channel',
+      firebase.notifications.Android.Importance.Max
+    );
+    await firebase.notifications().android.createChannel(channelId);
+    
     this.checkPermission();
-    this.createNotificationListeners();
+    this.createNotificationListeners(this.props.navigation);
     this.createFcmTokenRefreshListener();
     SplashScreen.hide();
     this.CheckConnectivity();
@@ -48,6 +55,8 @@ class App extends React.Component {
     this.notificationOpenedListener();
     this.onTokenRefreshListener();
   }
+
+
 
   async checkPermission() {
     const enabled = await firebase.messaging().hasPermission();
@@ -80,18 +89,14 @@ class App extends React.Component {
     }
   }
 
-  async createNotificationListeners() {
+
+
+  async createNotificationListeners(navigation) {
     /*
     * Triggered when a particular notification has been received in foreground
     * */
-    this.notificationListener = firebase.notifications().onNotification((notification) => {
+    this.notificationListener =  firebase.notifications().onNotification(async (notification) => {
 
-      const channelId = new firebase.notifications.Android.Channel(
-        'Default',
-        'Default',
-        firebase.notifications.Android.Importance.High
-      );
-      firebase.notifications().android.createChannel(channelId);
 
       let notification_to_be_displayed = new firebase.notifications.Notification({
         data: notification._android._notification._data,
@@ -107,47 +112,53 @@ class App extends React.Component {
           .android.setChannelId('Default')
           .android.setVibrate(1000);
       }
-      // console.log('FOREGROUND NOTIFICATION LISTENER: \n', notification_to_be_displayed);
 
-      firebase.notifications().displayNotification(notification_to_be_displayed);
+      firebase.notifications().displayNotification(notification);
     });
 
     /*
     * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
     * */
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-      // console.log('notificationOpen: ' + notificationOpen)
+      console.log(notificationOpen)
+      const notif = notificationOpen.notification;
 
-      const { title, body } = notificationOpen.notification;
-      // this.showAlert(title, body);
-    });
+      console.log(notif)
+      if(notif.data.targetScreen){
+        console.log("GO TO: "+notif.data.targetScreen)
+        setTimeout(()=>{
+          navigation.navigate(notif.data.targetScreen)
+        }, 500)
+      }
+
+   });
 
     /*
     * If your app is closed, you can check if it was opened by a notification being clicked / tapped / opened as follows:
     * */
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
-      const { title, body } = notificationOpen.notification;
-      // this.showAlert(title, body);
+      console.log('HERE')
     }
     /*
     * Triggered for data only payload in foreground
     * */
     this.messageListener = firebase.messaging().onMessage(async (message) => {
-      //process data message
 
       const notification = new firebase.notifications.Notification()
-        .setNotificationId(message.messageId)
-        .setTitle(message.data.title)
-        .setBody(message.data.body)
-        .android.setChannelId('Default')
-        .android.setSmallIcon('ic_stat_ic_notification')
-        .android.setPriority(firebase.notifications.Android.Priority.Max)
-        .setSound('default');
+      .setNotificationId(message.messageId)
+      .setTitle(message.data.title)
+      .setBody(message.data.body)
+      .setData(message.data)
+      .android.setChannelId('Default')
+      .android.setSmallIcon('ic_stat_ic_notification')
+      .android.setPriority(firebase.notifications.Android.Priority.High)
+      .setSound('bell.mp3');
 
       await firebase.notifications().displayNotification(notification);
       return Promise.resolve();
     });
+    
   }
 
   async createFcmTokenRefreshListener() {

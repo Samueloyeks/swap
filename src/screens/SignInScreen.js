@@ -56,7 +56,8 @@ export default class SignInScreen extends React.Component {
       email: '',
       password: '',
       loading: false,
-      isFocused: false
+      isFocused: false,
+      passwordShown:false
     }
   }
 
@@ -92,14 +93,14 @@ export default class SignInScreen extends React.Component {
               "profilePicture": response.data.data.profilePicture
             }
             db.set('userData', userData).then(() => {
-              this.props.navigation.navigate('Main')
               this.setState({ loading: false })
+              this.props.navigation.navigate('Main')
             })
           }
         }, err => {
           toast.show('Error Signing In')
-          console.log(err);
           this.setState({ loading: false })
+          console.log(err);
         }
         )
       } catch (ex) {
@@ -135,8 +136,8 @@ export default class SignInScreen extends React.Component {
       }
 
       db.set('userData', userData).then(() => {
-        navigation.navigate('Main')
         this.setState({ loading: false })
+        navigation.navigate('Main')
       })
 
     } catch (err) {
@@ -169,8 +170,8 @@ export default class SignInScreen extends React.Component {
       }
 
       db.set('userData', userData).then(() => {
-        navigation.navigate('Main')
         this.setState({ loading: false })
+        navigation.navigate('Main')
       })
 
     } catch (err) {
@@ -179,7 +180,11 @@ export default class SignInScreen extends React.Component {
     }
   };
 
-
+  togglePasswordVisibility(){
+    this.setState({
+      passwordShown:!this.state.passwordShown
+    })
+  }
 
   render() {
     return (
@@ -220,13 +225,15 @@ export default class SignInScreen extends React.Component {
                         onBlur={handleBlur('email')}
                       />
                       <ErrorMessage errorValue={touched.email && errors.email} />
-                      <FormInput
+                      <FormInput 
                         name='password'
                         value={values.password}
                         onChangeText={handleChange('password')}
                         autoCapitalize='none'
-                        secureTextEntry
+                        secureTextEntry={!this.state.passwordShown}
                         iconName='lock'
+                        rightIconName={this.state.passwordShown?'md-eye':'md-eye-off'}
+                        rightIconFunction={()=>this.togglePasswordVisibility()}
                         iconColor='#2C384A'
                         placeholder='Password'
                         onBlur={handleBlur('password')}

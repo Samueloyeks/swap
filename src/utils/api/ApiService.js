@@ -2,7 +2,7 @@ import { Component } from "react";
 import { Linking } from 'react-native';
 import base64 from 'react-native-base64'
 import axios from 'axios';
-import { API_USERNAME, API_PASSWORD, FIREBASE_KEY } from 'react-native-dotenv'
+import { API_USERNAME, API_PASSWORD, FIREBASE_KEY, API_LIVE_URL, API_TEST_URL, WEBSITE_URL, FCM_URL } from 'react-native-dotenv'
 
 
 
@@ -13,7 +13,7 @@ var firebaseKey = FIREBASE_KEY;
 
 
 
-var baseURL = 'https://api-swap.herokuapp.com'
+var baseURL = API_LIVE_URL
 
 
 const authHeader = 'Basic ' + base64.encode(`${API_USERNAME}:${API_PASSWORD}`);
@@ -34,11 +34,13 @@ const notificationDataAndroid = {
     "data": {
         "body": "",
         "title": "",
+        "targetScreen": "",
         "content_available": true,
         "priority": "high",
         "icon": "ic_stat_ic_notification",
         "show_in_foreground": true
-    }
+    },
+    "priority": 10
 };
 const notificationDataIOS = {
     "to": "",
@@ -48,14 +50,19 @@ const notificationDataIOS = {
     //     "icon": "ic_stat_ic_notification",
     //     "show_in_foreground": true
     // },
-    "data": {
+    "notification": {
         "body": "",
         "title": "",
+        "sound": "default",
         "content_available": true,
         "priority": "high",
         "icon": "ic_stat_ic_notification",
         "show_in_foreground": true
-    }
+    },
+    "data": {
+        "targetScreen": "",
+    },
+    "priority": 10
 };
 const fcmHeader = {
     "Content-Type": "application/json",
@@ -95,7 +102,7 @@ class Api extends Component {
     }
 
     async postNotification(data) {
-        const url = `https://fcm.googleapis.com/fcm/send`;
+        const url = FCM_URL;
 
         if (data.deviceType) {
             if (data.deviceType == 'android') {
@@ -104,6 +111,7 @@ class Api extends Component {
                 notificationDataAndroid.data.title = data.title;
                 notificationDataAndroid.data.body = data.body;
                 notificationDataAndroid.to = data.to;
+                notificationDataAndroid.data.targetScreen = data.targetScreen;
 
                 return await axios.post(
                     url,
@@ -114,9 +122,10 @@ class Api extends Component {
                 ).catch(error => console.log(error))
 
             } else {
-                notificationDataIOS.data.title = data.title;
-                notificationDataIOS.data.body = data.body;
+                notificationDataIOS.notification.title = data.title;
+                notificationDataIOS.notification.body = data.body;
                 notificationDataIOS.to = data.to;
+                notificationDataIOS.data.targetScreen = data.targetScreen;
 
                 return await axios.post(
                     url,
@@ -133,6 +142,7 @@ class Api extends Component {
             notificationDataAndroid.data.title = data.title;
             notificationDataAndroid.data.body = data.body;
             notificationDataAndroid.to = data.to;
+            notificationDataAndroid.data.targetScreen = data.targetScreen;
 
             return await axios.post(
                 url,
@@ -146,8 +156,8 @@ class Api extends Component {
 
     }
 
-    openURL = () => {
-        Linking.openURL('http://swap.net').catch((err) => console.error('An error occurred', err));
+    openSupportURL = () => {
+        Linking.openURL(WEBSITE_URL).catch((err) => console.error('An error occurred', err));
     }
 
     render() {

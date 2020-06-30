@@ -26,7 +26,7 @@ export default class ExploreScreen extends React.Component {
       activeCategories: {},
       activeCategoriesCount: 0,
       items: [],
-      pageSize: 11,
+      pageSize: 15,
       lastItemStamp: null,
       loading: false,
       loadingMore: false,
@@ -196,7 +196,7 @@ export default class ExploreScreen extends React.Component {
 
     this.setState({
       items: [],
-      pageSize: 11,
+      pageSize: 15,
       lastItemStamp: null,
       loading: true,
       loadedAll: false
@@ -280,7 +280,7 @@ export default class ExploreScreen extends React.Component {
     const screen = Dimensions.get("window");
 
     const { params = {} } = navigation.state;
-    // console.log(params)
+
     return {
 
       headerStyle: {
@@ -300,7 +300,7 @@ export default class ExploreScreen extends React.Component {
               flexDirection: 'row',
               paddingHorizontal: 15,
               height: StatusBar.currentHeight,
-              width: screen.width - 10
+              width: screen.width - 10,
             }}
           >
             <SearchBar
@@ -320,20 +320,28 @@ export default class ExploreScreen extends React.Component {
             <TouchableOpacity onPress={() => params.updateSearch()}><Text>Cancel</Text></TouchableOpacity>
           </View> :
           params.userData ?
-            <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen", { onGoBack: () => params.refreshUserData() })}>
-              <View style={styles.avatarDiv}>
-                <Image
-                  style={styles.avatar}
-                  source={params.userData.profilePicture ? ({ uri: params.userData.profilePicture }) : demoAvatar}
-                />
-              </View>
-            </TouchableOpacity>
+            <View
+              style={{
+                width: screen.width,
+              }}>
+              <TouchableOpacity
+                style={{
+                  marginRight: Platform.OS === 'ios' ? 0 : '35%',
+                }}
+                onPress={() => navigation.navigate("ProfileScreen", { onGoBack: () => params.refreshUserData() })}>
+                <View style={styles.avatarDiv}>
+                  <Image
+                    style={styles.avatar}
+                    source={params.userData.profilePicture ? ({ uri: params.userData.profilePicture }) : demoAvatar}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
             : null
-        // <View style={styles.header}><Text style={{ fontSize: 20 }}>Explore</Text></View>
       ),
       headerRight: () => (
         params.search ? null :
-          (<TouchableOpacity style={{ paddingRight: 5 }} onPress={() => params.setModalVisible(!params.modalVisible)}>
+          (<TouchableOpacity style={{ paddingRight: 5}} onPress={() => params.setModalVisible(!params.modalVisible)}>
             <Icon
               name="filter"
               color={(params.filterByLocation || params.filterByPrice) ? '#FF9D5C' : '#000'}
@@ -343,7 +351,7 @@ export default class ExploreScreen extends React.Component {
       ),
       headerLeft: () => (
         params.search ? null :
-          (<TouchableOpacity style={{ paddingLeft: 5 }} onPress={() => params.updateSearch()}>
+          (<TouchableOpacity style={{ paddingLeft: 5}} onPress={() => params.updateSearch()}>
             <Icon
               name="search"
               color='#000'
@@ -423,7 +431,7 @@ export default class ExploreScreen extends React.Component {
   onRefresh = () => {
     this.setState({
       items: [],
-      pageSize: 11,
+      pageSize: 15,
       lastItemStamp: null,
       loading: true,
       loadedAll: false
@@ -440,7 +448,7 @@ export default class ExploreScreen extends React.Component {
     } else {
       this.setState(
         (prevState, nextProps) => ({
-          pageSize: 10,
+          pageSize: 15,
           loadingMore: true
         }),
         () => {
@@ -500,7 +508,7 @@ export default class ExploreScreen extends React.Component {
 
       this.setState({
         items: [],
-        pageSize: 11,
+        pageSize: 15,
         lastItemStamp: null,
         loading: true,
         loadedAll: false
@@ -533,7 +541,7 @@ export default class ExploreScreen extends React.Component {
   reloadPage = () => {
     this.setState({
       items: [],
-      pageSize: 11,
+      pageSize: 15,
       lastItemStamp: null,
       loading: true,
       loadedAll: false
@@ -548,9 +556,9 @@ export default class ExploreScreen extends React.Component {
 
 
   render() {
-    
+
     return (
-      <View style={styles.container}> 
+      <View style={styles.container}>
 
         <Modal
           animationType="slide"
@@ -565,9 +573,7 @@ export default class ExploreScreen extends React.Component {
               <CheckBox
                 center
                 title='Location'
-                checkedIcon='dot-circle-o'
                 checkedColor="#FF9D5C"
-                uncheckedIcon='circle-o'
                 containerStyle={styles.checkboxContainer}
                 checked={this.state.filterByLocation}
                 onIconPress={() => {
@@ -581,9 +587,7 @@ export default class ExploreScreen extends React.Component {
               <CheckBox
                 center
                 title='Price'
-                checkedIcon='dot-circle-o'
                 checkedColor="#FF9D5C"
-                uncheckedIcon='circle-o'
                 containerStyle={styles.checkboxContainer}
                 checked={this.state.filterByPrice}
                 onIconPress={() => {
@@ -679,7 +683,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 500,
     backgroundColor: 'grey',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    alignSelf: 'center', // ok
   },
   avatar: {
     width: 30,

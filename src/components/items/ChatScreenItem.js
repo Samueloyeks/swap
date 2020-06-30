@@ -38,7 +38,7 @@ export default class ChatScreenItem extends Component {
                         deviceType :this.props.userDetails.deviceType,
                         profilePicture:this.props.userDetails.profilePicture  
                     } })}
-                >
+                > 
                     <View style={styles.container}>
                         <View style={styles.ImgContainer}>
                             <Image

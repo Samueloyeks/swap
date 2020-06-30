@@ -525,7 +525,7 @@ export default class UserProfileScreen extends React.Component {
             <View style={styles.avatarContainer}>
               <ImageModal
                 swipeToDismiss={true}
-                resizeMode="contain"
+                resizeMode='cover'
                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                 style={styles.avatar}
               />
@@ -563,19 +563,6 @@ export default class UserProfileScreen extends React.Component {
           <View style={{ paddingHorizontal: 20 }}><Text style={{ fontSize: 20 }}>Items</Text></View>
           <View >
 
-            {/* {
-              this.isEmpty(this.state.items) ?
-                null
-                :
-                <TouchableOpacity><Text style={{ textAlign: 'right', color: '#9F9F9F', paddingHorizontal: 20 }}>View All</Text></TouchableOpacity>
-            } */}
-
-            {/* <FlatList
-          data={Object.values(this.state.items)}
-          renderItem={this.renderItem}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={{ paddingBottom: 50 }}
-        /> */}
             {
               this.isEmpty(this.state.items) ?
                 <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
@@ -593,7 +580,11 @@ export default class UserProfileScreen extends React.Component {
                   onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
                 />
             }
+                        <View style={{ height: 50 }}>
+
+</View>
           </View>
+
 
         </View>
     )

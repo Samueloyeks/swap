@@ -113,6 +113,7 @@ export default class ConfirmOfferScreen extends Component {
               `You have a new offer for ${this.state.item[0].title}`,
             to: this.state.item[0].postedby.fcmToken,
             deviceType: this.state.item[0].postedby.deviceType,
+            targetScreen:'ItemsScreen'
           };
 
         api.post('/items/sendOffer', offerData).then((response) => {

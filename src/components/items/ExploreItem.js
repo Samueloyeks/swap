@@ -35,7 +35,7 @@ export default class ExploreItem extends Component {
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 0.7 }}>
+                            <View style={{ flex: 0.7,overflow:'hidden' }}>
                                 <Text style={styles.titleText}>{this.props.title}</Text> 
                             </View>
                             {

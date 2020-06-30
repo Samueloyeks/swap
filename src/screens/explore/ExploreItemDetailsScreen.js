@@ -153,13 +153,14 @@ export default class ExploreItemDetailsScreen extends Component {
       <View style={styles.container}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <View style={{ flexDirection: 'row' }}>
-            <View style={{ flex: 0.4, height: 150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
+            <View style={{ flex: 0.4, height: 150,width:150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
               <ImageModal
-                resizeMode='contain'
+                resizeMode='cover'
                 imageBackgroundColor="lightgrey"
                 style={{
                   width: 150,
                   height: 150,
+
                 }}
                 source={this.state.itemDetails.images ? ({ uri: this.state.itemDetails.images[0] }) : itemImage}
               />

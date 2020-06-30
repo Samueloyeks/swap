@@ -300,9 +300,9 @@ export default class SwapDetailsScreen extends Component {
                         ((this.state.selectedIndex == 0) ? (
                             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                                 <View style={{ flexDirection: 'row' }}>
-                                    <View style={{ flex: 0.4, height: 150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
+                                    <View style={{ flex: 0.4, height: 150,width:150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
                                         <ImageModal
-                                            resizeMode='contain'
+                                            resizeMode='cover'
                                             imageBackgroundColor="lightgrey"
                                             style={{
                                                 width: 150,
@@ -313,7 +313,6 @@ export default class SwapDetailsScreen extends Component {
                                     </View>
                                     <View style={{ flex: 0.6, flexDirection: 'column', padding: 10 }}>
                                         <Text style={styles.titleText}>{this.state.itemDetails.title}</Text>
-
                                         {
                                             (this.state.swapDetails && this.state.userData) ?
                                                 <View style={styles.stackedView}>

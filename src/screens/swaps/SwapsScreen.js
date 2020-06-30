@@ -81,7 +81,6 @@ export default class SwapsScreen extends React.Component {
 
   getAllSwaps = () => {
     if (this.state.userData) {
-      // this.setState({ loading: true })
       const { pageSize } = this.state;
 
 
@@ -121,7 +120,6 @@ export default class SwapsScreen extends React.Component {
   
       }, err => {
         toast.show('Error')
-        console.log(err);
         this.setState({ loading: false })
       })
 
@@ -297,7 +295,6 @@ export default class SwapsScreen extends React.Component {
   }
 
   renderCompletedItem = ({ item, index }) => {
-    // console.log(item)
     return (
       item.completed ?
         <CompletedSwapItem

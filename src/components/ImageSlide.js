@@ -9,7 +9,7 @@ export default class ImageSlide extends Component {
     return (
       <ImageModal
         swipeToDismiss={true}
-        resizeMode="contain"
+        resizeMode='cover'
         imageBackgroundColor="lightgrey"
         style={{
           width: 112,

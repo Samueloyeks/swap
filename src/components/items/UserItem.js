@@ -35,24 +35,21 @@ export default class UserItem extends Component {
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 0.7 }}>
-
-                                <Text style={styles.titleText}>{this.props.title}</Text></View>
-                            {
-                                !(this.props.userId == this.props.postedby.uid) ?
+                            <View style={{ flex: 0.7,overflow:'hidden' }}>
+                                <Text style={styles.titleText}>{this.props.title}</Text>
+                                </View>
                                     <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
-                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props })}>
+                                        <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen',{ itemDetails: this.props, chatTo:this.props.postedby })}>
                                             <Icon name="message" color="#FF9D5C" size={20} />
                                         </TouchableOpacity>
-                                    </View> : null
-                            }
+                                    </View>
                         </View>
                         <View style={styles.stackedView}>
                             <View ><Text style={{ fontSize: 10 }}>Posted By</Text></View>
                             <View >
                                 <TouchableOpacity
                                     onPress={
-                                        !(this.props.userId == this.props.postedby.uid) ?
+                                        // !(this.props.userId == this.props.postedby.uid) ?
                                             () =>
                                                 this.props.navigation.navigate('UserProfileScreen',
                                                     {
@@ -60,7 +57,7 @@ export default class UserItem extends Component {
                                                         username: this.props.postedby.username,
                                                         onGoBack: this.props.onRefresh
                                                     })
-                                                     : null
+                                                    //  : null
                                                      }>
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>
@@ -169,7 +166,8 @@ const styles = StyleSheet.create({
     },
     titleText: {
         fontSize: 15,
-        textTransform: 'uppercase'
+        textTransform: 'uppercase',
+        overflow:'hidden'
     }
 
 });

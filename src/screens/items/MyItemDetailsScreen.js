@@ -473,9 +473,9 @@ export default class MyItemDetailsScreen extends Component {
                         ((this.state.selectedIndex == 0) ? (
                             <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
                                 <View style={{ flexDirection: 'row' }}>
-                                    <View style={{ flex: 0.4, height: 150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
+                                    <View style={{ flex: 0.4, height: 150,width:150, marginBottom: 10, borderRadius: 5, overflow: 'hidden' }}>
                                         <ImageModal
-                                            resizeMode='contain'
+                                            resizeMode='cover'
                                             imageBackgroundColor="lightgrey"
                                             style={{
                                                 width: 150,

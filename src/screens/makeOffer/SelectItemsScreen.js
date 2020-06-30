@@ -87,10 +87,10 @@ export default class SelectItemsScreen extends React.Component {
       }
 
       let lastItemStamp
-  
+
       if (response.data.variable) {
         lastItemStamp = response.data.variable
-      } 
+      }
 
 
       this.setState({
@@ -277,7 +277,7 @@ export default class SelectItemsScreen extends React.Component {
     )
   }
 
-  reloadPage=()=>{
+  reloadPage = () => {
     this.setState({
       items: [],
       pageSize: 11,
@@ -312,9 +312,9 @@ export default class SelectItemsScreen extends React.Component {
               alignSelf: 'center',
             }}
           />
-          <View style={{ flex: 0.2, backgroundColor: '#FF9D5C', }}>
+          <View style={{ flex: 0.2, backgroundColor: '#FF9D5C' }}>
             <TouchableOpacity onPress={() => this.navigateToConfirm()}>
-              <Text style={styles.headerButton}>Done</Text>
+              <Text style={styles.headerButton}>DONE</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -326,14 +326,14 @@ export default class SelectItemsScreen extends React.Component {
             </View>
             :
             this.isEmpty(this.state.items) ?
-            <View>
+              <View>
                 <Text style={{ textAlign: 'center', fontSize: 13, color: 'lightgrey', margin: 20 }}>
-                No Items to Display
+                  No Items to Display
               </Text>
-              <TouchableOpacity onPress={()=>this.reloadPage()}>
-              <Icon style={{textAlign:'center'}} name="rotate-right" size={20}/>
-              </TouchableOpacity>
-            </View>
+                <TouchableOpacity onPress={() => this.reloadPage()}>
+                  <Icon style={{ textAlign: 'center' }} name="rotate-right" size={20} />
+                </TouchableOpacity>
+              </View>
               :
               <FlatList
                 data={this.state.items}
@@ -378,7 +378,11 @@ const styles = StyleSheet.create({
     // fontSize:15,
     alignSelf: 'flex-end',
     padding: 10,
-    textAlignVertical: 'center'
+    textAlignVertical: 'center',
+    backgroundColor: '#000',
+    marginRight: 5,
+    borderRadius: 15,
+    color: '#FFF'
   }
 
 });

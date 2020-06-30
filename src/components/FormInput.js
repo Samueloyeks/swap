@@ -2,10 +2,14 @@ import React from 'react'
 import { Input } from 'react-native-elements'
 import { StyleSheet, View } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon2 from 'react-native-vector-icons/Ionicons';
+
 
 
 const FormInput = ({
-  iconName,
+  iconName, 
+  rightIconName,
+  rightIconFunction,
   iconColor,
   returnKeyType,
   keyboardType,
@@ -18,6 +22,7 @@ const FormInput = ({
       <Input
         {...rest}
         leftIcon={<Icon name={iconName} size={20} color={iconColor} />}
+        rightIcon={rightIconName?<Icon2 onPress={()=>rightIconFunction()} name={rightIconName} size={20} color={iconColor}/>:null}
         leftIconContainerStyle={styles.iconStyle}
         placeholderTextColor='grey'
         name={name}

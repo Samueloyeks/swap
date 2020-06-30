@@ -179,7 +179,7 @@ export default class UploadScreen extends React.Component {
     selectGalleryImages = (index) => {
         ImagePicker.openPicker({
             width: 300,
-            height: 400,
+            height: 300,
             cropping: true,
             multiple: true,
             title: 'Select a Picture',
@@ -210,7 +210,7 @@ export default class UploadScreen extends React.Component {
     selectCameraImage = (index) => {
         ImagePicker.openCamera({
             width: 300,
-            height: 400,
+            height: 300,
             cropping: true,
             includeBase64: true,
             writeTempFile: true,

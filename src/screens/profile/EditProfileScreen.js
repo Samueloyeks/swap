@@ -311,7 +311,7 @@ export default class EditProfileScreen extends React.Component {
                         <View style={styles.avatarContainer}>
                             <ImageModal
                                 swipeToDismiss={true}
-                                resizeMode='contain'
+                                resizeMode='cover'
                                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                                 style={styles.avatar}
                             />
