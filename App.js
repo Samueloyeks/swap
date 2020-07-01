@@ -96,8 +96,6 @@ class App extends React.Component {
     * Triggered when a particular notification has been received in foreground
     * */
     this.notificationListener =  firebase.notifications().onNotification(async (notification) => {
-
-
       let notification_to_be_displayed = new firebase.notifications.Notification({
         data: notification._android._notification._data,
         sound: 'default',
@@ -113,19 +111,16 @@ class App extends React.Component {
           .android.setVibrate(1000);
       }
 
-      firebase.notifications().displayNotification(notification);
+      firebase.notifications().displayNotification(notification_to_be_displayed);
     });
 
     /*
     * If your app is in background, you can listen for when a notification is clicked / tapped / opened as follows:
     * */
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen) => {
-      console.log(notificationOpen)
       const notif = notificationOpen.notification;
 
-      console.log(notif)
       if(notif.data.targetScreen){
-        console.log("GO TO: "+notif.data.targetScreen)
         setTimeout(()=>{
           navigation.navigate(notif.data.targetScreen)
         }, 500)
@@ -138,7 +133,7 @@ class App extends React.Component {
     * */
     const notificationOpen = await firebase.notifications().getInitialNotification();
     if (notificationOpen) {
-      console.log('HERE')
+
     }
     /*
     * Triggered for data only payload in foreground

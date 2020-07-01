@@ -1,6 +1,7 @@
 import firebase from 'react-native-firebase';
 
 export default async (message) => {
+
   // handle your message
   const notification = new firebase.notifications.Notification()
   .setNotificationId(message.messageId)

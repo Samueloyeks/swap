@@ -12,6 +12,7 @@ const FormInput = ({
   name,
   placeholder,
   value, 
+  numberOfLines,
   containerStyle=styles.input,
   ...rest
 }) => (
@@ -27,7 +28,7 @@ const FormInput = ({
         value={value}
         inputContainerStyle={{ borderBottomWidth: 0 }}
         multiline={true}
-        numberOfLines={4}
+        numberOfLines={numberOfLines?numberOfLines:null}
         keyboardType={keyboardType}
       />
     </View>
@@ -47,7 +48,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'lightgrey',
     borderRadius: 25,
-    height: 40,
+    height: 42,
     backgroundColor:'#FFF',
   },
 })

@@ -17,6 +17,7 @@ import { EventRegister } from 'react-native-event-listeners'
 import { Linking } from 'react-native'
 
 
+
 let allReports = [
   { id: 1, report: 'False Advertisement' },
   { id: 2, report: 'Fraud' },
@@ -529,7 +530,7 @@ export default class UserProfileScreen extends React.Component {
                 source={this.state.profilePicture ? ({ uri: this.state.profilePicture }) : demoAvatar}
                 style={styles.avatar}
               />
-            </View>
+            </View> 
           </View>
 
           <View style={{ alignItems: 'center', justifyContent: 'center', marginTop: 10 }}>

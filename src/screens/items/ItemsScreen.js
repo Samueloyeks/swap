@@ -83,7 +83,6 @@ export default class ItemsScreen extends React.Component {
       if (response.data.variable) {
         lastItemStamp = response.data.variable
       }
-      console.log('stamp: '+lastItemStamp)
 
 
       this.setState({

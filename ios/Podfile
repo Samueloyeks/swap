@@ -59,6 +59,8 @@ target 'swap' do
   
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase/ios'
 
+
+
   target 'swapTests' do
     inherit! :search_paths
     # Pods for testing

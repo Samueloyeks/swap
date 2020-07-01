@@ -340,6 +340,7 @@ export default class UploadScreen extends React.Component {
                                                     iconColor='#CD2900'
                                                     placeholder='Description'
                                                     onBlur={handleBlur('description')}
+                                                    numberOfLines={4}
                                                     containerStyle={styles.description}
                                                 />
                                                 <ErrorMessage errorValue={touched.description && errors.description} />
@@ -562,7 +563,7 @@ const styles = {
         borderWidth: 1,
         borderColor: 'lightgrey',
         borderRadius: 25,
-        height: 45,
+        height: 42,
         backgroundColor: '#FFF',
         padding: 10
     }

@@ -684,7 +684,7 @@ const styles = StyleSheet.create({
     borderRadius: 500,
     backgroundColor: 'grey',
     overflow: 'hidden',
-    alignSelf: 'center', // ok
+    alignSelf: 'center', 
   },
   avatar: {
     width: 30,
