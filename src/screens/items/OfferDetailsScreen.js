@@ -162,7 +162,6 @@ export default class OfferDetailsScreen extends Component {
             to: this.state.offerDetails.offeredBy.fcmToken,
             deviceType: this.state.offerDetails.offeredBy.deviceType,
           };
-          console.log(notificiationData)
 
 
         api.post('/items/acceptOffer', data)

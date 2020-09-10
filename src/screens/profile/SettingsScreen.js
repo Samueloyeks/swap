@@ -86,7 +86,6 @@ export default class SettingsScreen extends Component {
         const { state } = await this.props.navigation;
 
         await this.setUserData();
-        // console.log(JSON.stringify(this.state.userData))
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 

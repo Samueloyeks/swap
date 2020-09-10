@@ -528,7 +528,7 @@ export default class MyItemDetailsScreen extends Component {
                                         </View>
 
                                         <View style={styles.stackedView}>
-                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.offers ? this.state.offers.length : 0}</Text></View>
+                                            <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Offers: {this.state.itemDetails.offers}</Text></View>
                                             <View style={{ flex: 0.5 }}><Text style={{ fontSize: 12 }}>Units: {this.state.itemDetails.numberAvailable}</Text></View>
                                         </View>
 

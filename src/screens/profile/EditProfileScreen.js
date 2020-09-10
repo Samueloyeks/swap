@@ -85,7 +85,6 @@ export default class EditProfileScreen extends React.Component {
     async componentDidMount() {
         const { state } = await this.props.navigation;
 
-        // console.log(state.params.userData)
         let userData = await state.params.userData
         this.setState({
             userData: userData,

@@ -546,7 +546,6 @@ class FirebaseService extends Component {
             uData.favoritesRefKey = favoritesRefKey
             uData.swapsRefKey = swapsRefKey
 
-            // console.log(uData)
             try {
                 await firebase.database().ref(`/userProfiles/${uid}`).set(uData).then(async () => {
                     await firebaseAuth.currentUser.sendEmailVerification();
@@ -663,7 +662,6 @@ class FirebaseService extends Component {
             uData.favoritesRefKey = favoritesRefKey
             uData.swapsRefKey = swapsRefKey
 
-            // console.log(uData)
             try {
                 await firebase.database().ref(`/userProfiles/${uid}`).set(uData).then(async () => {
                     await firebaseAuth.currentUser.sendEmailVerification();

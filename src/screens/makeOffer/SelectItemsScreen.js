@@ -312,10 +312,12 @@ export default class SelectItemsScreen extends React.Component {
               alignSelf: 'center',
             }}
           />
-          <View style={{ flex: 0.2, backgroundColor: '#FF9D5C' }}>
+          <View style={styles.headerButtonDiv}>
+            <View style={styles.headerButton}>
             <TouchableOpacity onPress={() => this.navigateToConfirm()}>
-              <Text style={styles.headerButton}>DONE</Text>
+              <Text style={{color:'#FFF'}}>DONE</Text>
             </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -368,21 +370,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 1,
-
+    flex: 1
   },
   bottomSpace: {
     marginBottom: 50
   },
   headerButton: {
-    // fontSize:15,
-    alignSelf: 'flex-end',
-    padding: 10,
+    // alignSelf: 'flex-end',
+    padding: 7,
     textAlignVertical: 'center',
     backgroundColor: '#000',
     marginRight: 5,
     borderRadius: 15,
     color: '#FFF'
+  },
+  headerButtonDiv: {
+    flex: 0.2,
+    backgroundColor: '#FF9D5C',
+    alignItems: 'center',
+    justifyContent: 'center'
   }
 
 });

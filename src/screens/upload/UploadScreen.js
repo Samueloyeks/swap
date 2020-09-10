@@ -310,7 +310,7 @@ export default class UploadScreen extends React.Component {
                                                     selectedItems={selectedItems}
                                                     selectText="Select Categories"
                                                     searchInputPlaceholderText="Search Categories..."
-                                                    onChangeInput={(text) => console.log(text)}
+                                                    // onChangeInput={(text) => console.log(text)}
                                                     tagRemoveIconColor="#CD2900"
                                                     tagBorderColor="#CCC"
                                                     tagTextColor="#FF9D5C"

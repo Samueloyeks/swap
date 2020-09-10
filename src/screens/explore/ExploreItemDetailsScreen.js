@@ -71,7 +71,6 @@ export default class ExploreItemDetailsScreen extends Component {
       itemDetails: state.params.itemDetails,
     })
     await this.setUserData();
-    // console.log(JSON.stringify(this.state.itemDetails))
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
   }
 

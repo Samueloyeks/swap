@@ -41,6 +41,8 @@ export default class SwapsScreen extends React.Component {
       loadedAll: false,
       isRefreshing: false,
       error: null,
+      silentlyGettingSwaps: false,
+      scrollEnabled: true,
     }
 
     this.markAsCompleted = this.markAsCompleted.bind(this)
@@ -66,8 +68,22 @@ export default class SwapsScreen extends React.Component {
     this.setState({ loading: true })
     await this.setUserData();
     this.getAllSwaps();
+
+    this.updateList = setInterval(() => {
+      if (!this.state.silentlyGettingSwaps) {
+        this.setState({
+          silentlyGettingSwaps: true
+        }, () => {
+          this.silentlyGetAllSwaps()
+        })
+      }
+    }, 60000);
+
   }
 
+  componentWillUnmount() {
+    clearInterval(this.updateList);
+  }
 
 
   async setUserData() {
@@ -123,6 +139,36 @@ export default class SwapsScreen extends React.Component {
         this.setState({ loading: false })
       })
 
+    }
+  }
+
+  silentlyGetAllSwaps = () => { 
+    if (this.state.swaps.length !== 0) {
+      // this.setState({ loading: true })
+      const { pageSize } = this.state;
+
+      var data = {
+        "uid": this.state.userData.uid,
+        "pageSize": pageSize,
+        "lastItemStamp": this.state.swaps[0]['timestamp']
+      }
+
+
+      api.post('/items/silentlyGetAllSwaps', data).then((response) => {
+        let swaps = response.data.data;
+
+        this.setState({
+          scrollEnabled: false,
+          items: [...swaps, ...this.state.swaps],
+          silentlyGettingSwaps: false,
+        }, () => {
+          this.setState({
+            scrollEnabled: true
+          })
+        })
+        this.arrayholder = this.state.swaps
+
+      })
     }
   }
 
@@ -478,6 +524,7 @@ export default class SwapsScreen extends React.Component {
                       ListFooterComponent={this.renderFooter.bind(this)}
                       onEndReachedThreshold={0.6}
                       onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
+                      scrollEnabled={this.state.scrollEnabled}
                     />
                   </View>
               )

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Animated, View, Text,ActivityIndicator, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
+import { StyleSheet, Animated, View, Text, ActivityIndicator, Image, TouchableOpacity, Button, Input, StatusBar, Platform, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import itemImage from '../../assets/imgs/item.png'
 import TimeAgo from 'react-native-timeago';
@@ -23,7 +23,7 @@ export default class MyItem extends Component {
 
 
     render() {
-        return ( 
+        return (
             <Swipeable
                 renderRightActions={() => {
                     return (
@@ -65,7 +65,7 @@ export default class MyItem extends Component {
                             {
                                 this.props.markingAsSwapped ?
                                     <View style={styles.stackedView}>
-                                        <Text style={{fontSize:7,color:'green'}}>Marking...</Text>
+                                        <Text style={{ fontSize: 7, color: 'green' }}>Marking...</Text>
                                     </View>
                                     :
                                     <View style={styles.stackedView}>
@@ -94,9 +94,9 @@ export default class MyItem extends Component {
                                 </View>
                                 <View style={{ flex: 0.2, marginLeft: 12, bottom: 0 }}>
                                     <TouchableOpacity
-                                    onPress={()=>{
-                                        this.props.navigation.navigate('MyItemChatsScreen',{itemDetails: this.props})
-                                    }}
+                                        onPress={() => {
+                                            this.props.navigation.navigate('MyItemChatsScreen', { itemDetails: this.props })
+                                        }}
                                     >
                                         <Icon
                                             key={this.props.id}
@@ -104,6 +104,14 @@ export default class MyItem extends Component {
                                             size={20}
                                         />
                                     </TouchableOpacity>
+                                </View>
+                                <View>
+                                    <Text style={{ fontSize: 9, bottom: 0, position: 'absolute' }}>
+                                        {this.props.offers == 1 ?
+                                            this.props.offers + ' offer' :
+                                            this.props.offers + ' offers'
+                                        }
+                                    </Text>
                                 </View>
 
                                 <View style={{ flex: 0.7, alignItems: 'flex-end' }}>

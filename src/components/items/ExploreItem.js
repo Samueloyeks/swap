@@ -35,12 +35,12 @@ export default class ExploreItem extends Component {
                     </View>
                     <View style={styles.content}>
                         <View style={styles.stackedView}>
-                            <View style={{ flex: 0.7,overflow:'hidden' }}>
+                            <View style={{ flex: 0.8,overflow:'hidden' }}>
                                 <Text style={styles.titleText}>{this.props.title}</Text> 
                             </View>
                             {
                                 !(this.props.userId == this.props.postedby.uid) ?
-                                    <View style={{ flex: 0.3, alignItems: 'flex-end' }}>
+                                    <View style={{ flex: 0.2, alignItems: 'flex-end' }}>
                                         <TouchableOpacity onPress={() => this.props.navigation.navigate('ChatsScreen', { itemDetails: this.props, chatTo:this.props.postedby })}>
                                             <Icon name="message" color="#FF9D5C" size={20} />
                                         </TouchableOpacity>
@@ -61,7 +61,7 @@ export default class ExploreItem extends Component {
                                                         onGoBack: this.props.onRefresh
                                                     }) 
                                                      : 
-                                                     ()=>this.props.navigation.navigate('ProfileScreen')
+                                                     ()=>this.props.navigation.navigate('ProfileScreen',{onGoBack:this.props.refreshUserData}) 
                                                      }>
                                     <Text style={{ fontSize: 10, color: '#FF9D5C', paddingLeft: 5 }}>{this.props.postedby.username}</Text>
                                 </TouchableOpacity>

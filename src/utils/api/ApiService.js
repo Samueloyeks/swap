@@ -2,21 +2,29 @@ import { Component } from "react";
 import { Linking } from 'react-native';
 import base64 from 'react-native-base64'
 import axios from 'axios';
-import { API_USERNAME, API_PASSWORD, FIREBASE_KEY, API_LIVE_URL, API_TEST_URL, WEBSITE_URL, FCM_URL } from 'react-native-dotenv'
+import {
+    API_USERNAME,
+    API_PASSWORD,
+    FIREBASE_KEY,
+    API_LIVE_URL,
+    API_TEST_URL,
+    API_TEST_URL_WINDOWS,
+    WEBSITE_URL,  
+    FCM_URL
+} from 'react-native-dotenv'
 
 
 
 var firebaseKey = FIREBASE_KEY;
 
-// var baseURL = 'http://127.0.0.1:3000';
-// var baseURL =  'http://192.168.56.1:3000';
+var baseURL = API_LIVE_URL 
+// var baseURL =  'API_TEST_URL_WINDOWS'
+// var baseURL = API_TEST_URL
 
-
-
-var baseURL = API_LIVE_URL
 
 
 const authHeader = 'Basic ' + base64.encode(`${API_USERNAME}:${API_PASSWORD}`);
+
 const defaultHeader = {
     'Authorization': authHeader,
     "Content-Type": "application/x-www-form-urlencoded",
@@ -42,6 +50,7 @@ const notificationDataAndroid = {
     },
     "priority": 10
 };
+
 const notificationDataIOS = {
     "to": "",
     // "notification": {
@@ -64,6 +73,7 @@ const notificationDataIOS = {
     },
     "priority": 10
 };
+
 const fcmHeader = {
     "Content-Type": "application/json",
     "Authorization": `key=${firebaseKey}`
@@ -85,7 +95,7 @@ class Api extends Component {
 
     async post(targetFunction, data) {
         const url = baseURL + targetFunction;
-
+        
         return await axios.post(url, data, {
             headers: defaultHeader,
         })

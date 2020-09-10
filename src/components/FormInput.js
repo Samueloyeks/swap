@@ -28,6 +28,7 @@ const FormInput = ({
         name={name}
         placeholder={placeholder}
         containerStyle={styles.input}
+        autoCapitalize="words"
         value={value}
         inputContainerStyle={{ borderBottomWidth: 0 }}
         keyboardType={keyboardType}

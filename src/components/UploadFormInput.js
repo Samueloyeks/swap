@@ -25,6 +25,7 @@ const FormInput = ({
         name={name}
         placeholder={placeholder}
         containerStyle={containerStyle}
+        autoCapitalize='words'
         value={value}
         inputContainerStyle={{ borderBottomWidth: 0 }}
         multiline={true}

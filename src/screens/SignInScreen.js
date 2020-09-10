@@ -152,7 +152,6 @@ export default class SignInScreen extends React.Component {
     this.setState({ loading: true });
     try {
       const uData = await firebaseService.googleAuth()
-      // console.log(uData)
 
       if (uData == false) {
         this.setState({ loading: false });

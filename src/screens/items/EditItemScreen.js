@@ -109,7 +109,7 @@ export default class EditItemScreen extends React.Component {
             let selectedCategory = selectedCategories[key]
             selectedCategoryIndices.push(selectedCategory.id)
         }
-        // console.log(state.params.itemDetails.id)
+
         this.setState({
             id: state.params.itemDetails.id,
             title: state.params.itemDetails.title,
@@ -193,7 +193,6 @@ export default class EditItemScreen extends React.Component {
             }
 
             api.post('/items/editItem', item).then((response) => {
-                // console.log(response.data)
                 if (response.status == 200) {
 
                     for (let i = 1; i <= 4; i++) {
@@ -218,7 +217,6 @@ export default class EditItemScreen extends React.Component {
     }
 
     handleChange = (value) => {
-        console.log(value)
     }
 
     onSelectedItemsChange = selectedItems => {
@@ -366,7 +364,7 @@ export default class EditItemScreen extends React.Component {
                                                     selectedItems={this.state.selectedItems}
                                                     selectText="Select Categories"
                                                     searchInputPlaceholderText="Search Categories..."
-                                                    onChangeInput={(text) => console.log(text)}
+                                                    // onChangeInput={(text) => }
                                                     tagRemoveIconColor="#CD2900"
                                                     tagBorderColor="#CCC"
                                                     tagTextColor="#FF9D5C"

@@ -74,7 +74,6 @@ export default class UserProfileScreen extends React.Component {
   async componentDidMount() {
     const { state } = await this.props.navigation;
 
-    // console.log(state.params.userData)
     let userId = await state.params.userId
     let explorePageIndex = await state.params.explorePageIndex
     this.setState({ explorePageIndex })
@@ -95,7 +94,6 @@ export default class UserProfileScreen extends React.Component {
     api.post('/users/fetchUserById', data).then((response) => {
       if (response.data.status == "success") {
 
-        // console.log(response.data.data);
 
         this.setState({
           loading: false,

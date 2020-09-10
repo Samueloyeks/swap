@@ -74,7 +74,6 @@ export default class SingleOfferDetailsScreen extends Component {
             itemDetails: state.params.offerDetails,
         })
         await this.setUserData();
-        // console.log(this.state.itemDetails)
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButtonClick);
     }
 

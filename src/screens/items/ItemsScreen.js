@@ -28,7 +28,8 @@ export default class ItemsScreen extends React.Component {
       error: null,
       searchString: '',
       markingAsSwapped: false,
-
+      silentlyGettingItems: false,
+      scrollEnabled: true,
     }
     this.arrayholder = []
 
@@ -44,6 +45,21 @@ export default class ItemsScreen extends React.Component {
     this.setState({ loading: true })
     await this.setUserData();
     this.getItemsByUid();
+
+    this.updateList = setInterval(() => {
+      if (!this.state.silentlyGettingItems) {
+        this.setState({
+          silentlyGettingItems: true
+        }, () => {
+          this.silentlyGetItems()
+        })
+      }
+    }, 60000);
+
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.updateList);
   }
 
   async setUserData() {
@@ -98,6 +114,36 @@ export default class ItemsScreen extends React.Component {
       console.log(err);
       this.setState({ loading: false })
     })
+  }
+
+  silentlyGetItems = () => { 
+    if (this.state.items.length !== 0) {
+      // this.setState({ loading: true })
+      const { pageSize } = this.state;
+
+      var data = {
+        "uid": this.state.userData.uid,
+        "pageSize": pageSize,
+        "lastItemStamp": this.state.items[0]['timestamp']
+      }
+
+
+      api.post('/items/silentlyGetItemsByUid', data).then((response) => {
+        let items = response.data.data;
+
+        this.setState({
+          scrollEnabled: false,
+          items: [...items, ...this.state.items],
+          silentlyGettingItems: false,
+        }, () => {
+          this.setState({
+            scrollEnabled: true
+          })
+        })
+        this.arrayholder = this.state.items
+
+      })
+    }
   }
 
   searchFilterFunction = text => {
@@ -303,6 +349,7 @@ export default class ItemsScreen extends React.Component {
         price={item.price}
         posted={item.posted}
         liked={item.liked}
+        offers={item.offers}
         favorited={item.favorited}
         id={item.id}
         index={index}
@@ -384,6 +431,7 @@ export default class ItemsScreen extends React.Component {
                 ListFooterComponent={this.renderFooter.bind(this)}
                 onEndReachedThreshold={0.6}
                 onEndReached={(!this.state.loadingMore) ? this.handleLoadMore.bind(this) : null}
+                scrollEnabled={this.state.scrollEnabled}
               />
         }
 

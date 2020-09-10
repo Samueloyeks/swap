@@ -16,5 +16,5 @@ AppRegistry.registerHeadlessTask('RNFirebaseBackgroundMessage', () => bgMessagin
 AppRegistry.registerComponent(appName, () => App);
 
 backgroundNotificationHandler = async () => {
-    console.log('Received Background Notification')
+    // console.log('Received Background Notification')
 }

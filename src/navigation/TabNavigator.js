@@ -32,17 +32,6 @@ import AllChatsScreen from '../screens/Chats/AllChatsScreen'
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 const ExploreStack = createStackNavigator({
   ExploreScreen: {
     screen: ExploreScreen,

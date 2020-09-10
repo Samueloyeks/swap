@@ -83,9 +83,6 @@ const ProfileStack = DismissableStackNavigator({
 
 });
 
-
-
-
 const AuthStack = createStackNavigator({
   // Landing: {
   //   screen: LandingScreen,
@@ -140,6 +137,8 @@ const MainStack = createStackNavigator({
       headerShown: false,
     }
   }
+}, {
+  mode: 'modal',
 })
 
 
@@ -168,12 +167,3 @@ export default createAppContainer(
   })
 );
 
-
-const styles = StyleSheet.create({
-  header: {
-    textAlign: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1
-  }
-})

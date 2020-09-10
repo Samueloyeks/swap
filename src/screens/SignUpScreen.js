@@ -30,8 +30,6 @@ import firebaseService from '../utils/firebase/FirebaseService';
 
 
 
-
-
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
 
 const validationSchema = Yup.object().shape({
@@ -195,7 +193,6 @@ export default class SignUpScreen extends React.Component {
     this.setState({ loading: true });
     try {
       const uData = await firebaseService.googleAuth()
-      // console.log(uData)
 
       if (uData == false) {
         this.setState({ loading: false });

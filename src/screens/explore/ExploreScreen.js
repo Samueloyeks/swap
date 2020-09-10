@@ -157,7 +157,7 @@ export default class ExploreScreen extends React.Component {
 
   }
 
-  silentlyGetItems = () => {
+  silentlyGetItems = () => { 
     if (this.state.items.length !== 0) {
       // this.setState({ loading: true })
       const { pageSize } = this.state;
@@ -320,14 +320,7 @@ export default class ExploreScreen extends React.Component {
             <TouchableOpacity onPress={() => params.updateSearch()}><Text>Cancel</Text></TouchableOpacity>
           </View> :
           params.userData ?
-            <View
-              style={{
-                width: screen.width,
-              }}>
               <TouchableOpacity
-                style={{
-                  marginRight: Platform.OS === 'ios' ? 0 : '35%',
-                }}
                 onPress={() => navigation.navigate("ProfileScreen", { onGoBack: () => params.refreshUserData() })}>
                 <View style={styles.avatarDiv}>
                   <Image
@@ -336,7 +329,6 @@ export default class ExploreScreen extends React.Component {
                   />
                 </View>
               </TouchableOpacity>
-            </View>
             : null
       ),
       headerRight: () => (
@@ -481,6 +473,7 @@ export default class ExploreScreen extends React.Component {
         {...this.props}
         favorite={this.favorite}
         like={this.like}
+        refreshUserData={this.refreshUserData}
         refreshDetails={this.refreshDetails}
         onRefresh={this.onRefresh}
         images={item.images}
