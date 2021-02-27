@@ -17,9 +17,9 @@ import {
 
 var firebaseKey = FIREBASE_KEY;
 
-var baseURL = API_LIVE_URL 
+// var baseURL = API_LIVE_URL 
 // var baseURL =  'API_TEST_URL_WINDOWS'
-// var baseURL = API_TEST_URL
+var baseURL = API_TEST_URL
 
 
 

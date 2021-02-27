@@ -1,6 +1,6 @@
 import React from 'react';
 import { Text, Button, View, StatusBar, Dimensions, StyleSheet } from 'react-native'
-import { createAppContainer, createSwitchNavigator, NavigationActions } from 'react-navigation';
+import { createAppContainer, createSwitchNavigator, NavigationActions} from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 import LandingScreen from '../screens/LandingScreen'
 import SignupScreen from '../screens/SignUpScreen'

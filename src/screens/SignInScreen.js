@@ -221,7 +221,7 @@ export default class SignInScreen extends React.Component {
                         iconColor='#2C384A'
                         keyboardType='email-address'
                         placeholder='Email'
-                        onBlur={handleBlur('email')}
+                        onBlur={handleBlur('email')} 
                       />
                       <ErrorMessage errorValue={touched.email && errors.email} />
                       <FormInput 

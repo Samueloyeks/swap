@@ -14,7 +14,7 @@ import configureStore from './src/store/configStore';
 const store = configureStore()
 
 
-
+ 
 
 
 YellowBox.ignoreWarnings(

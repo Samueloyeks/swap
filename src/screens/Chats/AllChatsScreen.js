@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     checkboxContainer: {
-        backgroundColor: 'transparent',
+        backgroundColor: 'transparent', 
         borderWidth: 0,
         padding: 0,
         alignSelf: 'flex-start'

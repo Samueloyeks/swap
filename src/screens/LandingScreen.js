@@ -178,7 +178,7 @@ const slides = [
     image: require('../assets/imgs/introSlide2.png'),
     backgroundColor: '#FAFAFA',
     titleStyle: styles.title,
-    textStyle: styles.text,
+    textStyle: styles.text, 
   },
   {
     key: 'third',

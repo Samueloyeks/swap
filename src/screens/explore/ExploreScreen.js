@@ -486,7 +486,7 @@ export default class ExploreScreen extends React.Component {
         favorited={item.favorited}
         id={item.id}
         index={index}
-        description={item.description}
+        description={item.description} 
         preferences={item.preferences}
         categories={item.categories}
         numberAvailable={item.quantity}
