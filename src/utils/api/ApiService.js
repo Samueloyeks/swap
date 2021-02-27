@@ -17,9 +17,9 @@ import {
 
 var firebaseKey = FIREBASE_KEY;
 
-// var baseURL = API_LIVE_URL 
+var baseURL = API_LIVE_URL 
 // var baseURL =  'API_TEST_URL_WINDOWS'
-var baseURL = API_TEST_URL
+// var baseURL = API_TEST_URL 
 
 
 
@@ -27,7 +27,7 @@ const authHeader = 'Basic ' + base64.encode(`${API_USERNAME}:${API_PASSWORD}`);
 
 const defaultHeader = {
     'Authorization': authHeader,
-    "Content-Type": "application/x-www-form-urlencoded",
+    "Content-Type": "application/x-www-form-urlencoded", 
     'Accept': 'application/json'
 }
 

@@ -82,6 +82,7 @@ export default class SignInScreen extends React.Component {
 
         values.fcmToken = fcmToken;
         values.deviceType = deviceType;
+
         api.post('/users/login', values).then((response) => {
           if (response.data) {
             var userData = {
